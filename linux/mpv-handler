@@ -1,4 +1,3 @@
 #!/bin/bash
 
-url=$(base64 -d <<< ${1#mpv://})
-mpv --player-operation-mode=pseudo-gui $url
+mpv $(base64 -d <<< ${1#mpv://})
