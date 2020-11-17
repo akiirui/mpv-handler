@@ -8,12 +8,12 @@
 // @description:zh-CN   通过 mpv 和 youtube-dl 播放网页上的视频和歌曲
 // @description:zh-TW   通過 mpv 和 youtube-dl 播放網頁上的視頻和歌曲
 // @namespace           play-with-mpv-handler
-// @version             2020.11.17.1
+// @version             2020.11.17.2
 // @author              Akatsuki Rui
 // @license             MIT License
 // @grant               GM_info
 // @run-at              document-idle
-// @match               *://www.youtube.com/watch?v=*
+// @match               *://www.youtube.com/watch*
 // @match               *://www.bilibili.com/video/*
 // ==/UserScript==
 
