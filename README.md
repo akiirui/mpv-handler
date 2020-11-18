@@ -17,7 +17,7 @@ Play website videos and songs with [mpv](https://mpv.io/) & [youtube-dl](https:/
 
 ## Supported sites
 
-- YouTube (`*://www.youtube.com/watch*`)
+- YouTube (`*://www.youtube.com/*`)
 - bilibili (`*://www.bilibili.com/video/*`)
 - And more sites waiting to add ~
 

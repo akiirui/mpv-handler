@@ -17,7 +17,7 @@
 
 ## 支持的网站
 
-- YouTube (`*://www.youtube.com/watch*`)
+- YouTube (`*://www.youtube.com/*`)
 - bilibili (`*://www.bilibili.com/video/*`)
 - 还有更多的网站等待添加～
 
