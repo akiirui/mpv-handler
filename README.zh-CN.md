@@ -4,16 +4,25 @@
 
 ## 安装与使用
 
+### Both
+
+- 安装 [mpv](https://mpv.io/installation/) & [youtube-dl](https://github.com/ytdl-org/youtube-dl/)
+- 安装油猴脚本 [play-with-mpv](https://greasyfork.org/scripts/416271-play-with-mpv)
+
+> 推荐 Windows 用户安装 [shinchiro's mpv builds](https://sourceforge.net/projects/mpv-player-windows/files).
+
+这个构建同时包含 `mpv` 和 `youtube-dl`，并且拥有更新它们的脚本。
+
 ### Linux
 
-1. 安装油猴脚本 [play-with-mpv](https://greasyfork.org/scripts/416271-play-with-mpv)
-2. 安装软件包 [mpv-handler-git](https://aur.archlinux.org/packages/mpv-handler-git/) <sup>AUR</sup>
-3. 打开受支持的网站，点击左下角的 mpv 图标
-4. 在 mpv 中尽情享受～
+1. 安装软件包 [mpv-handler-git](https://aur.archlinux.org/packages/mpv-handler-git/) <sup>AUR</sup>
+2. 打开受支持的网站，点击左下角的 mpv 图标
 
 ### Windows
 
-> 即将到来，但没有预计时间。
+1. 复制 [`windows/handler-install.bat`](https://github.com/akiirui/play-with-mpv-handler/tree/main/windows/handler-install.bat) & [`windows/mpv-handler.bat`](https://github.com/akiirui/play-with-mpv-handler/tree/main/windows/mpv-handler.bat) 到 `mpv` 的安装文件夹内
+2. 运行 `handler-install.bat` 注册协议处理程序
+3. 打开受支持的网站，点击左下角的 mpv 图标
 
 ## 支持的网站
 
