@@ -13,6 +13,8 @@ Play website videos and songs with [mpv](https://mpv.io/) & [youtube-dl](https:/
 
 This build include `mpv` and `youtube-dl` both, and have a script to update these.
 
+After install this build, remember run `update.bat` to update `mpv` and download latest `youtube-dl`.
+
 ### Linux
 
 1. Install package [mpv-handler-git](https://aur.archlinux.org/packages/mpv-handler-git/) <sup>AUR</sup>

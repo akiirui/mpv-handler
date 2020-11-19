@@ -13,6 +13,8 @@
 
 这个构建同时包含 `mpv` 和 `youtube-dl`，并且拥有更新它们的脚本。
 
+在安装这个构建后，记住运行 `update.bat` 以更新 `mpv` 和下载最新的 `youtube-dl`。
+
 ### Linux
 
 1. 安装软件包 [mpv-handler-git](https://aur.archlinux.org/packages/mpv-handler-git/) <sup>AUR</sup>
