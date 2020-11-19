@@ -23,7 +23,7 @@ Play website videos and songs with [mpv](https://mpv.io/) & [youtube-dl](https:/
 
 Because `youtube-dl` is supported too many sites , I cannot add all of these sites to `@match` at onetime.
 
-If you need some sites support, welcome to PR. Of course, `youtube-dl` supported sites only.
+If you need support for some sites , welcome to PR. Of course, `youtube-dl` [supported sites](https://ytdl-org.github.io/youtube-dl/supportedsites.html) only.
 
 ## GitHub
 

@@ -8,7 +8,7 @@
 // @description:zh-CN   通过 mpv 和 youtube-dl 播放网页上的视频和歌曲
 // @description:zh-TW   通過 mpv 和 youtube-dl 播放網頁上的視頻和歌曲
 // @namespace           play-with-mpv-handler
-// @version             2020.11.18.1
+// @version             2020.11.19
 // @author              Akatsuki Rui
 // @license             MIT License
 // @grant               GM_info
@@ -26,6 +26,7 @@ function appendButton() {
   let head = document.getElementsByTagName("head")[0];
   let body = document.getElementsByTagName("body")[0];
   let style = document.createElement("style");
+  let buttonIframe = document.createElement("iframe");
   let button = document.createElement("a");
 
   if (head) {
@@ -35,16 +36,27 @@ function appendButton() {
   }
 
   if (body) {
+    buttonIframe.name = "play-with-mpv";
+    buttonIframe.style = "display: none";
+    body.appendChild(buttonIframe);
+
     button.className = "play-with-mpv";
     button.style = "display: none";
+    button.target = "play-with-mpv";
+    button.addEventListener("click", () => {
+      let videoElement = document.getElementsByTagName("video")[0];
+
+      videoElement.paused ? null : videoElement.pause();
+    });
     body.appendChild(button);
+
     changeButton(location.href);
   }
 }
 
 function changeButton(currentUrl) {
   let isMatch = false;
-  let button = document.querySelector("a[class='play-with-mpv'");
+  let button = document.getElementsByClassName("play-with-mpv")[0];
 
   for (const element of MATCH_URLS) {
     if ((isMatch = currentUrl.includes(element))) break;

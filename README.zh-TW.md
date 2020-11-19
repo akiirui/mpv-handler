@@ -23,7 +23,7 @@
 
 因爲 `youtube-dl` 支持了非常多的網站，我無法一次性添加所有的網站進 `@match`。
 
-如果你有對應網站的需求，歡迎提交 PR。當然，僅限於 `youtube-dl` 所支持的網站。
+如果你有對應網站的需求，歡迎提交 PR。當然，僅限於 `youtube-dl` [所支持的網站](https://ytdl-org.github.io/youtube-dl/supportedsites.html)。
 
 ## GitHub
 
