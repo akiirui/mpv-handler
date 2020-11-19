@@ -17,4 +17,5 @@ if not "%1" == "" goto :argsexists
     del /q /f "%temp%\mpv_input.tmp" >nul 2>nul
     del /q /f "%temp%\mpv_output.tmp" >nul 2>nul
 
+    cd /D %~dp0
     start /b "Playing %video_url%" mpv.com %video_url%
