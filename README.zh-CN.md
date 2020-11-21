@@ -13,7 +13,7 @@
 
 这个构建同时包含 `mpv` 和 `youtube-dl`，并且拥有更新它们的脚本。
 
-在安装这个构建后，记住运行 `update.bat` 以更新 `mpv` 和下载最新的 `youtube-dl`。
+在安装这个构建后，记住运行 `updater.bat` 以更新 `mpv` 和下载最新的 `youtube-dl`。
 
 ### Linux
 

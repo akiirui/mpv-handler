@@ -13,7 +13,7 @@
 
 這個構建同時包含 `mpv` 和 `youtube-dl`，並且擁有更新它們的腳本。
 
-在安裝這個構建後，記住運行 `update.bat` 以更新 `mpv` 和下載最新的 `youtube-dl`。
+在安裝這個構建後，記住運行 `updater.bat` 以更新 `mpv` 和下載最新的 `youtube-dl`。
 
 ### Linux
 

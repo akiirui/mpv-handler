@@ -13,7 +13,7 @@ Play website videos and songs with [mpv](https://mpv.io/) & [youtube-dl](https:/
 
 This build include `mpv` and `youtube-dl` both, and have a script to update these.
 
-After install this build, remember run `update.bat` to update `mpv` and download latest `youtube-dl`.
+After install this build, remember run `updater.bat` to update `mpv` and download latest `youtube-dl`.
 
 ### Linux
 
