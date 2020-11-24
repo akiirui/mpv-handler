@@ -22,7 +22,7 @@ After install this build, remember run `updater.bat` to update `mpv` and downloa
 
 ### Windows
 
-1. Copy [`windows/handler-install.bat`](https://github.com/akiirui/play-with-mpv-handler/tree/main/windows/handler-install.bat) & [`windows/mpv-handler.bat`](https://github.com/akiirui/play-with-mpv-handler/tree/main/windows/mpv-handler.bat) to `mpv` installation folder
+1. Copy [`windows/handler-install.bat`](https://github.com/akiirui/mpv-handler/tree/main/windows/handler-install.bat) & [`windows/mpv-handler.bat`](https://github.com/akiirui/mpv-handler/tree/main/windows/mpv-handler.bat) to `mpv` installation folder
 2. Run `handler-install.bat` to register protocol handler
 3. Open supported sites and click left-bottom mpv icon
 
@@ -34,13 +34,13 @@ After install this build, remember run `updater.bat` to update `mpv` and downloa
 
 Because `youtube-dl` is supported too many sites , I cannot add all of these sites to `@match` at onetime.
 
-If you need support for some sites, welcome to PR or create a [Issues](https://github.com/akiirui/play-with-mpv-handler/issues/new).
+If you need support for some sites, welcome to PR or create a [Issues](https://github.com/akiirui/mpv-handler/issues/new).
 
 Of course, `youtube-dl` [supported sites](https://ytdl-org.github.io/youtube-dl/supportedsites.html) only.
 
 ## GitHub
 
-- [play-with-mpv-handler](https://github.com/akiirui/play-with-mpv-handler/)
+- [mpv-handler](https://github.com/akiirui/mpv-handler/)
 
 ## Thanks
 

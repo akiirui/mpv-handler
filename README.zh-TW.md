@@ -22,7 +22,7 @@
 
 ### Windows
 
-1. 複製 [`windows/handler-install.bat`](https://github.com/akiirui/play-with-mpv-handler/tree/main/windows/handler-install.bat) & [`windows/mpv-handler.bat`](https://github.com/akiirui/play-with-mpv-handler/tree/main/windows/mpv-handler.bat) 到 `mpv` 的安裝文件夾內
+1. 複製 [`windows/handler-install.bat`](https://github.com/akiirui/mpv-handler/tree/main/windows/handler-install.bat) & [`windows/mpv-handler.bat`](https://github.com/akiirui/mpv-handler/tree/main/windows/mpv-handler.bat) 到 `mpv` 的安裝文件夾內
 2. 運行 `handler-install.bat` 註冊協議處理程序
 3. 打開受支持的網站，點擊左下角的 mpv 圖標
 
@@ -34,13 +34,13 @@
 
 因爲 `youtube-dl` 支持了非常多的網站，我無法一次性添加所有的網站進 `@match`。
 
-如果你需要某些網站的支持，歡迎提交 PR 或者創建一個 [Issues](https://github.com/akiirui/play-with-mpv-handler/issues/new)。
+如果你需要某些網站的支持，歡迎提交 PR 或者創建一個 [Issues](https://github.com/akiirui/mpv-handler/issues/new)。
 
 當然，僅限於 `youtube-dl` [所支持的網站](https://ytdl-org.github.io/youtube-dl/supportedsites.html)。
 
 ## GitHub
 
-- [play-with-mpv-handler](https://github.com/akiirui/play-with-mpv-handler/)
+- [mpv-handler](https://github.com/akiirui/mpv-handler/)
 
 ## 鳴謝
 
