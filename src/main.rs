@@ -2,6 +2,7 @@ use thiserror::Error;
 
 #[cfg(unix)]
 static MPV_BIN: &str = "mpv";
+
 #[cfg(windows)]
 static MPV_BIN: &str = "mpv.com";
 
@@ -15,7 +16,7 @@ enum HandlerError {
     TooManyArgs,
     #[error("Wrong protocol: {0}")]
     WrongProtocol(String),
-    #[error("Base64 Decode Error: {0}")]
+    #[error(transparent)]
     DecodeError(#[from] base64::DecodeError),
     #[error(transparent)]
     FromUtf8Error(#[from] std::string::FromUtf8Error),
@@ -55,17 +56,18 @@ fn decode_url(args: Vec<String>) -> Result<String, HandlerError> {
 
     let mut arg = args[1].clone();
 
-    if !arg.starts_with("mpv://") {
+    if arg.starts_with("mpv://") {
+        arg.replace_range(0.."mpv://".len(), "");
+    } else {
         return Err(HandlerError::WrongProtocol(arg));
     }
-    arg.replace_range(0.."mpv://".len(), "");
 
+    // Fix Windows append slash `/` to argument end
     #[cfg(windows)]
     if arg.ends_with("/") {
         arg.pop();
     }
 
     let video_url = String::from_utf8(base64::decode(arg)?)?;
-
     Ok(video_url)
 }
