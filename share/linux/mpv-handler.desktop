@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Name=Play with mpv handler
+Name=mpv-handler
 GenericName=Multimedia player
 Comment=Play website videos and songs with mpv & youtube-dl
 NoDisplay=true

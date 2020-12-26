@@ -1,3 +1,0 @@
-#!/bin/bash
-
-mpv $(base64 -d <<< ${1#mpv://})
