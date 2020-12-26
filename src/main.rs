@@ -27,7 +27,10 @@ fn main() {
     match play_video(args) {
         Ok(_) => {}
         Err(e) => {
-            println!("{}", e);
+            println!("Error: {}", e);
+            println!("");
+            println!("Press ENTER to exit");
+            std::io::Read::read(&mut std::io::stdin(), &mut [0]).unwrap();
             std::process::exit(1);
         }
     }
@@ -55,8 +58,13 @@ fn decode_url(args: Vec<String>) -> Result<String, HandlerError> {
     if !arg.starts_with("mpv://") {
         return Err(HandlerError::WrongProtocol(arg));
     }
-
     arg.replace_range(0.."mpv://".len(), "");
+
+    #[cfg(windows)]
+    if arg.ends_with("/") {
+        arg.pop();
+    }
+
     let video_url = String::from_utf8(base64::decode(arg)?)?;
 
     Ok(video_url)
