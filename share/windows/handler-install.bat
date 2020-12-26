@@ -14,8 +14,8 @@ call :ensure_admin
 cd /D %~dp0
 set mpv_path=%cd%\mpv.com
 if not exist "%mpv_path%" call :die "mpv.com not found"
-set mpv_handler_path=%cd%\mpv-handler.bat
-if not exist "%mpv_path%" call :die "mpv-handler.bat not found"
+set mpv_handler_path=%cd%\mpv-handler.exe
+if not exist "%mpv_path%" call :die "mpv-handler.exe not found"
 
 call :add_verbs
 
@@ -60,6 +60,6 @@ echo Enjoy!
 :add_verbs
     call :reg add "HKCR\mpv" /d "URL: mpv Protocol" /f
     call :reg add "HKCR\mpv" /v "URL Protocol" /d "mpv" /f
-    call :reg add "HKCR\mpv" /v "DefaultIcon" /d "\"%~dp0mpv-handler.bat\",1" /f
-    call :reg add "HKCR\mpv\shell\open\command" /d "\"%~dp0mpv-handler.bat\" %%%%1" /f
+    call :reg add "HKCR\mpv" /v "DefaultIcon" /d "\"%~dp0mpv-handler.exe\",1" /f
+    call :reg add "HKCR\mpv\shell\open\command" /d "\"%~dp0mpv-handler.exe\" %%%%1" /f
     goto :EOF
