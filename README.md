@@ -1,30 +1,35 @@
 # Play with mpv handler
 
-Play website videos and songs with [mpv](https://mpv.io/) & [youtube-dl](https://github.com/ytdl-org/youtube-dl/), without any background service.
+Play website videos and songs with [mpv][mpv] & [youtube-dl][youtube-dl], without any background service.
 
-## Install & Usage
+## Install
 
 ### Both
 
-- Install [mpv](https://mpv.io/installation/) & [youtube-dl](https://github.com/ytdl-org/youtube-dl/)
-- Install userscript [play-with-mpv](https://greasyfork.org/scripts/416271-play-with-mpv)
+- Install [mpv][mpv-install] & [youtube-dl][youtube-dl]
+- Install userscript [play-with-mpv][mpv-handler-greasyfork]
 
-> For Windows users, recommend to install [shinchiro's mpv builds](https://sourceforge.net/projects/mpv-player-windows/files).
-
-This build include `mpv` and `youtube-dl` both, and have a script to update these.
-
-After install this build, remember run `updater.bat` to update `mpv` and download latest `youtube-dl`.
+> For Windows users, recommend to install [shinchiro's mpv builds][mpv-windows].
+>
+> This build include `mpv` and `youtube-dl` both, and have a script to update these.
+>
+> After install this build, remember run `updater.bat` to update `mpv` and download latest `youtube-dl`.
 
 ### Linux
 
-1. Install package [mpv-handler-git](https://aur.archlinux.org/packages/mpv-handler-git/) <sup>AUR</sup>
-2. Open supported sites and click left-bottom mpv icon
+1. Install package [mpv-handler-git][mpv-handler-aur] <sup>AUR</sup>
 
 ### Windows
 
-1. Copy [`windows/handler-install.bat`](https://github.com/akiirui/mpv-handler/tree/main/windows/handler-install.bat) & [`windows/mpv-handler.bat`](https://github.com/akiirui/mpv-handler/tree/main/windows/mpv-handler.bat) to `mpv` installation folder
-2. Run `handler-install.bat` to register protocol handler
-3. Open supported sites and click left-bottom mpv icon
+1. Download latest `mpv-handler-windows-64.zip` in [Release][mpv-handler-release]
+2. Unzip this archive to `mpv` installation folder
+3. Run `handler-install.bat` to register protocol handler
+
+## Usage
+
+Open supported sites and click left-bottom mpv icon.
+
+Enjoy!
 
 ## Supported sites
 
@@ -34,16 +39,28 @@ After install this build, remember run `updater.bat` to update `mpv` and downloa
 
 Because `youtube-dl` is supported too many sites , I cannot add all of these sites to `@match` at onetime.
 
-If you need support for some sites, welcome to PR or create a [Issues](https://github.com/akiirui/mpv-handler/issues/new).
+If you need support for some sites, welcome to PR or create a [Issues][mpv-handler-issues].
 
-Of course, `youtube-dl` [supported sites](https://ytdl-org.github.io/youtube-dl/supportedsites.html) only.
+Of course, `youtube-dl` [supported sites][youtube-dl-sites] only.
 
 ## GitHub
 
-- [mpv-handler](https://github.com/akiirui/mpv-handler/)
+- [mpv-handler][mpv-handler]
 
 ## Thanks
 
-- [mpv](https://mpv.io/)
-- [youtube-dl](https://github.com/ytdl-org/youtube-dl/)
-- [papirus-icon-theme](https://github.com/PapirusDevelopmentTeam/papirus-icon-theme)
+- [mpv][mpv]
+- [youtube-dl][youtube-dl]
+- [papirus-icon-theme][papirus-icon-theme]
+
+[mpv-handler-aur]: https://aur.archlinux.org/packages/mpv-handler-git/
+[mpv-handler-issues]: https://github.com/akiirui/mpv-handler/issues/new
+[mpv-handler-release]: https://github.com/akiirui/mpv-handler/releases
+[mpv-handler-greasyfork]: https://greasyfork.org/scripts/416271-play-with-mpv
+[mpv-handler]: https://github.com/akiirui/mpv-handler/
+[mpv-install]: https://mpv.io/installation/
+[mpv-windows]: https://sourceforge.net/projects/mpv-player-windows/files
+[mpv]: https://mpv.io/
+[papirus-icon-theme]: https://github.com/PapirusDevelopmentTeam/papirus-icon-theme/
+[youtube-dl-sites]: https://ytdl-org.github.io/youtube-dl/supportedsites.html
+[youtube-dl]: https://github.com/ytdl-org/youtube-dl/
