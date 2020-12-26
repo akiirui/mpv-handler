@@ -1,0 +1,19 @@
+[package]
+name = "mpv-handler"
+version = "0.1.0"
+edition = "2018"
+authors = ["Akatsuki Rui <akiirui@outlook.com>"]
+description = "Play website videos and songs with mpv & youtube-dl"
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/akiirui/mpv-handler"
+repository = "https://github.com/akiirui/mpv-handler"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+thiserror = "1.0"
+base64 = "0.13"
+
+[profile.release]
+lto = true
