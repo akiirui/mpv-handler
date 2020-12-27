@@ -60,6 +60,6 @@ echo Enjoy!
 :add_verbs
     call :reg add "HKCR\mpv" /d "URL: mpv Protocol" /f
     call :reg add "HKCR\mpv" /v "URL Protocol" /d "mpv" /f
-    call :reg add "HKCR\mpv" /v "DefaultIcon" /d "\"%~dp0mpv-handler.exe\",1" /f
-    call :reg add "HKCR\mpv\shell\open\command" /d "\"%~dp0mpv-handler.exe\" %%%%1" /f
+    call :reg add "HKCR\mpv" /v "DefaultIcon" /d "\"%mpv_handler_path%\",1" /f
+    call :reg add "HKCR\mpv\shell\open\command" /d "\"%mpv_handler_path%\" %%%%1" /f
     goto :EOF
