@@ -8,12 +8,13 @@
 // @description:zh-CN   通过 mpv 和 youtube-dl 播放网页上的视频和歌曲
 // @description:zh-TW   通過 mpv 和 youtube-dl 播放網頁上的視頻和歌曲
 // @namespace           play-with-mpv-handler
-// @version             2020.12.27.1
+// @version             2020.12.27.2
 // @author              Akatsuki Rui
 // @license             MIT License
 // @grant               GM_getValue
 // @grant               GM_setValue
 // @grant               GM_notification
+// @grant               GM_openInTab
 // @run-at              document-idle
 // @noframes
 // @match               *://www.youtube.com/*
@@ -32,14 +33,16 @@ function notifyHandlerUpdate() {
     title: "Play with mpv",
     text: `mpv-handler is upgraded to ${MPV_HANDLER_VERSION}
 
-Check updates at:
-https://github.com/akiirui/mpv-handler/releases`,
+Click to check updates`,
+    onclick: () => {
+      GM_openInTab("https://github.com/akiirui/mpv-handler/releases/latest");
+      GM_setValue("mpvHandlerVersion", MPV_HANDLER_VERSION);
+    },
   };
 
   let version = GM_getValue("mpvHandlerVersion", null);
   if (version !== MPV_HANDLER_VERSION) {
     GM_notification(NOTIFICATION);
-    GM_setValue("mpvHandlerVersion", MPV_HANDLER_VERSION);
   }
 }
 
