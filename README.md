@@ -21,7 +21,7 @@ Play website videos and songs with [mpv][mpv] & [youtube-dl][youtube-dl], withou
 
 ### Windows
 
-1. Download latest `mpv-handler-windows-64.zip` in [Release][mpv-handler-release]
+1. Download latest [`mpv-handler-windows-64.zip`][mpv-handler-release]
 2. Unzip this archive to `mpv` installation folder
 3. Run `handler-install.bat` to register protocol handler
 
@@ -55,7 +55,7 @@ Of course, `youtube-dl` [supported sites][youtube-dl-sites] only.
 
 [mpv-handler-aur]: https://aur.archlinux.org/packages/mpv-handler-git/
 [mpv-handler-issues]: https://github.com/akiirui/mpv-handler/issues/new
-[mpv-handler-release]: https://github.com/akiirui/mpv-handler/releases
+[mpv-handler-release]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-windows-64.zip
 [mpv-handler-greasyfork]: https://greasyfork.org/scripts/416271-play-with-mpv
 [mpv-handler]: https://github.com/akiirui/mpv-handler/
 [mpv-install]: https://mpv.io/installation/

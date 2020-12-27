@@ -21,7 +21,7 @@
 
 ### Windows
 
-1. 在 [Release][mpv-handler-release] 下载最新的 `mpv-handler-windows-64.zip`
+1. 下载最新的 [`mpv-handler-windows-64.zip`][mpv-handler-release]
 2. 解压缩至 `mpv` 的安装文件夹
 3. 运行 `handler-install.bat` 注册协议处理程序
 
@@ -55,7 +55,7 @@
 
 [mpv-handler-aur]: https://aur.archlinux.org/packages/mpv-handler-git/
 [mpv-handler-issues]: https://github.com/akiirui/mpv-handler/issues/new
-[mpv-handler-release]: https://github.com/akiirui/mpv-handler/releases
+[mpv-handler-release]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-windows-64.zip
 [mpv-handler-greasyfork]: https://greasyfork.org/scripts/416271-play-with-mpv
 [mpv-handler]: https://github.com/akiirui/mpv-handler/
 [mpv-install]: https://mpv.io/installation/
