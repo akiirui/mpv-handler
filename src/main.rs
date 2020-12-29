@@ -34,6 +34,7 @@ fn args_parser() -> Result<(), HandlerError> {
         Some(data) => data.clone(),
         None => return Err(HandlerError::NoArgGiven),
     };
+
     match arg.as_str() {
         "version" | "-v" | "-V" => handler_version(),
         _ => handler_play(arg),
@@ -43,12 +44,14 @@ fn args_parser() -> Result<(), HandlerError> {
 fn handler_version() -> Result<(), HandlerError> {
     let version: &str = option_env!("MPV_HANDLER_VERSION").unwrap_or(env!("CARGO_PKG_VERSION"));
     println!("mpv-handler {}", version);
+
     Ok(())
 }
 
 fn handler_play(mut arg: String) -> Result<(), HandlerError> {
     #[cfg(unix)]
     const MPV_BIN: &str = "mpv";
+
     #[cfg(windows)]
     const MPV_BIN: &str = "mpv.com";
 
@@ -63,8 +66,26 @@ fn handler_play(mut arg: String) -> Result<(), HandlerError> {
         arg.pop();
     }
 
-    let video_url = String::from_utf8(base64::decode(arg)?)?;
-    let mpv = std::process::Command::new(MPV_BIN).arg(video_url).status();
+    let protocol = String::from_utf8(base64::decode(arg)?)?;
+    let args: Vec<&str> = protocol.split('|').collect();
+
+    let video_url = args.get(0).unwrap_or(&"");
+    let video_quality = args.get(1).unwrap_or(&"Best");
+
+    let video_quality = match *video_quality {
+        "Best" => "--ytdl-format=bestvideo+bestaudio/best",
+        "4K" => "--ytdl-format=bestvideo[height<=2160]+bestaudio/best[height<=2160]/best",
+        "2K" => "--ytdl-format=bestvideo[height<=1440]+bestaudio/best[height<=1440]/best",
+        "1080P" => "--ytdl-format=bestvideo[height<=1080]+bestaudio/best[height<=1080]/best",
+        "720P" => "--ytdl-format=bestvideo[height<=720]+bestaudio/best[height<=720]/best",
+        _ => "--ytdl-format=bestvideo+bestaudio/best",
+    };
+
+    let mpv = std::process::Command::new(MPV_BIN)
+        .arg(video_quality)
+        .arg(video_url)
+        .status();
+
     match mpv {
         Ok(status) => match status.success() {
             true => Ok(()),
