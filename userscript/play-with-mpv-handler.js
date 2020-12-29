@@ -8,10 +8,10 @@
 // @description:zh-CN   通过 mpv 和 youtube-dl 播放网页上的视频和歌曲
 // @description:zh-TW   通過 mpv 和 youtube-dl 播放網頁上的視頻和歌曲
 // @namespace           play-with-mpv-handler
-// @version             2020.12.29.1
+// @version             2020.12.29.2
 // @author              Akatsuki Rui
 // @license             MIT License
-// @require             https://cdn.jsdelivr.net/gh/sizzlemctwizzle/GM_config/gm_config.js
+// @require             https://cdn.jsdelivr.net/gh/sizzlemctwizzle/GM_config@a4a49b47ecfb1d8fcd27049cc0e8114d05522a0f/gm_config.js
 // @grant               GM_info
 // @grant               GM_getValue
 // @grant               GM_setValue
