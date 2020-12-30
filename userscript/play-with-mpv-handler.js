@@ -8,7 +8,7 @@
 // @description:zh-CN   通过 mpv 和 youtube-dl 播放网页上的视频和歌曲
 // @description:zh-TW   通過 mpv 和 youtube-dl 播放網頁上的視頻和歌曲
 // @namespace           play-with-mpv-handler
-// @version             2020.12.29.2
+// @version             2020.12.30
 // @author              Akatsuki Rui
 // @license             MIT License
 // @require             https://cdn.jsdelivr.net/gh/sizzlemctwizzle/GM_config@a4a49b47ecfb1d8fcd27049cc0e8114d05522a0f/gm_config.js
@@ -75,32 +75,35 @@ const MPV_CSS = `
   background-repeat: no-repeat;
 }
 .pwm-settings {
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease-in-out;
   display: block;
-  transform: translate(25%, 0);
+  position: absolute;
+  top: -32px;
   width: 32px;
   height: 32px;
-  background-color: #eeeeee;
+  margin-left: 8px;
   border: 0;
   border-radius: 50%;
   background-size: 32px;
+  background-color: #eeeeee;
   background-image: url(data:image/svg+xml;base64,${ICON_SETTINGS});
   background-repeat: no-repeat;
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
 }
 .pwm-iframe {
   display: none;
 }
 .play-with-mpv {
   position: fixed;
-  left: 12px;
-  bottom: 12px;
+  left: 8px;
+  bottom: 8px;
 }
-.play-with-mpv:hover .pwm-settings {
-  visibility: visible;
+.pwm-play:hover + .pwm-settings,
+.pwm-settings:hover {
   opacity: 1;
-  transition: opacity 0.3s ease-in-out;
+  visibility: visible;
+  transition: all 0.2s ease-in-out;
 }
 `;
 
@@ -108,38 +111,26 @@ const CONFIG_ID = "perferQuality";
 
 const CONFIG_CSS = `
 #${CONFIG_ID} .config_header {
-  font-size: 1.5em;
-  margin: 0;
-  padding-bottom: 0.3em;
-}
-#${CONFIG_ID} .field_label {
-  font-size: 1em;
-}
-#${CONFIG_ID} .radio_label {
-  font-size: 0.9em;
-}
-#${CONFIG_ID} .saveclose_buttons {
-  margin: 0.2em;
-  padding: 0.3em 1.5em;
-}
-#${CONFIG_ID}_buttons_holder {
-  position: fixed;
-  width: 97%;
-  bottom: 0;
-}
-#${CONFIG_ID} .reset_holder {
-  float: left;
-  position: relative;
-  bottom: -1em;
+  padding-bottom: 5px;
 }
 #${CONFIG_ID}_field_perferQuality {
-  padding-top: 0.3em;
+  padding-top: 5px;
+  padding-bottom: 10px;
+}
+#${CONFIG_ID} .saveclose_buttons {
+  margin: 1px;
+  padding: 5px 16px;
+}
+#${CONFIG_ID} .reset_holder {
+  position: relative;
+  float: left;
+  bottom: -16px;
 }
 `;
 
-const IFRAME_CSS = `
-height: 140px;
-width: 290px;
+const CONFIG_IFRAME_CSS = `
+height: 145px;
+width: 265px;
 border: 1px solid;
 border-radius: 3px;
 position: fixed;
@@ -151,7 +142,7 @@ GM_config.init({
   title: `${GM_info.script.name}`,
   fields: {
     perferQuality: {
-      label: "Prefer quality",
+      label: "Prefer Quality",
       type: "radio",
       options: ["Best", "4K", "2K", "1080P", "720P"],
       default: "Best",
@@ -169,7 +160,7 @@ GM_config.init({
 });
 
 function notifyHandlerUpdate() {
-  const updateNotify = {
+  const UPDATE_NOTIFY = {
     title: `${GM_info.script.name}`,
     text: `mpv-handler is upgraded to ${MPV_HANDLER_VERSION}\n\nClick to check updates`,
     onclick: () => {
@@ -180,7 +171,7 @@ function notifyHandlerUpdate() {
 
   let version = GM_getValue("mpvHandlerVersion", null);
   if (version !== MPV_HANDLER_VERSION) {
-    GM_notification(updateNotify);
+    GM_notification(UPDATE_NOTIFY);
   }
 }
 
@@ -195,18 +186,13 @@ function appendButton() {
 
   let body = document.getElementsByTagName("body")[0];
   let buttonDiv = document.createElement("div");
-  let buttonSettings = document.createElement("button");
-  let buttonPlay = document.createElement("a");
   let buttonIframe = document.createElement("iframe");
+  let buttonPlay = document.createElement("a");
+  let buttonSettings = document.createElement("button");
 
   if (body) {
-    buttonSettings.className = "pwm-settings";
-    buttonSettings.addEventListener("click", () => {
-      if (!GM_config.isOpen) {
-        GM_config.open();
-        GM_config.frame.style = IFRAME_CSS;
-      }
-    });
+    buttonIframe.className = "pwm-iframe";
+    buttonIframe.name = "pwm-iframe";
 
     buttonPlay.className = "pwm-play";
     buttonPlay.target = "pwm-iframe";
@@ -216,13 +202,18 @@ function appendButton() {
       if (videoElement) videoElement.pause();
     });
 
-    buttonIframe.className = "pwm-iframe";
-    buttonIframe.name = "pwm-iframe";
+    buttonSettings.className = "pwm-settings";
+    buttonSettings.addEventListener("click", () => {
+      if (!GM_config.isOpen) {
+        GM_config.open();
+        GM_config.frame.style = CONFIG_IFRAME_CSS;
+      }
+    });
 
     buttonDiv.className = "play-with-mpv";
-    buttonDiv.appendChild(buttonSettings);
-    buttonDiv.appendChild(buttonPlay);
     buttonDiv.appendChild(buttonIframe);
+    buttonDiv.appendChild(buttonPlay);
+    buttonDiv.appendChild(buttonSettings);
 
     body.appendChild(buttonDiv);
   }
@@ -242,7 +233,6 @@ function updateButton(currentUrl) {
 
     button.style = isMatch ? "display: block" : "display: none";
     button.href = isMatch ? "mpv://" + btoa(protocol) : "";
-    console.log(protocol);
   }
 }
 
