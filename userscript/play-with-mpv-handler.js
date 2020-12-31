@@ -8,7 +8,7 @@
 // @description:zh-CN   通过 mpv 和 youtube-dl 播放网页上的视频和歌曲
 // @description:zh-TW   通過 mpv 和 youtube-dl 播放網頁上的視頻和歌曲
 // @namespace           play-with-mpv-handler
-// @version             2020.12.30
+// @version             2021.01.01
 // @author              Akatsuki Rui
 // @license             MIT License
 // @require             https://cdn.jsdelivr.net/gh/sizzlemctwizzle/GM_config@a4a49b47ecfb1d8fcd27049cc0e8114d05522a0f/gm_config.js
@@ -110,16 +110,22 @@ const MPV_CSS = `
 const CONFIG_ID = "perferQuality";
 
 const CONFIG_CSS = `
+body {
+  display: flex;
+}
+#${CONFIG_ID}_wrapper {
+  margin: auto;
+}
 #${CONFIG_ID} .config_header {
-  padding-bottom: 5px;
+  padding-bottom: 8px;
 }
 #${CONFIG_ID}_field_perferQuality {
-  padding-top: 5px;
-  padding-bottom: 10px;
+  padding-top: 4px;
+  padding-bottom: 8px;
 }
 #${CONFIG_ID} .saveclose_buttons {
   margin: 1px;
-  padding: 5px 16px;
+  padding: 4px 16px;
 }
 #${CONFIG_ID} .reset_holder {
   position: relative;
@@ -129,12 +135,12 @@ const CONFIG_CSS = `
 `;
 
 const CONFIG_IFRAME_CSS = `
-height: 145px;
-width: 265px;
-border: 1px solid;
-border-radius: 3px;
 position: fixed;
 z-index: 999;
+width:270px;
+height: 150px;
+border: 1px solid;
+border-radius: 2px;
 `;
 
 GM_config.init({
