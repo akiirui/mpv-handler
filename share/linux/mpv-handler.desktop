@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=mpv-handler
+GenericName=Multimedia player
+Comment=Play website videos and songs with mpv & youtube-dl
+NoDisplay=true
+Icon=mpv
+Exec=mpv-handler %u
+Terminal=true
+Categories=AudioVideo;Audio;Video;Player;TV;
+MimeType=x-scheme-handler/mpv;
+X-KDE-Protocols=mpv
