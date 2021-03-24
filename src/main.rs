@@ -82,6 +82,10 @@ impl Handler {
             arg.replace_range(0.."mpv.//".len(), "");
         }
 
+        if arg.ends_with('/') {
+            arg.pop();
+        }
+
         let protocol: Vec<&str> = arg.split("/?").collect();
 
         match protocol.get(0) {
@@ -95,10 +99,12 @@ impl Handler {
 
                 for option in options {
                     let option_data: Vec<&str> = option.split('=').collect();
+
                     let option_name: &str = match option_data.get(0) {
                         Some(name) => *name,
                         None => return Err(HandlerError::WrongProtocol),
                     };
+
                     let option_value: &str = match option_data.get(1) {
                         Some(value) => *value,
                         None => return Err(HandlerError::WrongProtocol),
