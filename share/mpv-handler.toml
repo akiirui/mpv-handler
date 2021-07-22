@@ -1,0 +1,40 @@
+### Player ###
+[player]
+mpv = "/usr/bin/mpv"
+
+### Video Downloader ###
+# You should be change the value of "bin" to your downloader executable file path.
+[ytdl]
+# Attention!! [ytdl] bin path should be mpv executable file.
+# Because youtube-dl not have `--player` option to set player.
+# The pipeline method `youtube-dl URL -o - | player -` Will destroy quality choices.
+bin = "/usr/bin/mpv"
+cookies = "--ytdl-raw-options-append=cookies="
+cookies_prefix = true
+direct = true
+quality.best = "--ytdl-format=bestvideo+bestaudio/best"
+quality.360p = "--ytdl-format=bestvideo[height<=360]+bestaudio/best[height<=360]/best"
+quality.480p = "--ytdl-format=bestvideo[height<=480]+bestaudio/best[height<=480]/best"
+quality.720p = "--ytdl-format=bestvideo[height<=720]+bestaudio/best[height<=720]/best"
+quality.1080p = "--ytdl-format=bestvideo[height<=1080]+bestaudio/best[height<=1080]/best"
+quality.1440p = "--ytdl-format=bestvideo[height<=1440]+bestaudio/best[height<=1440]/best"
+quality.2160p = "--ytdl-format=bestvideo[height<=2160]+bestaudio/best[height<=2160]/best"
+
+[you-get]
+bin = "/usr/bin/you-get"
+cookies = "--cookies"
+options = ["--player"]
+
+[streamlink]
+bin = "/usr/bin/streamlink"
+options = ["--player"]
+
+# # For advanced user, you can add downloader manually.
+# # Example:
+# [example-downloader]
+# bin = "/usr/bin/example"        # Required, String. The downloader executable file path.
+# cookies = "--cookies"           # Optional, String. The option to set cookies, if it support pass cookies.
+# cookies_prefix = false          # Optional, Boolen. The option to mark cookies option is prefix.
+# direct = false                  # Optional, Boolen. The option to mark downlader is player.
+# options = ["--player"]          # Optional, String Array. The options to set player or output.
+# quality.best = "--quality=best" # Optional, String. The option to set quality.
