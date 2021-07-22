@@ -11,6 +11,8 @@ pub enum HandlerError {
     Config(#[from] crate::config::ConfigError),
     #[error(transparent)]
     Protocol(#[from] crate::protocol::ProtocolError),
+    #[error(transparent)]
+    IoError(#[from] std::io::Error),
     #[error("No argument is given")]
     NoArg,
     #[error("Too many arguments are given")]
@@ -47,9 +49,9 @@ impl Handler {
     /// - `GetHomeDirFailed`
     ///    - (Unix only) Get user home directory failed
     /// - `ConfigError`
-    ///    - Transparent to `Config::ConfigError`
+    ///    - Transparent from `Config::ConfigError`
     /// - `ProtocolError`
-    ///    - Transparent to `Protocol::ProtocolError`
+    ///    - Transparent from `Protocol::ProtocolError`
     pub fn new() -> Result<Handler, HandlerError> {
         let mut args: Vec<String> = std::env::args().collect();
         let arg: &mut String = match args.len() {
@@ -113,6 +115,9 @@ impl Handler {
     /// - `WrongPlayerConfig`
     ///     - Missing player key in configure file
     ///     - The player key value is empty
+    /// - `IoError`
+    ///     - Transparent from `std::io::Error`
+
     pub fn run(&self) -> Result<(), HandlerError> {
         // Downloader Arguments
         let mut args: Vec<&String> = Vec::new();

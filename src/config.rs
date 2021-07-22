@@ -39,9 +39,9 @@ impl Config {
     /// ## Errors
     ///
     /// - `TomlDeError`
-    ///    - Deserialize toml configure file failed
+    ///     - Deserialize toml configure file failed
     /// - `ReadConfigFailed`
-    ///    - Open configure file failed
+    ///     - Open configure file failed
     pub fn read(path: std::path::PathBuf) -> Result<Config, ConfigError> {
         let data: Vec<u8> = std::fs::read(path)?;
         let config: Config = toml::from_slice(&data)?;
