@@ -41,7 +41,7 @@ Optional parameters:
 
 ```
 cookies     = [ www.domain.com.txt ]
-downloader  = [ ytdl, you-get, streamlink, and more...] (default: ytdl)
+downloader  = [ mpv, ytdl, you-get, streamlink, and more...] (default: mpv)
 quality     = [ best, 4k, 2k, 1080p, 720p, 480p, 360p, and more... ]
 ```
 
@@ -51,21 +51,16 @@ Example:
 mpv://aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj01cWFwNWFPNGk5QQ==/?cookies=www.youtube.com.txt&downloader=ytdl&quality=best
 ```
 
-## Customize Configure File
+## Customize Configuration
 
 ```toml
 ### Player ###
-[player]
-mpv = "/usr/bin/mpv"  # Change it to your mpv executable file path
+player = "/usr/bin/mpv"
 
 ### Video Downloader ###
-# You should be change the value of "bin" to your downloader executable file path.
-
-# Attention!! [ytdl] bin path should be mpv executable file.
-# Because youtube-dl not have `--player` option to set player.
-# The pipeline method `youtube-dl URL -o - | player -` Will destroy quality choices.
-[ytdl]
-bin = "/usr/bin/mpv" # Change it to your mpv executable file path
+# You should be change the value of "bin" to your downloader executable binary path.
+[mpv]
+bin = "/usr/bin/mpv"
 cookies = "--ytdl-raw-options-append=cookies="
 cookies_prefix = true
 direct = true
@@ -77,35 +72,62 @@ quality.1080p = "--ytdl-format=bestvideo[height<=1080]+bestaudio/best[height<=10
 quality.1440p = "--ytdl-format=bestvideo[height<=1440]+bestaudio/best[height<=1440]/best"
 quality.2160p = "--ytdl-format=bestvideo[height<=2160]+bestaudio/best[height<=2160]/best"
 
+[ytdl]
+bin = "/usr/bin/youtube-dl"
+cookies = "--cookies"
+pipeline = true
+options = ["--quiet", "--output", "-"]
+
 [you-get]
-bin = "/usr/bin/you-get" # Change it to your you-get executable file path
+bin = "/usr/bin/you-get"
 cookies = "--cookies"
 options = ["--player"]
 
 [streamlink]
-bin = "/usr/bin/streamlink" # Change it to your streamlink executable file path
+bin = "/usr/bin/streamlink"
 options = ["--player"]
 
 # For advanced user, you can add downloader manually.
 # Example:
-[example-downloader]
-bin = "/usr/bin/example"        # Required, String. The downloader executable file path.
-cookies = "--cookies"           # Optional, String. The option to set cookies, if it support pass cookies.
-cookies_prefix = false          # Optional, Boolen. The option to mark cookies option is prefix.
-direct = false                  # Optional, Boolen. The option to mark downlader is player.
-options = ["--player"]          # Optional, String Array. The options to set player or output.
-quality.best = "--quality=best" # Optional, String. The option to set quality.
+#
+# [example]
+# bin = "/usr/bin/example"
+# cookies = "--cookies"
+# cookies_prefix = false
+# direct = false
+# pipeline = false
+# options = ["--player"]
+# quality.best = "--quality=best"
+#
+#
+# [example]       Required, Type: String
+#                   The value "example" is downloader table name
+# bin             Required, Type: String
+#                   The downloader executable binary path.
+# cookies         Optional, Type: String (default: "")
+#                   The downloader parameter of passthorgh cookies.
+# cookies_prefix  Optional, Type: Boolen (default: false)
+#                   Set as true to mark cookies parameter as prefix.
+# direct          Optional, Type: Boolen (defalut: false)
+#                   Set as true to mark downloader run directly without player.
+# pipeline        Optional, Type: Boolen (default: false)
+#                   Set as true to mark downloader transfer video data through pipeline.
+# options         Optional, Type: Array of Strings (default: [])
+#                   The parameters of downloader to set player or output.
+# quality.LEVEL   Optional, Type: String
+#                   The LEVEL is a key name
+#                   The value is parameter of downloader to choose quality/format.
 ```
 
-### How customize configure works?
+### How customize configuration works?
 
 Example protocol URL:
 
 ```
-mpv://aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj01cWFwNWFPNGk5QQ==/?cookies=www.youtube.com.txt&downloader=ytdl&quality=best
+mpv://aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj01cWFwNWFPNGk5QQ==/?cookies=www.youtube.com.txt&downloader=example&quality=best
 ```
 
-1. Read customize configure file and parse protocol URL.
+1. Read customize configuration file and parse protocol URL.
 2. If protocol URL given option `downloader=example-downloader`
 3. Create a command follow `[example-downloader] -> bin`:
 
