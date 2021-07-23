@@ -5,7 +5,7 @@ use std::collections::HashMap;
 
 #[derive(Error, Debug)]
 pub enum ConfigError {
-    #[error("Conifgure file decode failed, {0}")]
+    #[error("Configuration file decode failed, {0}")]
     TomlDeError(#[from] toml::de::Error),
     #[error(transparent)]
     ReadConfigFailed(#[from] std::io::Error),
@@ -34,14 +34,12 @@ pub struct Downloader {
 }
 
 impl Config {
-    /// Read configure file from path
+    /// Read configuration file from path
     ///
     /// ## Errors
     ///
     /// - `TomlDeError`
-    ///     - Deserialize toml configure file failed
     /// - `ReadConfigFailed`
-    ///     - Open configure file failed
     pub fn read(path: std::path::PathBuf) -> Result<Config, ConfigError> {
         let data: Vec<u8> = std::fs::read(path)?;
         let config: Config = toml::from_slice(&data)?;

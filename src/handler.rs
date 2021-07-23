@@ -20,10 +20,6 @@ pub enum HandlerError {
     #[cfg(unix)]
     #[error("Error: Get user home directory failed")]
     GetHomeDirFailed,
-    #[error("Error: Player or downloader executable binary not found")]
-    DownloaderNotFound,
-    #[error("Error: Player or downloader exited with error or termination signal")]
-    DownloaderExited,
     #[error("Error: The player \"{0}\" settings was not found")]
     ConfigPlayerNotFound(String),
     #[error("Error: The player \"{0}\" value is empty")]
@@ -38,6 +34,10 @@ pub enum HandlerError {
     ConfigDownloaderQualityNotFound(String, String),
     #[error("Error: The downloader \"{0}\" quailty \"{1}\" value is empty")]
     ConfigDownloaderQualityEmptyValue(String, String),
+    #[error("Error: Downloader or player executable binary not found, check your configuration")]
+    DownloaderNotFound,
+    #[error("Error: Downloader or player exited with error or termination signal")]
+    DownloaderExited,
 }
 
 #[derive(Debug)]
@@ -49,20 +49,15 @@ pub struct Handler {
 impl Handler {
     /// Generate Handler struct
     ///
-    /// Read configure file and parse protocol URL
+    /// Read configuration file and parse protocol URL
     ///
     /// ## Errors
     ///
-    /// - `NoArg`
-    ///    - No argument is given
-    /// - `TooManyArgs`
-    ///    - 2 or more arguments is given
-    /// - `GetHomeDirFailed`
-    ///    - (Unix only) Get user home directory failed
     /// - `ConfigError`
-    ///    - Transparent from `Config::ConfigError`
     /// - `ProtocolError`
-    ///    - Transparent from `Protocol::ProtocolError`
+    /// - `NoArg`
+    /// - `TooManyArgs`
+    /// - `GetHomeDirFailed` (unix only)
     pub fn new() -> Result<Handler, HandlerError> {
         let mut args: Vec<String> = std::env::args().collect();
         let arg: &mut String = match args.len() {
@@ -114,14 +109,14 @@ impl Handler {
     ///
     /// ## Errors
     ///
-    /// - `WrongDownloaderConfig`
-    ///     - Missing downloader table in configure file
-    ///     - The downloader key value is empty
-    /// - `WrongPlayerConfig`
-    ///     - Missing player key in configure file
-    ///     - The player key value is empty
     /// - `IoError`
-    ///     - Transparent from `std::io::Error`
+    /// - `ConfigPlayerNotFound`
+    /// - `ConfigPlayerEmptyValue`
+    /// - `ConfigDownloaderNotFound`
+    /// - `ConfigDownloaderBinEmptyValue`
+    /// - `ConfigDownloaderCookiesEmptyValue`
+    /// - `ConfigDownloaderQualityNotFound`
+    /// - `ConfigDownloaderQualityEmptyValue`
 
     pub fn run(&self) -> Result<(), HandlerError> {
         let mut args: Vec<&String> = Vec::new();
@@ -255,9 +250,7 @@ impl Handler {
     /// ## Errors
     ///
     /// - `DownloaderExited`
-    ///     - The download or player exited with non-zero code or termination signal
     /// - `DownloaderNotFound`
-    ///     - The downloader or player executable binary not found
     fn play(
         &self,
         args: Vec<&String>,
@@ -285,9 +278,7 @@ impl Handler {
     /// ## Errors
     ///
     /// - `DownloaderExited`
-    ///     - The download or player exited with non-zero code or termination signal
     /// - `DownloaderNotFound`
-    ///     - The downloader or player executable binary not found
     fn play_direct(&self, args: Vec<&String>, downloader_bin: &String) -> Result<(), HandlerError> {
         println!("Playing: {}", self.protocol.url);
 

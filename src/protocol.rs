@@ -26,13 +26,8 @@ impl Protocol {
     /// ## Errors
     ///
     /// - `WrongProtocol`
-    ///     - Protocol URL isn't start with `mpv://`
-    ///     - Protocol URL `option=value` format is wrong
-    ///     - Protocol URL is contains options are not listed in `option_name`
     /// - `MissingVideoUrl`
-    ///     - Protocol URL isn't contains video URL data
     /// - `MissingDownloader`
-    ///     - Protocol URL option `downloader` is not given
     pub fn parse(arg: &mut String) -> Result<Protocol, ProtocolError> {
         if arg.starts_with("mpv://") {
             arg.replace_range(0.."mpv.//".len(), "");
@@ -99,11 +94,8 @@ impl Protocol {
 /// ## Errors
 ///
 /// - `MissingVideoUrl`
-///     - When the length of `data` equal zero
 /// - `WrongProtocolBase64`
-///     - When base64 decoding failed
 /// - `WrongProtocolFromUtf8`
-///     - When converting utf-8 bytes to string failed
 fn decode_url(data: &&str) -> Result<String, ProtocolError> {
     match data.len() {
         0 => Err(ProtocolError::MissingVideoUrl),
