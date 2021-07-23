@@ -30,12 +30,14 @@ jobs:
         run: |
           strip target/release/mpv-handler
           zip -j mpv-handler-linux-x64.zip \
-            share/mpv-handler.toml\
+            README*.md \
+            share/mpv-handler.toml \
             share/linux/* \
             target/release/mpv-handler
 
           strip target/x86_64-pc-windows-gnu/release/mpv-handler.exe
           zip -j mpv-handler-windows-x64.zip \
+            README*.md \
             share/mpv-handler.toml \
             share/windows/* \
             target/x86_64-pc-windows-gnu/release/mpv-handler.exe
