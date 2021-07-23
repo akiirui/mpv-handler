@@ -31,6 +31,8 @@ options = ["--player"]
 [streamlink]
 bin = "/usr/bin/streamlink"
 options = ["--player"]
+quality.best = "best"
+quality.worst = "worst"
 
 # For advanced user, you can add other downloader manually.
 # Example:
