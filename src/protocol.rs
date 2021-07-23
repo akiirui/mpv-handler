@@ -2,13 +2,13 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum ProtocolError {
-    #[error("Wrong protocol url is given")]
+    #[error("Wrong protocol URL is given")]
     WrongProtocol,
-    #[error("Wrong protocol url is given, base64 decoding failed")]
+    #[error("Wrong protocol URL is given, base64 decoding failed")]
     WrongProtocolBase64(#[from] base64::DecodeError),
-    #[error("Wrong protocol url is given, string converting failed")]
+    #[error("Wrong protocol URL is given, string converting failed")]
     WrongProtocolFromUtf8(#[from] std::string::FromUtf8Error),
-    #[error("Video URL is not given in the protocol URL")]
+    #[error("Wrong protocol URL is given, not found video URL")]
     MissingVideoUrl,
 }
 

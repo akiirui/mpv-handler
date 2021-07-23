@@ -13,20 +13,31 @@ pub enum HandlerError {
     Protocol(#[from] crate::protocol::ProtocolError),
     #[error(transparent)]
     IoError(#[from] std::io::Error),
-    #[error("No argument is given")]
+    #[error("Error: No argument is given")]
     NoArg,
-    #[error("Too many arguments are given")]
+    #[error("Error: Too many arguments are given")]
     TooManyArgs,
-    #[error("Get home directory failed")]
+    #[cfg(unix)]
+    #[error("Error: Get user home directory failed")]
     GetHomeDirFailed,
-    #[error("The downloader settings are broken in the configure file")]
-    WrongDownloaderConfig,
-    #[error("The downloader settings are broken in the configure file")]
-    WrongPlayerConfig,
-    #[error("Player or downloader executable binary not found")]
+    #[error("Error: Player or downloader executable binary not found")]
     DownloaderNotFound,
-    #[error("Player or downloader exited with error or termination signal")]
+    #[error("Error: Player or downloader exited with error or termination signal")]
     DownloaderExited,
+    #[error("Error: The player \"{0}\" settings was not found")]
+    ConfigPlayerNotFound(String),
+    #[error("Error: The player \"{0}\" value is empty")]
+    ConfigPlayerEmptyValue(String),
+    #[error("Error: The downloader \"{0}\" settings was not found")]
+    ConfigDownloaderNotFound(String),
+    #[error("Error: The downloader \"{0}\" bin value is empty")]
+    ConfigDownloaderBinEmptyValue(String),
+    #[error("Error: The downloader \"{0}\" cookies value is empty, but you passed cookies")]
+    ConfigDownloaderCookiesEmptyValue(String),
+    #[error("Error: The downloader \"{0}\" quality \"{1}\" was not found")]
+    ConfigDownloaderQualityNotFound(String, String),
+    #[error("Error: The downloader \"{0}\" quailty \"{1}\" value is empty")]
+    ConfigDownloaderQualityEmptyValue(String, String),
 }
 
 #[derive(Debug)]
@@ -119,7 +130,6 @@ impl Handler {
     ///     - Transparent from `std::io::Error`
 
     pub fn run(&self) -> Result<(), HandlerError> {
-        // Downloader Arguments
         let mut args: Vec<&String> = Vec::new();
         let mut cookies: String;
 
@@ -128,19 +138,42 @@ impl Handler {
             .downloader
             .contains_key(&self.protocol.downloader)
         {
-            return Err(HandlerError::WrongDownloaderConfig);
+            return Err(HandlerError::ConfigDownloaderNotFound(
+                self.protocol.downloader.clone(),
+            ));
         }
 
-        // Append video URL
-        args.push(&self.protocol.url);
+        if self.config.downloader[&self.protocol.downloader].bin.len() == 0 {
+            return Err(HandlerError::ConfigDownloaderBinEmptyValue(
+                self.protocol.downloader.clone(),
+            ));
+        }
 
-        // Append cookies option and cookies file path
-        if self.protocol.cookies.len() != 0
-            && self.config.downloader[&self.protocol.downloader]
+        if !self.config.player.contains_key(PLAYER) {
+            return Err(HandlerError::ConfigPlayerNotFound(PLAYER.to_string()));
+        }
+
+        if self.config.player[PLAYER].len() == 0 {
+            return Err(HandlerError::ConfigPlayerEmptyValue(PLAYER.to_string()));
+        }
+
+        // Append video URL to arguments
+        {
+            args.push(&self.protocol.url);
+        }
+
+        // Append cookies option and cookies file path to arguments
+        if self.protocol.cookies.len() != 0 {
+            if self.config.downloader[&self.protocol.downloader]
                 .cookies
                 .len()
-                != 0
-        {
+                == 0
+            {
+                return Err(HandlerError::ConfigDownloaderCookiesEmptyValue(
+                    self.protocol.downloader.clone(),
+                ));
+            }
+
             let mut path: std::path::PathBuf;
 
             #[cfg(unix)]
@@ -175,16 +208,25 @@ impl Handler {
         }
 
         // Append quality option
-        if self.protocol.quality.len() != 0
-            && self.config.downloader[&self.protocol.downloader]
+        if self.protocol.quality.len() != 0 {
+            if !self.config.downloader[&self.protocol.downloader]
                 .quality
                 .contains_key(&self.protocol.quality)
-        {
+            {
+                return Err(HandlerError::ConfigDownloaderQualityNotFound(
+                    self.protocol.downloader.clone(),
+                    self.protocol.quality.clone(),
+                ));
+            }
+
             if self.config.downloader[&self.protocol.downloader].quality[&self.protocol.quality]
                 .len()
                 == 0
             {
-                return Err(HandlerError::WrongDownloaderConfig);
+                return Err(HandlerError::ConfigDownloaderQualityEmptyValue(
+                    self.protocol.downloader.clone(),
+                    self.protocol.quality.clone(),
+                ));
             }
 
             args.push(
@@ -201,14 +243,6 @@ impl Handler {
             for option in &self.config.downloader[&self.protocol.downloader].options {
                 args.push(option);
             }
-        }
-
-        if self.config.downloader[&self.protocol.downloader].bin.len() == 0 {
-            return Err(HandlerError::WrongDownloaderConfig);
-        }
-
-        if !self.config.player.contains_key(PLAYER) || self.config.player[PLAYER].len() == 0 {
-            return Err(HandlerError::WrongPlayerConfig);
         }
 
         dbg!(&args);
