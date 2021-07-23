@@ -4,6 +4,31 @@ A protocol handler for mpv, written by Rust.
 
 Working with userscript [play-with-mpv-handler][mpv-handler-greasyfork].
 
+## Install
+
+### Linux
+
+`mpv-handler.toml` should be stored at `~/.config/mpv/mpv-handler.toml`.
+
+- Arch Linux
+
+  - [mpv-handler](https://aur.archlinux.org/packages/mpv-handler/) <sup>AUR</sup>
+  - [mpv-handler-git](https://aur.archlinux.org/packages/mpv-handler-git/) <sup>AUR</sup>
+
+- GitHub Actions Build
+
+  - [latest/mpv-handler-linux-x64.zip](https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-linux-x64.zip)
+
+### Windows
+
+`mpv-handler.toml` should be stored in the same directory with `mpv-hander.exe`.
+
+**Don't forget to edit the configuration file following the comments**
+
+- GitHub Actions Build
+
+  - [latest/mpv-handler-windows-x64.zip](https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-windows-x64.zip)
+
 ## Protocol URL
 
 Base URL:
@@ -12,17 +37,12 @@ Base URL:
 mpv://BASE64_ENCODE_URL/
 ```
 
-Required paramentrs:
-
-```
-downloader  = [ ytdl, you-get, streamlink, and more...]
-```
-
 Optional parameters:
 
 ```
-cookies = [ video_domain.txt ]
-quality = [ best, 4k, 2k, 1080p, 720p, 480p, 360p, and more... ]
+cookies     = [ www.domain.com.txt ]
+downloader  = [ ytdl, you-get, streamlink, and more...] (default: ytdl)
+quality     = [ best, 4k, 2k, 1080p, 720p, 480p, 360p, and more... ]
 ```
 
 Example:
