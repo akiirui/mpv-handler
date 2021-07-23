@@ -13,7 +13,7 @@ pub enum ConfigError {
 
 #[derive(Deserialize, Debug)]
 pub struct Config {
-    pub player: HashMap<String, String>,
+    pub player: String,
     #[serde(flatten)]
     pub downloader: HashMap<String, Downloader>,
 }
@@ -27,6 +27,8 @@ pub struct Downloader {
     pub cookies_prefix: bool,
     #[serde(default)]
     pub direct: bool,
+    #[serde(default)]
+    pub pipeline: bool,
     #[serde(default)]
     pub options: Vec<String>,
     #[serde(default)]
@@ -44,9 +46,6 @@ impl Config {
         let data: Vec<u8> = std::fs::read(path)?;
         let config: Config = toml::from_slice(&data)?;
 
-        Ok(Config {
-            player: config.player,
-            downloader: config.downloader,
-        })
+        Ok(config)
     }
 }

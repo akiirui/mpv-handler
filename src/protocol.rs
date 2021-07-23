@@ -1,5 +1,7 @@
 use thiserror::Error;
 
+const DEFAULT_DOWNLOADER: &str = "mpv";
+
 #[derive(Error, Debug)]
 pub enum ProtocolError {
     #[error("Wrong protocol URL is given")]
@@ -42,7 +44,7 @@ impl Protocol {
         let args: Vec<&str> = arg.split("/?").collect();
         let mut protocol = Protocol {
             cookies: String::new(),
-            downloader: String::from("ytdl"),
+            downloader: String::from(DEFAULT_DOWNLOADER),
             quality: String::new(),
             url: String::new(),
         };

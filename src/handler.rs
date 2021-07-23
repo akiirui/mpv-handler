@@ -4,6 +4,7 @@ use crate::config::Config;
 use crate::protocol::Protocol;
 
 const PLAYER: &str = "mpv";
+const CONFIG_FILE_NAME: &str = "mpv-handler.toml";
 
 #[derive(Error, Debug)]
 pub enum HandlerError {
@@ -20,8 +21,6 @@ pub enum HandlerError {
     #[cfg(unix)]
     #[error("Error: Get user home directory failed")]
     GetHomeDirFailed,
-    #[error("Error: The player \"{0}\" settings was not found")]
-    ConfigPlayerNotFound(String),
     #[error("Error: The player \"{0}\" value is empty")]
     ConfigPlayerEmptyValue(String),
     #[error("Error: The downloader \"{0}\" settings was not found")]
@@ -83,20 +82,17 @@ impl Handler {
             };
             path.push(".config");
             path.push("mpv");
-            path.push("mpv-handler.toml");
-
-            config = Config::read(path)?;
+            path.push(CONFIG_FILE_NAME);
         }
 
         #[cfg(windows)]
         {
             path = std::env::current_exe()?;
             path.pop();
-            path.push("mpv-handler.toml");
-
-            config = Config::read(path)?;
+            path.push(CONFIG_FILE_NAME);
         }
 
+        config = Config::read(path)?;
         protocol = Protocol::parse(arg)?;
 
         Ok(Handler {
@@ -138,11 +134,7 @@ impl Handler {
             ));
         }
 
-        if !self.config.player.contains_key(PLAYER) {
-            return Err(HandlerError::ConfigPlayerNotFound(PLAYER.to_string()));
-        }
-
-        if self.config.player[PLAYER].len() == 0 {
+        if self.config.player.len() == 0 {
             return Err(HandlerError::ConfigPlayerEmptyValue(PLAYER.to_string()));
         }
 
@@ -234,14 +226,22 @@ impl Handler {
             }
         }
 
-        if self.config.downloader[&self.protocol.downloader].direct == false {
+        if self.config.downloader[&self.protocol.downloader].direct == true {
+            return self.play_direct(args, &self.config.downloader[&self.protocol.downloader].bin);
+        }
+
+        if self.config.downloader[&self.protocol.downloader].pipeline == false {
             return self.play(
                 args,
                 &self.config.downloader[&self.protocol.downloader].bin,
-                &self.config.player[PLAYER],
+                &self.config.player,
             );
         } else {
-            return self.play_direct(args, &self.config.downloader[&self.protocol.downloader].bin);
+            return self.play_pipeline(
+                args,
+                &self.config.downloader[&self.protocol.downloader].bin,
+                &self.config.player,
+            );
         }
     }
 
@@ -273,7 +273,7 @@ impl Handler {
         }
     }
 
-    /// Run player directly (mpv include ytdl-hooks)
+    /// Run downloader directly (mpv has ytdl-hooks)
     ///
     /// ## Errors
     ///
@@ -287,6 +287,40 @@ impl Handler {
             .status();
 
         match downloader {
+            Ok(status) => match status.success() {
+                true => Ok(()),
+                false => Err(HandlerError::DownloaderExited),
+            },
+            Err(_) => Err(HandlerError::DownloaderNotFound),
+        }
+    }
+
+    /// Run downloader transfer video data through pipeline
+    ///
+    /// ## Errors
+    ///
+    /// - `IoError`
+    /// - `DownloaderExited`
+    /// - `DownloaderNotFound`
+    fn play_pipeline(
+        &self,
+        args: Vec<&String>,
+        downloader_bin: &String,
+        player_bin: &String,
+    ) -> Result<(), HandlerError> {
+        println!("Playing: {}", self.protocol.url);
+
+        let downloader = std::process::Command::new(downloader_bin)
+            .args(args)
+            .stdout(std::process::Stdio::piped())
+            .spawn()?;
+
+        let player = std::process::Command::new(player_bin)
+            .arg("-")
+            .stdin(downloader.stdout.unwrap())
+            .status();
+
+        match player {
             Ok(status) => match status.success() {
                 true => Ok(()),
                 false => Err(HandlerError::DownloaderExited),

@@ -1,13 +1,9 @@
 ### Player ###
-[player]
-mpv = "/usr/bin/mpv"
+player = "/usr/bin/mpv"
 
 ### Video Downloader ###
 # You should be change the value of "bin" to your downloader executable file path.
-[ytdl]
-# Attention!! [ytdl] bin path should be mpv executable file.
-# Because youtube-dl not have `--player` option to set player.
-# The pipeline method `youtube-dl URL -o - | player -` Will destroy quality choices.
+[mpv]
 bin = "/usr/bin/mpv"
 cookies = "--ytdl-raw-options-append=cookies="
 cookies_prefix = true
@@ -20,6 +16,12 @@ quality.1080p = "--ytdl-format=bestvideo[height<=1080]+bestaudio/best[height<=10
 quality.1440p = "--ytdl-format=bestvideo[height<=1440]+bestaudio/best[height<=1440]/best"
 quality.2160p = "--ytdl-format=bestvideo[height<=2160]+bestaudio/best[height<=2160]/best"
 
+[ytdl]
+bin = "/usr/bin/youtube-dl"
+cookies = "--cookies"
+pipeline = true
+options = ["--quiet", "--output", "-"]
+
 [you-get]
 bin = "/usr/bin/you-get"
 cookies = "--cookies"
@@ -31,10 +33,31 @@ options = ["--player"]
 
 # # For advanced user, you can add downloader manually.
 # # Example:
-# [example-downloader]
-# bin = "/usr/bin/example"        # Required, String. The downloader executable file path.
-# cookies = "--cookies"           # Optional, String. The option to set cookies, if it support pass cookies.
-# cookies_prefix = false          # Optional, Boolen. The option to mark cookies option is prefix.
-# direct = false                  # Optional, Boolen. The option to mark downlader is player.
-# options = ["--player"]          # Optional, String Array. The options to set player or output.
-# quality.best = "--quality=best" # Optional, String. The option to set quality.
+#
+# [example]
+# bin = "/usr/bin/example"
+# cookies = "--cookies"
+# cookies_prefix = false
+# direct = false
+# pipeline = false
+# options = ["--player"]
+# quality.best = "--quality=best"
+#
+#
+# [example]       Required, Type: String
+#                   The value "example" is downloader table name
+# bin             Required, Type: String
+#                   The downloader executable binary path.
+# cookies         Optional, Type: String (default: "")
+#                   The downloader parameter of passthorgh cookies.
+# cookies_prefix  Optional, Type: Boolen (default: false)
+#                   Set as true to mark cookies parameter as prefix.
+# direct          Optional, Type: Boolen (defalut: false)
+#                   Set as true to mark downloader run directly without player.
+# pipeline        Optional, Type: Boolen (default: false)
+#                   Set as true to mark downloader transfer video data through pipeline.
+# options         Optional, Type: Array of Strings (default: [])
+#                   The parameters of downloader to set player or output.
+# quality.LEVEL   Optional, Type: String
+#                   The LEVEL is a key name
+#                   The value is parameter of downloader to choose quality/format.
