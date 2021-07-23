@@ -90,8 +90,6 @@ impl Handler {
             path.push("mpv");
             path.push("mpv-handler.toml");
 
-            dbg!(&path);
-
             config = Config::read(path)?;
         }
 
@@ -101,14 +99,10 @@ impl Handler {
             path.pop();
             path.push("mpv-handler.toml");
 
-            dbg!(&path);
-
             config = Config::read(path)?;
         }
 
         protocol = Protocol::parse(arg)?;
-
-        dbg!(&config, &protocol);
 
         Ok(Handler {
             config: config,
@@ -244,8 +238,6 @@ impl Handler {
                 args.push(option);
             }
         }
-
-        dbg!(&args);
 
         if self.config.downloader[&self.protocol.downloader].direct == false {
             return self.play(
