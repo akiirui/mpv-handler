@@ -8,8 +8,6 @@ pub enum ProtocolError {
     WrongProtocolBase64(#[from] base64::DecodeError),
     #[error("Wrong protocol url is given, string converting failed")]
     WrongProtocolFromUtf8(#[from] std::string::FromUtf8Error),
-    #[error("Downloader is not given in the protocol URL")]
-    MissingDownloader,
     #[error("Video URL is not given in the protocol URL")]
     MissingVideoUrl,
 }
@@ -49,7 +47,7 @@ impl Protocol {
         let args: Vec<&str> = arg.split("/?").collect();
         let mut protocol = Protocol {
             cookies: String::new(),
-            downloader: String::new(),
+            downloader: String::from("ytdl"),
             quality: String::new(),
             url: String::new(),
         };
@@ -90,9 +88,6 @@ impl Protocol {
         // Check required options are already exists
         if protocol.url.len() == 0 {
             return Err(ProtocolError::MissingVideoUrl);
-        }
-        if protocol.downloader.len() == 0 {
-            return Err(ProtocolError::MissingDownloader);
         }
 
         Ok(protocol)
