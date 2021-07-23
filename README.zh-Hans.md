@@ -1,16 +1,16 @@
 # mpv handler
 
-A protocol handler for mpv, written by Rust.
+一个为 mpv 提供的协议处理程序，使用 Rust 编写。
 
-Please use with UserScript:
+请配合用户脚本使用：
 
 [![play-with-mpv-handler][play-with-mpv-badges]][play-with-mpv-greasyfork ]
 
-## Install
+## 安装
 
 ### Linux
 
-`mpv-handler.toml` should be stored at `~/.config/mpv/mpv-handler.toml`.
+`mpv-handler.toml` 需要放置在 `$HOME/.config/mpv/mpv-handler.toml`。
 
 - Arch Linux
   - [mpv-handler][mpv-handler-download-aur] <sup>AUR</sup>
@@ -20,12 +20,12 @@ Please use with UserScript:
 
 ### Windows
 
-`mpv-handler.toml` should be stored in the same directory with `mpv-hander.exe`.
+`mpv-handler.toml` 需要和 `mpv-handler.exe` 放置在同一个目录。
 
-**For Windows users, don't forget to edit the configuration file following the comments.**
+**Windows 用户请不要忘记参照注释编辑压缩包附带的 `mpv-handler.toml`。**
 
 - GitHub Actions Build
-  - [latest/mpv-handler-windows-x64.zip](https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-windows-x64.zip)
+  - [latest/mpv-handler-windows-x64.zip][mpv-handler-download-windows]
 
 [mpv-handler-download-aur]: https://aur.archlinux.org/packages/mpv-handler/
 [mpv-handler-download-aur-git]: https://aur.archlinux.org/packages/mpv-handler-git/
@@ -35,41 +35,41 @@ Please use with UserScript:
 [play-with-mpv-greasyfork]: https://greasyfork.org/scripts/416271-play-with-mpv
 [play-with-mpv-github]: https://github.com/akiirui/userscript/tree/main/play-with-mpv-handler
 
-## Protocol URL
+## 协议 URL
 
-Base URL:
+基础 URL：
 
 ```
 mpv://BASE64_ENCODE_VIDEO_URL/
 ```
 
-Optional parameters:
+可选参数：
 
 ```
-cookies = [ www.domain.com.txt ]
-downloader = [ mpv, ytdl, you-get, streamlink, and more...] (default: mpv)
-quality = [ best, 4k, 2k, 1080p, 720p, 480p, 360p, and more... ]
+cookies     = [ www.domain.com.txt ]
+downloader  = [ mpv, ytdl, you-get, streamlink, and more...] (default: mpv)
+quality     = [ best, 4k, 2k, 1080p, 720p, 480p, 360p, and more... ]
 ```
 
-Example:
+例：
 
 ```
 mpv://aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj01cWFwNWFPNGk5QQ==/?cookies=www.youtube.com.txt&downloader=mpv&quality=best
 ```
 
-## Customize Configuration
+## 自定义配置
 
-Generally, users only need to edit `player` and downloader `bin` to corresponding executable binary.
+一般来说，用户只需要编辑 `player` 和所需下载器的 `bin` 至相应的可执行文件路径。
 
-As of `v0.2.3`, default `mpv-handler.toml` configuration is like this:
+截止 `v0.2.3`，默认的 `mpv-handler.toml` 配置如下（已翻译注释为中文）：
 
 ```toml
-### Player ###
-# You should be change the value of "player" to your player executalbe binary path.
+### 播放器 ###
+# 你应当修改 "player" 的值至你的播放器的可执行文件路径。
 player = "/usr/bin/mpv"
 
-### Video Downloader ###
-# You should be change the value of "bin" to your downloader executable binary path.
+### 视频下载器 ###
+# 你应当修改 "bin" 的值至你的下载器的可执行文件路径。
 [mpv]
 bin = "/usr/bin/mpv"
 cookies = "--ytdl-raw-options-append=cookies="
@@ -98,8 +98,8 @@ options = ["--player"]
 bin = "/usr/bin/streamlink"
 options = ["--player"]
 
-# For advanced user, you can add other downloader manually.
-# Example:
+# 如果你是高级用户，你可以手动添加其他的下载器。
+# 例：
 #
 # [example]
 # bin = "/usr/bin/example"
@@ -111,21 +111,21 @@ options = ["--player"]
 # quality.best = "--quality=best"
 #
 #
-# [example]       Required, Type: String
-#                     The value "example" is downloader table name
-# bin             Required, Type: String
-#                     The downloader executable binary path.
-# cookies         Optional, Type: String (default: "")
-#                     The downloader parameter of passthorgh cookies.
-# cookies_prefix  Optional, Type: Boolen (default: false)
-#                     Set as true to mark cookies parameter as prefix.
-# direct          Optional, Type: Boolen (defalut: false)
-#                     Set as true to mark downloader run directly without player.
-# pipeline        Optional, Type: Boolen (default: false)
-#                     Set as true to mark downloader transfer video data through pipeline.
-# options         Optional, Type: Array of Strings (default: [])
-#                     The parameters of downloader to set player or output.
-# quality.LEVEL   Optional, Type: String
-#                     The LEVEL is a key name
-#                     The value is parameter of downloader to choose quality/format.
+# [example]       必须，类型：字符串
+#                     值 "example" 是下载器表的名称。
+# bin             必须，类型：字符串
+#                     下载器可执行文件的路径。
+# cookies         可选，类型：字符串（默认：""）
+#                     下载器传递 cookies 的参数。
+# cookies_prefix  可选，类型：布尔值（默认：false）
+#                     设置为 ture 标记 cookies 参数为前缀。
+# direct          可选，类型：布尔值（默认：false）
+#                     设置为 ture 标记下载器可直接运行，不需要播放器。
+# pipeline        可选，类型：布尔值（默认：false）
+#                     设置为 ture 标记下载器通过管道传递视频数据。
+# options         可选，类型：字符串数组（默认：[]）
+#                     下载器设置播放器或者输出位置的参数。
+# quality.LEVEL   可选，类型：字符串
+#                     LEVEL 是品质选择的关键词
+#                     它的值是下载器选择品质或格式的参数。
 ```

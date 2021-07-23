@@ -1,8 +1,9 @@
 ### Player ###
+# You should be change the value of "player" to your player executalbe binary path.
 player = "/usr/bin/mpv"
 
 ### Video Downloader ###
-# You should be change the value of "bin" to your downloader executable file path.
+# You should be change the value of "bin" to your downloader executable binary path.
 [mpv]
 bin = "/usr/bin/mpv"
 cookies = "--ytdl-raw-options-append=cookies="
@@ -31,8 +32,8 @@ options = ["--player"]
 bin = "/usr/bin/streamlink"
 options = ["--player"]
 
-# # For advanced user, you can add downloader manually.
-# # Example:
+# For advanced user, you can add other downloader manually.
+# Example:
 #
 # [example]
 # bin = "/usr/bin/example"
@@ -45,19 +46,19 @@ options = ["--player"]
 #
 #
 # [example]       Required, Type: String
-#                   The value "example" is downloader table name
+#                     The value "example" is downloader table name
 # bin             Required, Type: String
-#                   The downloader executable binary path.
+#                     The downloader executable binary path.
 # cookies         Optional, Type: String (default: "")
-#                   The downloader parameter of passthorgh cookies.
+#                     The downloader parameter of passthorgh cookies.
 # cookies_prefix  Optional, Type: Boolen (default: false)
-#                   Set as true to mark cookies parameter as prefix.
+#                     Set as true to mark cookies parameter as prefix.
 # direct          Optional, Type: Boolen (defalut: false)
-#                   Set as true to mark downloader run directly without player.
+#                     Set as true to mark downloader run directly without player.
 # pipeline        Optional, Type: Boolen (default: false)
-#                   Set as true to mark downloader transfer video data through pipeline.
+#                     Set as true to mark downloader transfer video data through pipeline.
 # options         Optional, Type: Array of Strings (default: [])
-#                   The parameters of downloader to set player or output.
+#                     The parameters of downloader to set player or output.
 # quality.LEVEL   Optional, Type: String
-#                   The LEVEL is a key name
-#                   The value is parameter of downloader to choose quality/format.
+#                     The LEVEL is a key name
+#                     The value is parameter of downloader to choose quality/format.
