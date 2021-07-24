@@ -42,7 +42,7 @@ Windows 用户目前只能手动安装 `mpv-handler`。
 1. 下载 [latest/mpv-handler-windows-x64.zip][download-windows]
 2. 解压缩档案到你想要的文件夹里（从 `v0.2.x` 起，不再需要和 `mpv` 安装至同一个文件夹）
 3. 运行 `handler-install.bat` 注册协议处理程序
-4. 检查 `~/.config/mpv/mpv-handler.toml` 并按需更改
+4. 检查 `mpv-handler.toml` 并按需更改
 
 [badges-aur-git]: https://img.shields.io/aur/version/mpv-handler-git?label=mpv-handler-git&style=for-the-badge
 [badges-aur]: https://img.shields.io/aur/version/mpv-handler?label=mpv-handler&style=for-the-badge

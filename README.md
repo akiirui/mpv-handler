@@ -42,7 +42,7 @@ Windows users need to install `mpv-handler` manually.
 1. Download [latest/mpv-handler-windows-x64.zip][download-windows]
 2. Unzip the archive to the directory you want (since v0.2.x, not requires to install in the same directory with `mpv` anymore)
 3. Run `handler-install.bat` register protocol handler
-4. Check `~/.config/mpv/mpv-handler.toml` and change it as needed
+4. Check `mpv-handler.toml` and change it as needed
 
 [badges-aur-git]: https://img.shields.io/aur/version/mpv-handler-git?label=mpv-handler-git&style=for-the-badge
 [badges-aur]: https://img.shields.io/aur/version/mpv-handler?label=mpv-handler&style=for-the-badge
