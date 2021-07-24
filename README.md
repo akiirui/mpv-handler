@@ -62,9 +62,9 @@ mpv://BASE64_ENCODE_VIDEO_URL/
 Optional parameters:
 
 ```
-cookies = [ www.domain.com.txt ]
-downloader = [ mpv, ytdl, you-get, streamlink, and more...] (default: mpv)
-quality = [ best, 4k, 2k, 1080p, 720p, 480p, 360p, and more... ]
+cookies     = [ www.domain.com.txt ]
+downloader  = [ mpv, ytdl, you-get, streamlink, and more...] (default: mpv)
+quality     = [ best, 4k, 2k, 1080p, 720p, 480p, 360p, and more... ]
 ```
 
 Example:

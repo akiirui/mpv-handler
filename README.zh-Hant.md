@@ -4,28 +4,43 @@
 
 請配合用戶腳本使用：
 
-[![play-with-mpv-handler][play-with-mpv-badges]][play-with-mpv-greasyfork ]
+[![play-with-mpv-handler][play-with-mpv-badges]][play-with-mpv-greasyfork]
 
 ## 安裝
 
 ### Linux
 
-`mpv-handler.toml` 需要放置在 `$HOME/.config/mpv/mpv-handler.toml`。
-
 - Arch Linux
   - [mpv-handler][mpv-handler-download-aur] <sup>AUR</sup>
   - [mpv-handler-git][mpv-handler-download-aur-git] <sup>AUR</sup>
-- GitHub Actions Build
-  - [latest/mpv-handler-linux-x64.zip][mpv-handler-download-linux]
+
+**不要忘記複製 `/usr/share/mpv-handler/mpv-handler.toml` 至 `~/.config/mpv/`。**
+
+#### 手動安裝
+
+1. 下載 [latest/mpv-handler-linux-x64.zip][mpv-handler-download-linux]
+2. 解壓縮壓縮包
+3. 複製 `mpv-handler` 至 `~/.local/bin`
+4. 複製 `mpv-handler.desktop` 至 `~/.local/share/applications/`
+5. 複製 `mpv-handler.toml` 至 `~/.config/mpv/`
+6. 添加 `~/.local/bin` 到環境變量 `PATH` 中（如果它沒在你的 `PATH` 中列出）
+7. 註冊 xdg-mime（感謝 [linuxuprising][linuxuprising] 的提醒）
+
+```
+$ xdg-mime default mpv-handler.desktop x-scheme-handler/mpv
+```
+
+8. 檢查 `~/.config/mpv/mpv-handler.toml` 並按需更改
 
 ### Windows
 
-`mpv-handler.toml` 需要和 `mpv-handler.exe` 放置在同一個目錄。
+Windows 用戶目前只能手動安裝 `mpv-handler`。
 
-**Windows 用戶請不要忘記參照註釋編輯壓縮包附帶的 `mpv-handler.toml`。**
+#### 手動安裝
 
-- GitHub Actions Build
-  - [latest/mpv-handler-windows-x64.zip][mpv-handler-download-windows]
+1. 下載 [latest/mpv-handler-windows-x64.zip][mpv-handler-download-windows]
+2. 解壓縮檔案到你想要的文件夾裏（從 `v0.2.x` 起，不再需要和 `mpv` 安裝至同一個文件夾）
+3. 運行 `handler-install.bat` 註冊協議處理程序
 
 [mpv-handler-download-aur]: https://aur.archlinux.org/packages/mpv-handler/
 [mpv-handler-download-aur-git]: https://aur.archlinux.org/packages/mpv-handler-git/
@@ -34,6 +49,7 @@
 [play-with-mpv-badges]: https://img.shields.io/badge/dynamic/json?style=for-the-badge&label=play-with-mpv&prefix=v&query=version&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F416271.json
 [play-with-mpv-greasyfork]: https://greasyfork.org/scripts/416271-play-with-mpv
 [play-with-mpv-github]: https://github.com/akiirui/userscript/tree/main/play-with-mpv-handler
+[linuxuprising]: https://www.linuxuprising.com/2021/07/open-youtube-and-more-videos-from-your.html
 
 ## 協議 URL
 
@@ -61,7 +77,7 @@ mpv://aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj01cWFwNWFPNGk5QQ==/?cookies=www.
 
 一般來說，用戶只需要編輯 `player` 和所需下載器的 `bin` 至相應的可執行文件路徑。
 
-截止 `v0.2.3`，默認的 `mpv-handler.toml` 配置如下（已翻譯註釋爲中文）：
+默認的 `mpv-handler.toml` 配置如下（已翻譯註釋爲中文）：
 
 ```toml
 ### 播放器 ###
@@ -96,7 +112,10 @@ options = ["--player"]
 
 [streamlink]
 bin = "/usr/bin/streamlink"
+require_quality = true
 options = ["--player"]
+quality.best = "best"
+quality.worst = "worst"
 
 # 如果你是高級用戶，你可以手動添加其他的下載器。
 # 例：
@@ -107,6 +126,7 @@ options = ["--player"]
 # cookies_prefix = false
 # direct = false
 # pipeline = false
+# require_quality = false
 # options = ["--player"]
 # quality.best = "--quality=best"
 #
@@ -118,14 +138,16 @@ options = ["--player"]
 # cookies         可選，類型：字符串（默認：""）
 #                     下載器傳遞 cookies 的參數。
 # cookies_prefix  可選，類型：布爾值（默認：false）
-#                     設置爲 ture 標記 cookies 參數爲前綴。
+#                     設置爲 ture 以標記 cookies 參數爲前綴。
 # direct          可選，類型：布爾值（默認：false）
-#                     設置爲 ture 標記下載器可直接運行，不需要播放器。
+#                     設置爲 ture 以標記下載器可直接運行，不需要播放器。
 # pipeline        可選，類型：布爾值（默認：false）
-#                     設置爲 ture 標記下載器通過管道傳遞視頻數據。
+#                     設置爲 ture 以標記下載器通過管道傳遞視頻數據。
+# require_quality 可選，類型：布爾值（默認：false）
+#                     設置爲 ture 以標記下載器需要一個 quality LEVEL。
 # options         可選，類型：字符串數組（默認：[]）
 #                     下載器設置播放器或者輸出位置的參數。
 # quality.LEVEL   可選，類型：字符串
-#                     LEVEL 是品質選擇的關鍵詞
+#                     LEVEL 是品質的關鍵詞
 #                     它的值是下載器選擇品質或格式的參數。
 ```
