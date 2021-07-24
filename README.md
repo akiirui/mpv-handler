@@ -84,7 +84,7 @@ The default `mpv-handler.toml` configuration is like this:
 
 ```toml
 ### Player ###
-# You should be change the value of "player" to your player executalbe binary path.
+# You should be change the value of "player" to your player executable binary path.
 player = "/usr/bin/mpv"
 
 ### Video Downloader ###
