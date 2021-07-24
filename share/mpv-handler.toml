@@ -61,7 +61,7 @@ quality.worst = "worst"
 #                     Set to true to mark the downloader run directly without player.
 # pipeline        Optional, Type: Boolen (default: false)
 #                     Set to true to mark the downloader transfer video data through pipeline.
-# require_quality    Optional, Type: Boolen (default: false)
+# require_quality Optional, Type: Boolen (default: false)
 #                     Set to true to mark the downloader requires a quality LEVEL given.
 # options         Optional, Type: Array of Strings (default: [])
 #                     The parameters of downloader to set player or output.

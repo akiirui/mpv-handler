@@ -2,30 +2,45 @@
 
 A protocol handler for mpv, written by Rust.
 
-Please use with UserScript:
+Please use with userscript:
 
-[![play-with-mpv-handler][play-with-mpv-badges]][play-with-mpv-greasyfork ]
+[![play-with-mpv-handler][play-with-mpv-badges]][play-with-mpv-greasyfork]
 
-## Install
+## Installation
 
 ### Linux
-
-`mpv-handler.toml` should be stored at `~/.config/mpv/mpv-handler.toml`.
 
 - Arch Linux
   - [mpv-handler][mpv-handler-download-aur] <sup>AUR</sup>
   - [mpv-handler-git][mpv-handler-download-aur-git] <sup>AUR</sup>
-- GitHub Actions Build
-  - [latest/mpv-handler-linux-x64.zip][mpv-handler-download-linux]
+
+**Don't forget copy `/usr/share/mpv-handler/mpv-handler.toml` to `~/.config/mpv/`.**
+
+#### Manual installation
+
+1. Download [latest/mpv-handler-linux-x64.zip][mpv-handler-download-linux]
+2. Unzip the archive
+3. Copy `mpv-handler` to `~/.local/bin`
+4. Copy `mpv-handler.desktop` to `~/.local/share/applications/`
+5. Copy `mpv-handler.toml` to `~/.config/mpv/`
+6. Add `~/.local/bin` to your environment variable `PATH` (if it not lists in your `PATH`)
+7. Register xdg-mime (thanks for the [linuxuprising][linuxuprising] reminder)
+
+```
+$ xdg-mime default mpv-handler.desktop x-scheme-handler/mpv
+```
+
+8. Check `~/.config/mpv/mpv-handler.toml` and change it as needed
 
 ### Windows
 
-`mpv-handler.toml` should be stored in the same directory with `mpv-hander.exe`.
+Windows users need to install `mpv-handler` manually.
 
-**For Windows users, don't forget to edit the configuration file following the comments.**
+#### Manual installation
 
-- GitHub Actions Build
-  - [latest/mpv-handler-windows-x64.zip](https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-windows-x64.zip)
+1. Download [latest/mpv-handler-windows-x64.zip][mpv-handler-download-windows]
+2. Unzip the archive to the directory you want (since v0.2.x, not requires to install in the same directory with `mpv` anymore)
+3. Run `handler-install.bat` register protocol handler
 
 [mpv-handler-download-aur]: https://aur.archlinux.org/packages/mpv-handler/
 [mpv-handler-download-aur-git]: https://aur.archlinux.org/packages/mpv-handler-git/
@@ -34,6 +49,7 @@ Please use with UserScript:
 [play-with-mpv-badges]: https://img.shields.io/badge/dynamic/json?style=for-the-badge&label=play-with-mpv&prefix=v&query=version&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F416271.json
 [play-with-mpv-greasyfork]: https://greasyfork.org/scripts/416271-play-with-mpv
 [play-with-mpv-github]: https://github.com/akiirui/userscript/tree/main/play-with-mpv-handler
+[linuxuprising]: https://www.linuxuprising.com/2021/07/open-youtube-and-more-videos-from-your.html
 
 ## Protocol URL
 
@@ -61,7 +77,7 @@ mpv://aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj01cWFwNWFPNGk5QQ==/?cookies=www.
 
 Generally, users only need to edit `player` and downloader `bin` to corresponding executable binary.
 
-As of `v0.2.3`, default `mpv-handler.toml` configuration is like this:
+The default `mpv-handler.toml` configuration is like this:
 
 ```toml
 ### Player ###
@@ -96,7 +112,10 @@ options = ["--player"]
 
 [streamlink]
 bin = "/usr/bin/streamlink"
+require_quality = true
 options = ["--player"]
+quality.best = "best"
+quality.worst = "worst"
 
 # For advanced user, you can add other downloader manually.
 # Example:
@@ -107,6 +126,7 @@ options = ["--player"]
 # cookies_prefix = false
 # direct = false
 # pipeline = false
+# require_quality = false
 # options = ["--player"]
 # quality.best = "--quality=best"
 #
@@ -118,11 +138,13 @@ options = ["--player"]
 # cookies         Optional, Type: String (default: "")
 #                     The downloader parameter of passthorgh cookies.
 # cookies_prefix  Optional, Type: Boolen (default: false)
-#                     Set as true to mark cookies parameter as prefix.
+#                     Set to true to mark cookies parameter as prefix.
 # direct          Optional, Type: Boolen (defalut: false)
-#                     Set as true to mark downloader run directly without player.
+#                     Set to true to mark the downloader run directly without player.
 # pipeline        Optional, Type: Boolen (default: false)
-#                     Set as true to mark downloader transfer video data through pipeline.
+#                     Set to true to mark the downloader transfer video data through pipeline.
+# require_quality Optional, Type: Boolen (default: false)
+#                     Set to true to mark the downloader requires a quality LEVEL given.
 # options         Optional, Type: Array of Strings (default: [])
 #                     The parameters of downloader to set player or output.
 # quality.LEVEL   Optional, Type: String
