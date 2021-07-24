@@ -4,21 +4,22 @@
 
 请配合用户脚本使用：
 
-[![play-with-mpv-handler][play-with-mpv-badges]][play-with-mpv-greasyfork]
+[![play-with-mpv][badges-play-with-mpv]][greasyfork-play-with-mpv]
 
 ## 安装
 
 ### Linux
 
 - Arch Linux
-  - [mpv-handler][mpv-handler-download-aur] <sup>AUR</sup>
-  - [mpv-handler-git][mpv-handler-download-aur-git] <sup>AUR</sup>
+
+  [![mpv-handler][badges-aur]][download-aur] \
+  [![mpv-handler-git][badges-aur-git]][download-aur-git]
 
 **不要忘记复制 `/usr/share/mpv-handler/mpv-handler.toml` 至 `~/.config/mpv/`。**
 
 #### 手动安装
 
-1. 下载 [latest/mpv-handler-linux-x64.zip][mpv-handler-download-linux]
+1. 下载 [latest/mpv-handler-linux-x64.zip][download-linux]
 2. 解压缩压缩包
 3. 复制 `mpv-handler` 至 `~/.local/bin`
 4. 复制 `mpv-handler.desktop` 至 `~/.local/share/applications/`
@@ -38,18 +39,19 @@ Windows 用户目前只能手动安装 `mpv-handler`。
 
 #### 手动安装
 
-1. 下载 [latest/mpv-handler-windows-x64.zip][mpv-handler-download-windows]
+1. 下载 [latest/mpv-handler-windows-x64.zip][download-windows]
 2. 解压缩档案到你想要的文件夹里（从 `v0.2.x` 起，不再需要和 `mpv` 安装至同一个文件夹）
 3. 运行 `handler-install.bat` 注册协议处理程序
 4. 检查 `~/.config/mpv/mpv-handler.toml` 并按需更改
 
-[mpv-handler-download-aur]: https://aur.archlinux.org/packages/mpv-handler/
-[mpv-handler-download-aur-git]: https://aur.archlinux.org/packages/mpv-handler-git/
-[mpv-handler-download-linux]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-linux-x64.zip
-[mpv-handler-download-windows]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-windows-x64.zip
-[play-with-mpv-badges]: https://img.shields.io/badge/dynamic/json?style=for-the-badge&label=play-with-mpv&prefix=v&query=version&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F416271.json
-[play-with-mpv-greasyfork]: https://greasyfork.org/scripts/416271-play-with-mpv
-[play-with-mpv-github]: https://github.com/akiirui/userscript/tree/main/play-with-mpv-handler
+[badges-aur-git]: https://img.shields.io/aur/version/mpv-handler-git?label=mpv-handler-git&style=for-the-badge
+[badges-aur]: https://img.shields.io/aur/version/mpv-handler?label=mpv-handler&style=for-the-badge
+[badges-play-with-mpv]: https://img.shields.io/badge/dynamic/json?style=for-the-badge&label=play-with-mpv&prefix=v&query=version&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F416271.json
+[download-aur-git]: https://aur.archlinux.org/packages/mpv-handler-git/
+[download-aur]: https://aur.archlinux.org/packages/mpv-handler/
+[download-linux]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-linux-x64.zip
+[download-windows]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-windows-x64.zip
+[greasyfork-play-with-mpv]: https://greasyfork.org/scripts/416271-play-with-mpv
 [linuxuprising]: https://www.linuxuprising.com/2021/07/open-youtube-and-more-videos-from-your.html
 
 ## 协议 URL

@@ -4,21 +4,22 @@ A protocol handler for mpv, written by Rust.
 
 Please use with userscript:
 
-[![play-with-mpv-handler][play-with-mpv-badges]][play-with-mpv-greasyfork]
+[![play-with-mpv][badges-play-with-mpv]][greasyfork-play-with-mpv]
 
 ## Installation
 
 ### Linux
 
 - Arch Linux
-  - [mpv-handler][mpv-handler-download-aur] <sup>AUR</sup>
-  - [mpv-handler-git][mpv-handler-download-aur-git] <sup>AUR</sup>
+
+  [![mpv-handler][badges-aur]][download-aur] \
+  [![mpv-handler-git][badges-aur-git]][download-aur-git]
 
 **Don't forget copy `/usr/share/mpv-handler/mpv-handler.toml` to `~/.config/mpv/`.**
 
 #### Manual installation
 
-1. Download [latest/mpv-handler-linux-x64.zip][mpv-handler-download-linux]
+1. Download [latest/mpv-handler-linux-x64.zip][download-linux]
 2. Unzip the archive
 3. Copy `mpv-handler` to `~/.local/bin`
 4. Copy `mpv-handler.desktop` to `~/.local/share/applications/`
@@ -38,18 +39,19 @@ Windows users need to install `mpv-handler` manually.
 
 #### Manual installation
 
-1. Download [latest/mpv-handler-windows-x64.zip][mpv-handler-download-windows]
+1. Download [latest/mpv-handler-windows-x64.zip][download-windows]
 2. Unzip the archive to the directory you want (since v0.2.x, not requires to install in the same directory with `mpv` anymore)
 3. Run `handler-install.bat` register protocol handler
 4. Check `~/.config/mpv/mpv-handler.toml` and change it as needed
 
-[mpv-handler-download-aur]: https://aur.archlinux.org/packages/mpv-handler/
-[mpv-handler-download-aur-git]: https://aur.archlinux.org/packages/mpv-handler-git/
-[mpv-handler-download-linux]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-linux-x64.zip
-[mpv-handler-download-windows]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-windows-x64.zip
-[play-with-mpv-badges]: https://img.shields.io/badge/dynamic/json?style=for-the-badge&label=play-with-mpv&prefix=v&query=version&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F416271.json
-[play-with-mpv-greasyfork]: https://greasyfork.org/scripts/416271-play-with-mpv
-[play-with-mpv-github]: https://github.com/akiirui/userscript/tree/main/play-with-mpv-handler
+[badges-aur-git]: https://img.shields.io/aur/version/mpv-handler-git?label=mpv-handler-git&style=for-the-badge
+[badges-aur]: https://img.shields.io/aur/version/mpv-handler?label=mpv-handler&style=for-the-badge
+[badges-play-with-mpv]: https://img.shields.io/badge/dynamic/json?style=for-the-badge&label=play-with-mpv&prefix=v&query=version&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F416271.json
+[download-aur-git]: https://aur.archlinux.org/packages/mpv-handler-git/
+[download-aur]: https://aur.archlinux.org/packages/mpv-handler/
+[download-linux]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-linux-x64.zip
+[download-windows]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-windows-x64.zip
+[greasyfork-play-with-mpv]: https://greasyfork.org/scripts/416271-play-with-mpv
 [linuxuprising]: https://www.linuxuprising.com/2021/07/open-youtube-and-more-videos-from-your.html
 
 ## Protocol URL
