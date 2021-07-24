@@ -29,6 +29,8 @@ pub enum HandlerError {
     ConfigDownloaderBinEmptyValue(String),
     #[error("Error: The downloader \"{0}\" cookies value is empty, but you passed cookies")]
     ConfigDownloaderCookiesEmptyValue(String),
+    #[error("Error: The downloader \"{0}\" requires a quality LEVEL")]
+    ConfigDownloaderRequireQuality(String),
     #[error("Error: The downloader \"{0}\" quality \"{1}\" was not found")]
     ConfigDownloaderQualityNotFound(String, String),
     #[error("Error: The downloader \"{0}\" quailty \"{1}\" value is empty")]
@@ -113,7 +115,6 @@ impl Handler {
     /// - `ConfigDownloaderCookiesEmptyValue`
     /// - `ConfigDownloaderQualityNotFound`
     /// - `ConfigDownloaderQualityEmptyValue`
-
     pub fn run(&self) -> Result<(), HandlerError> {
         let mut args: Vec<&String> = Vec::new();
         let mut cookies: String;
@@ -189,6 +190,14 @@ impl Handler {
         }
 
         // Append quality option
+        if self.config.downloader[&self.protocol.downloader].require_quality == true {
+            if self.protocol.quality.len() == 0 {
+                return Err(HandlerError::ConfigDownloaderRequireQuality(
+                    self.protocol.downloader.clone(),
+                ));
+            }
+        }
+
         if self.protocol.quality.len() != 0 {
             if !self.config.downloader[&self.protocol.downloader]
                 .quality

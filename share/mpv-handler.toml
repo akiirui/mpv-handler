@@ -30,6 +30,7 @@ options = ["--player"]
 
 [streamlink]
 bin = "/usr/bin/streamlink"
+require_quality = true
 options = ["--player"]
 quality.best = "best"
 quality.worst = "worst"
@@ -43,6 +44,7 @@ quality.worst = "worst"
 # cookies_prefix = false
 # direct = false
 # pipeline = false
+# require_quality = false
 # options = ["--player"]
 # quality.best = "--quality=best"
 #
@@ -54,11 +56,13 @@ quality.worst = "worst"
 # cookies         Optional, Type: String (default: "")
 #                     The downloader parameter of passthorgh cookies.
 # cookies_prefix  Optional, Type: Boolen (default: false)
-#                     Set as true to mark cookies parameter as prefix.
+#                     Set to true to mark cookies parameter as prefix.
 # direct          Optional, Type: Boolen (defalut: false)
-#                     Set as true to mark downloader run directly without player.
+#                     Set to true to mark the downloader run directly without player.
 # pipeline        Optional, Type: Boolen (default: false)
-#                     Set as true to mark downloader transfer video data through pipeline.
+#                     Set to true to mark the downloader transfer video data through pipeline.
+# require_quality    Optional, Type: Boolen (default: false)
+#                     Set to true to mark the downloader requires a quality LEVEL given.
 # options         Optional, Type: Array of Strings (default: [])
 #                     The parameters of downloader to set player or output.
 # quality.LEVEL   Optional, Type: String

@@ -30,6 +30,8 @@ pub struct Downloader {
     #[serde(default)]
     pub pipeline: bool,
     #[serde(default)]
+    pub require_quality: bool,
+    #[serde(default)]
     pub options: Vec<String>,
     #[serde(default)]
     pub quality: HashMap<String, String>,
