@@ -41,6 +41,7 @@ Windows users need to install `mpv-handler` manually.
 1. Download [latest/mpv-handler-windows-x64.zip][mpv-handler-download-windows]
 2. Unzip the archive to the directory you want (since v0.2.x, not requires to install in the same directory with `mpv` anymore)
 3. Run `handler-install.bat` register protocol handler
+4. Check `~/.config/mpv/mpv-handler.toml` and change it as needed
 
 [mpv-handler-download-aur]: https://aur.archlinux.org/packages/mpv-handler/
 [mpv-handler-download-aur-git]: https://aur.archlinux.org/packages/mpv-handler-git/

@@ -41,6 +41,7 @@ Windows 用戶目前只能手動安裝 `mpv-handler`。
 1. 下載 [latest/mpv-handler-windows-x64.zip][mpv-handler-download-windows]
 2. 解壓縮檔案到你想要的文件夾裏（從 `v0.2.x` 起，不再需要和 `mpv` 安裝至同一個文件夾）
 3. 運行 `handler-install.bat` 註冊協議處理程序
+4. 檢查 `~/.config/mpv/mpv-handler.toml` 並按需更改
 
 [mpv-handler-download-aur]: https://aur.archlinux.org/packages/mpv-handler/
 [mpv-handler-download-aur-git]: https://aur.archlinux.org/packages/mpv-handler-git/
