@@ -4,13 +4,13 @@ const DEFAULT_DOWNLOADER: &str = "mpv";
 
 #[derive(Error, Debug)]
 pub enum ProtocolError {
-    #[error("Wrong protocol URL is given")]
+    #[error("Error: Wrong protocol URL")]
     WrongProtocol,
-    #[error("Wrong protocol URL is given, base64 decoding failed")]
+    #[error("Error: Failed to decode video URL data, {0}")]
     WrongProtocolBase64(#[from] base64::DecodeError),
-    #[error("Wrong protocol URL is given, string converting failed")]
+    #[error("Error: Failed to convert video URL string, {0}")]
     WrongProtocolFromUtf8(#[from] std::string::FromUtf8Error),
-    #[error("Wrong protocol URL is given, not found video URL")]
+    #[error("Error: Not found video URL")]
     MissingVideoUrl,
 }
 

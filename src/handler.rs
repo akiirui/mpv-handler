@@ -23,7 +23,7 @@ pub enum HandlerError {
     GetHomeDirFailed,
     #[error("Error: The player \"{0}\" value is empty")]
     ConfigPlayerEmptyValue(String),
-    #[error("Error: The downloader \"{0}\" settings was not found")]
+    #[error("Error: The downloader \"{0}\" settings is not found")]
     ConfigDownloaderNotFound(String),
     #[error("Error: The downloader \"{0}\" bin value is empty")]
     ConfigDownloaderBinEmptyValue(String),
@@ -31,7 +31,7 @@ pub enum HandlerError {
     ConfigDownloaderCookiesEmptyValue(String),
     #[error("Error: The downloader \"{0}\" requires a quality LEVEL")]
     ConfigDownloaderRequireQuality(String),
-    #[error("Error: The downloader \"{0}\" quality \"{1}\" was not found")]
+    #[error("Error: The downloader \"{0}\" quality \"{1}\" is not found")]
     ConfigDownloaderQualityNotFound(String, String),
     #[error("Error: The downloader \"{0}\" quailty \"{1}\" value is empty")]
     ConfigDownloaderQualityEmptyValue(String, String),
