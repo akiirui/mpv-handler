@@ -5,9 +5,9 @@ use std::collections::HashMap;
 
 #[derive(Error, Debug)]
 pub enum ConfigError {
-    #[error("Error: Failed to decode configuration file, {0}")]
+    #[error("Error: Failed to decode configuration file: {0}")]
     TomlDeError(#[from] toml::de::Error),
-    #[error("Error: Failed to open configuration file, {0}")]
+    #[error("Error: Failed to open configuration file: {0}")]
     ReadConfigFailed(#[from] std::io::Error),
 }
 

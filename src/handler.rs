@@ -35,10 +35,12 @@ pub enum HandlerError {
     ConfigDownloaderQualityNotFound(String, String),
     #[error("Error: The downloader \"{0}\" quailty \"{1}\" value is empty")]
     ConfigDownloaderQualityEmptyValue(String, String),
-    #[error("Error: Downloader or player executable binary not found, check your configuration")]
-    DownloaderNotFound,
     #[error("Error: Downloader or player exited with error or termination signal")]
     DownloaderExited,
+    #[error("Error: Failed to run downloader \"{0}\": {1}")]
+    FailedRunDownloader(String, std::io::Error),
+    #[error("Error: Failed to run player: {0}")]
+    FailedRunPlayer(std::io::Error),
 }
 
 #[derive(Debug)]
@@ -259,7 +261,7 @@ impl Handler {
     /// ## Errors
     ///
     /// - `DownloaderExited`
-    /// - `DownloaderNotFound`
+    /// - `FailedRunDownloader`
     fn play(
         &self,
         args: Vec<&String>,
@@ -278,7 +280,10 @@ impl Handler {
                 true => Ok(()),
                 false => Err(HandlerError::DownloaderExited),
             },
-            Err(_) => Err(HandlerError::DownloaderNotFound),
+            Err(error) => Err(HandlerError::FailedRunDownloader(
+                self.protocol.downloader.clone(),
+                error,
+            )),
         }
     }
 
@@ -287,7 +292,7 @@ impl Handler {
     /// ## Errors
     ///
     /// - `DownloaderExited`
-    /// - `DownloaderNotFound`
+    /// - `FailedRunDownloader`
     fn play_direct(&self, args: Vec<&String>, downloader_bin: &String) -> Result<(), HandlerError> {
         println!("Playing: {}", self.protocol.url);
 
@@ -300,7 +305,10 @@ impl Handler {
                 true => Ok(()),
                 false => Err(HandlerError::DownloaderExited),
             },
-            Err(_) => Err(HandlerError::DownloaderNotFound),
+            Err(error) => Err(HandlerError::FailedRunDownloader(
+                self.protocol.downloader.clone(),
+                error,
+            )),
         }
     }
 
@@ -308,9 +316,9 @@ impl Handler {
     ///
     /// ## Errors
     ///
-    /// - `IoError`
     /// - `DownloaderExited`
-    /// - `DownloaderNotFound`
+    /// - `FailedRunDownloader`
+    /// - `FailedRunPlayer`
     fn play_pipeline(
         &self,
         args: Vec<&String>,
@@ -319,10 +327,19 @@ impl Handler {
     ) -> Result<(), HandlerError> {
         println!("Playing: {}", self.protocol.url);
 
-        let downloader = std::process::Command::new(downloader_bin)
+        let downloader = match std::process::Command::new(downloader_bin)
             .args(args)
             .stdout(std::process::Stdio::piped())
-            .spawn()?;
+            .spawn()
+        {
+            Ok(child) => child,
+            Err(error) => {
+                return Err(HandlerError::FailedRunDownloader(
+                    self.protocol.downloader.clone(),
+                    error,
+                ))
+            }
+        };
 
         let player = std::process::Command::new(player_bin)
             .arg("-")
@@ -334,7 +351,7 @@ impl Handler {
                 true => Ok(()),
                 false => Err(HandlerError::DownloaderExited),
             },
-            Err(_) => Err(HandlerError::DownloaderNotFound),
+            Err(error) => Err(HandlerError::FailedRunPlayer(error)),
         }
     }
 }
