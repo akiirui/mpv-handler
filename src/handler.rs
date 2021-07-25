@@ -3,9 +3,6 @@ use thiserror::Error;
 use crate::config::Config;
 use crate::protocol::Protocol;
 
-const PLAYER: &str = "mpv";
-const CONFIG_FILE_NAME: &str = "mpv-handler.toml";
-
 #[derive(Error, Debug)]
 pub enum HandlerError {
     #[error(transparent)]
@@ -19,10 +16,10 @@ pub enum HandlerError {
     #[error("Error: Too many arguments are given")]
     TooManyArgs,
     #[cfg(unix)]
-    #[error("Error: Get user home directory failed")]
-    GetHomeDirFailed,
-    #[error("Error: The player \"{0}\" value is empty")]
-    ConfigPlayerEmptyValue(String),
+    #[error("Error: Failed to get config directory")]
+    FailedGetConfigDir,
+    #[error("Error: The player value is empty")]
+    ConfigPlayerEmptyValue,
     #[error("Error: The downloader \"{0}\" settings is not found")]
     ConfigDownloaderNotFound(String),
     #[error("Error: The downloader \"{0}\" bin value is empty")]
@@ -35,6 +32,8 @@ pub enum HandlerError {
     ConfigDownloaderQualityNotFound(String, String),
     #[error("Error: The downloader \"{0}\" quailty \"{1}\" value is empty")]
     ConfigDownloaderQualityEmptyValue(String, String),
+    #[error("Error: The downloader \"{0}\" play mode is wrong")]
+    ConfigDownloaderWrongPlayMode(String),
     #[error("Error: Downloader or player exited with error or termination signal")]
     DownloaderExited,
     #[error("Error: Failed to run downloader \"{0}\": {1}")]
@@ -61,7 +60,7 @@ impl Handler {
     /// - `NoArg`
     /// - `TooManyArgs`
     /// - `GetHomeDirFailed` (unix only)
-    pub fn new() -> Result<Handler, HandlerError> {
+    pub fn new() -> Result<Self, HandlerError> {
         let mut args: Vec<String> = std::env::args().collect();
         let arg: &mut String = match args.len() {
             2 => &mut args[1],
@@ -76,27 +75,8 @@ impl Handler {
 
         let config: Config;
         let protocol: Protocol;
-        let mut path: std::path::PathBuf;
 
-        #[cfg(unix)]
-        {
-            path = match dirs::home_dir() {
-                Some(path) => path,
-                None => return Err(HandlerError::GetHomeDirFailed),
-            };
-            path.push(".config");
-            path.push("mpv");
-            path.push(CONFIG_FILE_NAME);
-        }
-
-        #[cfg(windows)]
-        {
-            path = std::env::current_exe()?;
-            path.pop();
-            path.push(CONFIG_FILE_NAME);
-        }
-
-        config = Config::read(path)?;
+        config = Config::load()?;
         protocol = Protocol::parse(arg)?;
 
         Ok(Handler {
@@ -121,6 +101,12 @@ impl Handler {
         let mut args: Vec<&String> = Vec::new();
         let mut cookies: String;
 
+        // Check player setting
+        if self.config.player.len() == 0 {
+            return Err(HandlerError::ConfigPlayerEmptyValue);
+        }
+
+        // Check downloader settings
         if !self
             .config
             .downloader
@@ -131,14 +117,20 @@ impl Handler {
             ));
         }
 
+        // Check downloader setting - bin
         if self.config.downloader[&self.protocol.downloader].bin.len() == 0 {
             return Err(HandlerError::ConfigDownloaderBinEmptyValue(
                 self.protocol.downloader.clone(),
             ));
         }
 
-        if self.config.player.len() == 0 {
-            return Err(HandlerError::ConfigPlayerEmptyValue(PLAYER.to_string()));
+        // Check downloader requires quality.LEVEL
+        if self.config.downloader[&self.protocol.downloader].require_quality == true
+            && self.protocol.quality.len() == 0
+        {
+            return Err(HandlerError::ConfigDownloaderRequireQuality(
+                self.protocol.downloader.clone(),
+            ));
         }
 
         // Append video URL to arguments
@@ -148,6 +140,7 @@ impl Handler {
 
         // Append cookies option and cookies file path to arguments
         if self.protocol.cookies.len() != 0 {
+            // Check downloader setting - cookies
             if self.config.downloader[&self.protocol.downloader]
                 .cookies
                 .len()
@@ -162,9 +155,11 @@ impl Handler {
 
             #[cfg(unix)]
             {
-                path = std::path::PathBuf::from("~");
-                path.push(".config");
-                path.push("mpv");
+                path = match dirs::config_dir() {
+                    Some(path) => path,
+                    None => return Err(HandlerError::FailedGetConfigDir),
+                };
+                path.push("mpv-handler");
                 path.push("cookies");
                 path.push(&self.protocol.cookies);
             }
@@ -192,15 +187,8 @@ impl Handler {
         }
 
         // Append quality option
-        if self.config.downloader[&self.protocol.downloader].require_quality == true {
-            if self.protocol.quality.len() == 0 {
-                return Err(HandlerError::ConfigDownloaderRequireQuality(
-                    self.protocol.downloader.clone(),
-                ));
-            }
-        }
-
         if self.protocol.quality.len() != 0 {
+            // Check downloader setting - quality.LEVEL
             if !self.config.downloader[&self.protocol.downloader]
                 .quality
                 .contains_key(&self.protocol.quality)
@@ -211,6 +199,7 @@ impl Handler {
                 ));
             }
 
+            // Check downloader setting - quality.LEVEL value
             if self.config.downloader[&self.protocol.downloader].quality[&self.protocol.quality]
                 .len()
                 == 0
@@ -237,22 +226,27 @@ impl Handler {
             }
         }
 
-        if self.config.downloader[&self.protocol.downloader].direct == true {
-            return self.play_direct(args, &self.config.downloader[&self.protocol.downloader].bin);
-        }
-
-        if self.config.downloader[&self.protocol.downloader].pipeline == false {
-            return self.play(
+        // Choose downloader play mode
+        match self.config.downloader[&self.protocol.downloader]
+            .play_mode
+            .as_str()
+        {
+            "normal" => self.play(
                 args,
                 &self.config.downloader[&self.protocol.downloader].bin,
                 &self.config.player,
-            );
-        } else {
-            return self.play_pipeline(
+            ),
+            "direct" => {
+                self.play_direct(args, &self.config.downloader[&self.protocol.downloader].bin)
+            }
+            "pipe" => self.play_pipe(
                 args,
                 &self.config.downloader[&self.protocol.downloader].bin,
                 &self.config.player,
-            );
+            ),
+            _ => Err(HandlerError::ConfigDownloaderWrongPlayMode(
+                self.protocol.downloader.clone(),
+            )),
         }
     }
 
@@ -312,14 +306,14 @@ impl Handler {
         }
     }
 
-    /// Run downloader transfer video data through pipeline
+    /// Run downloader and transfer video data through pipeline
     ///
     /// ## Errors
     ///
     /// - `DownloaderExited`
     /// - `FailedRunDownloader`
     /// - `FailedRunPlayer`
-    fn play_pipeline(
+    fn play_pipe(
         &self,
         args: Vec<&String>,
         downloader_bin: &String,

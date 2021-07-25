@@ -1,0 +1,44 @@
+# Don't edit this file!
+# This is default settings, It will be overwritten when mpv-handler is updated.
+#
+# For customize settings, create and edit file:
+# - Linux:
+#     - $HOME/.config/mpv-handler/custom.toml
+#     - /etc/mpv-handler/custom.toml
+#   If the first one is found, the second one will not be loaded.
+# - Windows:  custom.toml (in the same directory as mpv-handler.exe)
+
+### Player ###
+player = "/usr/bin/mpv"
+
+### Video Downloader ###
+[mpv]
+bin = "/usr/bin/mpv"
+cookies = "--ytdl-raw-options-append=cookies="
+cookies_prefix = true
+play_mode = "direct"
+quality.best = "--ytdl-format=bestvideo+bestaudio/best"
+quality.2160p = "--ytdl-format=bestvideo[height<=2160]+bestaudio/best[height<=2160]/best"
+quality.1440p = "--ytdl-format=bestvideo[height<=1440]+bestaudio/best[height<=1440]/best"
+quality.1080p = "--ytdl-format=bestvideo[height<=1080]+bestaudio/best[height<=1080]/best"
+quality.720p = "--ytdl-format=bestvideo[height<=720]+bestaudio/best[height<=720]/best"
+quality.480p = "--ytdl-format=bestvideo[height<=480]+bestaudio/best[height<=480]/best"
+quality.360p = "--ytdl-format=bestvideo[height<=360]+bestaudio/best[height<=360]/best"
+
+[ytdl]
+bin = "/usr/bin/youtube-dl"
+cookies = "--cookies"
+play_mode = "pipe"
+options = ["--quiet", "--output", "-"]
+
+[you-get]
+bin = "/usr/bin/you-get"
+cookies = "--cookies"
+options = ["--player"]
+
+[streamlink]
+bin = "/usr/bin/streamlink"
+require_quality = true
+options = ["--player"]
+quality.best = "best"
+quality.worst = "worst"
