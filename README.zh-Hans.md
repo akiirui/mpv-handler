@@ -21,7 +21,7 @@
 2. 解压缩压缩包
 3. 复制 `mpv-handler` 至 `$HOME/.local/bin`
 4. 复制 `mpv-handler.desktop` 至 `$HOME/.local/share/applications/`
-5. 复制 `mpv-handler.toml` 至 `$HOME/.config/mpv-handler/`
+5. 复制 `config.toml` 至 `$HOME/.config/mpv-handler/`
 6. 添加 `$HOME/.local/bin` 到环境变量 `PATH` 中（如果它没在你的 `PATH` 中列出）
 7. 注册 xdg-mime（感谢 [linuxuprising][linuxuprising] 的提醒）
 
@@ -87,7 +87,7 @@ mpv://aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj01cWFwNWFPNGk5QQ==/?cookies=www.
 #     - $HOME/.config/mpv-handler/custom.toml
 #     - /etc/mpv-handler/custom.toml
 #   如果找到了第一个，那么第二个不会被加载。
-# - Windows:  custom.toml (在放置 mpv-handler.exe 的同一个目录中)
+# - Windows: custom.toml (在放置 mpv-handler.exe 的同一个目录中)
 
 ### 播放器 ###
 player = "/usr/bin/mpv"

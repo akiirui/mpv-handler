@@ -87,7 +87,7 @@ The default `config.toml` configuration is like this:
 #     - $HOME/.config/mpv-handler/custom.toml
 #     - /etc/mpv-handler/custom.toml
 #   If the first one is found, the second one will not be loaded.
-# - Windows:  custom.toml (in the same directory as mpv-handler.exe)
+# - Windows: custom.toml (in the same directory as mpv-handler.exe)
 
 ### Player ###
 player = "/usr/bin/mpv"
