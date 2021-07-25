@@ -15,23 +15,21 @@
   [![mpv-handler][badges-aur]][download-aur] \
   [![mpv-handler-git][badges-aur-git]][download-aur-git]
 
-**不要忘記複製 `/usr/share/mpv-handler/mpv-handler.toml` 至 `~/.config/mpv/`。**
-
 #### 手動安裝
 
 1. 下載 [latest/mpv-handler-linux-x64.zip][download-linux]
 2. 解壓縮壓縮包
-3. 複製 `mpv-handler` 至 `~/.local/bin`
-4. 複製 `mpv-handler.desktop` 至 `~/.local/share/applications/`
-5. 複製 `mpv-handler.toml` 至 `~/.config/mpv/`
-6. 添加 `~/.local/bin` 到環境變量 `PATH` 中（如果它沒在你的 `PATH` 中列出）
+3. 複製 `mpv-handler` 至 `$HOME/.local/bin`
+4. 複製 `mpv-handler.desktop` 至 `$HOME/.local/share/applications/`
+5. 複製 `mpv-handler.toml` 至 `$HOME/.config/mpv-handler/`
+6. 添加 `$HOME/.local/bin` 到環境變量 `PATH` 中（如果它沒在你的 `PATH` 中列出）
 7. 註冊 xdg-mime（感謝 [linuxuprising][linuxuprising] 的提醒）
 
 ```
 $ xdg-mime default mpv-handler.desktop x-scheme-handler/mpv
 ```
 
-8. 檢查 `~/.config/mpv/mpv-handler.toml` 並按需更改
+8. 如果需要，創建 `$HOME/.config/mpv-handler/custom.toml` 並按需更改
 
 ### Windows
 
@@ -42,7 +40,7 @@ Windows 用戶目前只能手動安裝 `mpv-handler`。
 1. 下載 [latest/mpv-handler-windows-x64.zip][download-windows]
 2. 解壓縮檔案到你想要的文件夾裏（從 `v0.2.x` 起，不再需要和 `mpv` 安裝至同一個文件夾）
 3. 運行 `handler-install.bat` 註冊協議處理程序
-4. 檢查 `mpv-handler.toml` 並按需更改
+4. 在放置 `mpv-handler.exe` 的同一個目錄中創建 `custom.toml` 並按需更改
 
 [badges-aur-git]: https://img.shields.io/aur/version/mpv-handler-git?label=mpv-handler-git&style=for-the-badge
 [badges-aur]: https://img.shields.io/aur/version/mpv-handler?label=mpv-handler&style=for-the-badge
@@ -78,34 +76,40 @@ mpv://aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj01cWFwNWFPNGk5QQ==/?cookies=www.
 
 ## 自定義配置
 
-一般來說，用戶只需要編輯 `player` 和所需下載器的 `bin` 至相應的可執行文件路徑。
-
-默認的 `mpv-handler.toml` 配置如下（已翻譯註釋爲中文）：
+默認的 `config.toml` 配置如下（已翻譯註釋爲中文）：
 
 ```toml
+# 不要編輯此文件！
+# 這是默認設置，並且它在 mpv-handler 更新時會被覆蓋。
+#
+# 對於自定義設置，創建並且編輯以下文件：
+# - Linux:
+#     - $HOME/.config/mpv-handler/custom.toml
+#     - /etc/mpv-handler/custom.toml
+#   如果找到了第一個，那麼第二個不會被加載。
+# - Windows:  custom.toml (在放置 mpv-handler.exe 的同一個目錄中)
+
 ### 播放器 ###
-# 你應當修改 "player" 的值至你的播放器的可執行文件路徑。
 player = "/usr/bin/mpv"
 
 ### 視頻下載器 ###
-# 你應當修改 "bin" 的值至你的下載器的可執行文件路徑。
 [mpv]
 bin = "/usr/bin/mpv"
 cookies = "--ytdl-raw-options-append=cookies="
 cookies_prefix = true
-direct = true
+play_mode = "direct"
 quality.best = "--ytdl-format=bestvideo+bestaudio/best"
-quality.360p = "--ytdl-format=bestvideo[height<=360]+bestaudio/best[height<=360]/best"
-quality.480p = "--ytdl-format=bestvideo[height<=480]+bestaudio/best[height<=480]/best"
-quality.720p = "--ytdl-format=bestvideo[height<=720]+bestaudio/best[height<=720]/best"
-quality.1080p = "--ytdl-format=bestvideo[height<=1080]+bestaudio/best[height<=1080]/best"
-quality.1440p = "--ytdl-format=bestvideo[height<=1440]+bestaudio/best[height<=1440]/best"
 quality.2160p = "--ytdl-format=bestvideo[height<=2160]+bestaudio/best[height<=2160]/best"
+quality.1440p = "--ytdl-format=bestvideo[height<=1440]+bestaudio/best[height<=1440]/best"
+quality.1080p = "--ytdl-format=bestvideo[height<=1080]+bestaudio/best[height<=1080]/best"
+quality.720p = "--ytdl-format=bestvideo[height<=720]+bestaudio/best[height<=720]/best"
+quality.480p = "--ytdl-format=bestvideo[height<=480]+bestaudio/best[height<=480]/best"
+quality.360p = "--ytdl-format=bestvideo[height<=360]+bestaudio/best[height<=360]/best"
 
 [ytdl]
 bin = "/usr/bin/youtube-dl"
 cookies = "--cookies"
-pipeline = true
+play_mode = "pipe"
 options = ["--quiet", "--output", "-"]
 
 [you-get]
@@ -119,21 +123,43 @@ require_quality = true
 options = ["--player"]
 quality.best = "best"
 quality.worst = "worst"
+```
+
+一般來說，用戶只需要編輯 `player` 和所需下載器的 `bin` 至相應的可執行文件路徑。
+
+爲此，用戶可以創建 `custom.toml` 來覆寫默認設置。
+
+```toml
+# 對於 Windows 用戶，
+# 路徑格式可以是 "C:\\folder\\some.exe" 也可以是 "C:/folder/some.exe"
+player = "/usr/bin/vlc"
+
+[ytdl]
+bin = "/usr/local/bin/youtube-dl"
+options = ["-o", "-"]
+
+# 警告：
+# 開發者不建議用戶修改除了 "bin" 以外的默認下載器設置。
+#
+# 如果你修改了默認下載器的 "quality.LEVEL"，
+# 你將丟失其他的來自默認設置的 "quality.LEVEL"。
+# 在這個例子中，你將丟失 "quality.worst"。
+[streamlink]
+quality.best = "bestvideo"
 
 # 如果你是高級用戶，你可以手動添加其他的下載器。
+#
 # 例：
-#
-# [example]
-# bin = "/usr/bin/example"
-# cookies = "--cookies"
-# cookies_prefix = false
-# direct = false
-# pipeline = false
-# require_quality = false
-# options = ["--player"]
-# quality.best = "--quality=best"
-#
-#
+[example]
+bin = "/usr/bin/example"
+cookies = "--cookies"
+cookies_prefix = false
+require_quality = false
+play_mode = "normal"
+options = ["--player"]
+quality.best = "--quality=best"
+quality.worst = "--quality=worst"
+
 # [example]       必須，類型：字符串
 #                     值 "example" 是下載器表的名稱。
 # bin             必須，類型：字符串
@@ -142,12 +168,10 @@ quality.worst = "worst"
 #                     下載器傳遞 cookies 的參數。
 # cookies_prefix  可選，類型：布爾值（默認：false）
 #                     設置爲 ture 以標記 cookies 參數爲前綴。
-# direct          可選，類型：布爾值（默認：false）
-#                     設置爲 ture 以標記下載器可直接運行，不需要播放器。
-# pipeline        可選，類型：布爾值（默認：false）
-#                     設置爲 ture 以標記下載器通過管道傳遞視頻數據。
 # require_quality 可選，類型：布爾值（默認：false）
 #                     設置爲 ture 以標記下載器需要一個 quality LEVEL。
+# play_mode       可選, 類型：字符串 [normal, direct, pipe] （默認："normal")
+#                     下載器的運行播放器的模式
 # options         可選，類型：字符串數組（默認：[]）
 #                     下載器設置播放器或者輸出位置的參數。
 # quality.LEVEL   可選，類型：字符串

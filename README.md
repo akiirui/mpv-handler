@@ -15,23 +15,21 @@ Please use with userscript:
   [![mpv-handler][badges-aur]][download-aur] \
   [![mpv-handler-git][badges-aur-git]][download-aur-git]
 
-**Don't forget copy `/usr/share/mpv-handler/mpv-handler.toml` to `~/.config/mpv/`.**
-
 #### Manual installation
 
 1. Download [latest/mpv-handler-linux-x64.zip][download-linux]
 2. Unzip the archive
-3. Copy `mpv-handler` to `~/.local/bin`
-4. Copy `mpv-handler.desktop` to `~/.local/share/applications/`
-5. Copy `mpv-handler.toml` to `~/.config/mpv/`
-6. Add `~/.local/bin` to your environment variable `PATH` (if it not lists in your `PATH`)
+3. Copy `mpv-handler` to `$HOME/.local/bin`
+4. Copy `mpv-handler.desktop` to `$HOME/.local/share/applications/`
+5. Copy `config.toml` to `$HOME/.config/mpv-handler/`
+6. Add `$HOME/.local/bin` to your environment variable `PATH` (if it not lists in your `PATH`)
 7. Register xdg-mime (thanks for the [linuxuprising][linuxuprising] reminder)
 
 ```
 $ xdg-mime default mpv-handler.desktop x-scheme-handler/mpv
 ```
 
-8. Check `~/.config/mpv/mpv-handler.toml` and change it as needed
+8. Create `$HOME/.config/mpv-handler/custom.toml` and edit it, if needed
 
 ### Windows
 
@@ -42,7 +40,7 @@ Windows users need to install `mpv-handler` manually.
 1. Download [latest/mpv-handler-windows-x64.zip][download-windows]
 2. Unzip the archive to the directory you want (since v0.2.x, not requires to install in the same directory with `mpv` anymore)
 3. Run `handler-install.bat` register protocol handler
-4. Check `mpv-handler.toml` and change it as needed
+4. Create `custom.toml` in the same directory as `mpv-handler.exe` and edit it
 
 [badges-aur-git]: https://img.shields.io/aur/version/mpv-handler-git?label=mpv-handler-git&style=for-the-badge
 [badges-aur]: https://img.shields.io/aur/version/mpv-handler?label=mpv-handler&style=for-the-badge
@@ -78,34 +76,40 @@ mpv://aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj01cWFwNWFPNGk5QQ==/?cookies=www.
 
 ## Customize Configuration
 
-Generally, users only need to edit `player` and downloader `bin` to corresponding executable binary.
-
-The default `mpv-handler.toml` configuration is like this:
+The default `config.toml` configuration is like this:
 
 ```toml
+# Don't edit this file!
+# This is default settings, It will be overwritten when update mpv-handler.
+#
+# For customize settings, create and edit file:
+# - Linux:
+#     - $HOME/.config/mpv-handler/custom.toml
+#     - /etc/mpv-handler/custom.toml
+#   If the first one is found, the second one will not be loaded.
+# - Windows:  custom.toml (in the same directory as mpv-handler.exe)
+
 ### Player ###
-# You should be change the value of "player" to your player executable binary path.
 player = "/usr/bin/mpv"
 
 ### Video Downloader ###
-# You should be change the value of "bin" to your downloader executable binary path.
 [mpv]
 bin = "/usr/bin/mpv"
 cookies = "--ytdl-raw-options-append=cookies="
 cookies_prefix = true
-direct = true
+play_mode = "direct"
 quality.best = "--ytdl-format=bestvideo+bestaudio/best"
-quality.360p = "--ytdl-format=bestvideo[height<=360]+bestaudio/best[height<=360]/best"
-quality.480p = "--ytdl-format=bestvideo[height<=480]+bestaudio/best[height<=480]/best"
-quality.720p = "--ytdl-format=bestvideo[height<=720]+bestaudio/best[height<=720]/best"
-quality.1080p = "--ytdl-format=bestvideo[height<=1080]+bestaudio/best[height<=1080]/best"
-quality.1440p = "--ytdl-format=bestvideo[height<=1440]+bestaudio/best[height<=1440]/best"
 quality.2160p = "--ytdl-format=bestvideo[height<=2160]+bestaudio/best[height<=2160]/best"
+quality.1440p = "--ytdl-format=bestvideo[height<=1440]+bestaudio/best[height<=1440]/best"
+quality.1080p = "--ytdl-format=bestvideo[height<=1080]+bestaudio/best[height<=1080]/best"
+quality.720p = "--ytdl-format=bestvideo[height<=720]+bestaudio/best[height<=720]/best"
+quality.480p = "--ytdl-format=bestvideo[height<=480]+bestaudio/best[height<=480]/best"
+quality.360p = "--ytdl-format=bestvideo[height<=360]+bestaudio/best[height<=360]/best"
 
 [ytdl]
 bin = "/usr/bin/youtube-dl"
 cookies = "--cookies"
-pipeline = true
+play_mode = "pipe"
 options = ["--quiet", "--output", "-"]
 
 [you-get]
@@ -119,38 +123,58 @@ require_quality = true
 options = ["--player"]
 quality.best = "best"
 quality.worst = "worst"
+```
+
+Generally, users only need to edit `player` and downloader `bin` to corresponding executable binary.
+
+For this, users can create `custom.toml` to overwrite default settings:
+
+```toml
+# For Windows users,
+# The path format can be "C:\\folder\\some.exe" or "C:/folder/some.exe"
+player = "/usr/bin/vlc"
+
+[ytdl]
+bin = "/usr/local/bin/youtube-dl"
+options = ["-o", "-"]
+
+# Warning:
+# Developer isn't recommend users change default downloader settings except "bin".
+#
+# If you've changed "quality.LEVEL" for default downloader,
+# You will lost other "quality.LEVEL" from default settings.
+# Here, you will be lost "quality.worst".
+[streamlink]
+quality.best = "bestvideo"
 
 # For advanced user, you can add other downloader manually.
+#
 # Example:
-#
-# [example]
-# bin = "/usr/bin/example"
-# cookies = "--cookies"
-# cookies_prefix = false
-# direct = false
-# pipeline = false
-# require_quality = false
-# options = ["--player"]
-# quality.best = "--quality=best"
-#
-#
+[example]
+bin = "/usr/bin/example"
+cookies = "--cookies"
+cookies_prefix = false
+require_quality = false
+play_mode = "normal"
+options = ["--player"]
+quality.best = "--quality=best"
+quality.worst = "--quality=worst"
+
 # [example]       Required, Type: String
 #                     The value "example" is downloader table name
 # bin             Required, Type: String
-#                     The downloader executable binary path.
+#                     The downloader executable binary path
 # cookies         Optional, Type: String (default: "")
-#                     The downloader parameter of passthorgh cookies.
+#                     The downloader parameter of passthorgh cookies
 # cookies_prefix  Optional, Type: Boolen (default: false)
-#                     Set to true to mark cookies parameter as prefix.
-# direct          Optional, Type: Boolen (defalut: false)
-#                     Set to true to mark the downloader run directly without player.
-# pipeline        Optional, Type: Boolen (default: false)
-#                     Set to true to mark the downloader transfer video data through pipeline.
+#                     Set to true to mark cookies parameter as prefix
 # require_quality Optional, Type: Boolen (default: false)
-#                     Set to true to mark the downloader requires a quality LEVEL given.
+#                     Set to true to mark the downloader requires a quality LEVEL given
+# play_mode       Optional, Type: String [normal, direct, pipe] (default: "normal")
+#                     The mode of downloader to run player
 # options         Optional, Type: Array of Strings (default: [])
-#                     The parameters of downloader to set player or output.
+#                     The parameters of downloader to set player or output
 # quality.LEVEL   Optional, Type: String
 #                     The LEVEL is a key name
-#                     The value is parameter of downloader to choose quality/format.
+#                     The value is parameter of downloader to choose quality/format
 ```
