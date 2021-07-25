@@ -10,6 +10,7 @@ call :ensure_vista
 :: Make sure the script is running as admin
 call :ensure_admin
 
+:: Delete registry
 call :del_verbs
 
 echo Sussessful uninstall handler
