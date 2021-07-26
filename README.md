@@ -127,8 +127,8 @@ options = ["--player"]
 bin = "/usr/bin/streamlink"
 require_quality = true
 options = ["--player"]
-quality.best = "best"
-quality.worst = "worst"
+quality.best = "--default-stream=best"
+quality.worst = "--default-stream=worst"
 ```
 
 Generally, users only need to edit `player` and downloader `bin` to corresponding executable binary.

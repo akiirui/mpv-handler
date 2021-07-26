@@ -127,8 +127,8 @@ options = ["--player"]
 bin = "/usr/bin/streamlink"
 require_quality = true
 options = ["--player"]
-quality.best = "best"
-quality.worst = "worst"
+quality.best = "--default-stream=best"
+quality.worst = "--default-stream=worst"
 ```
 
 一般來說，用戶只需要編輯 `player` 和所需下載器的 `bin` 至相應的可執行文件路徑。
