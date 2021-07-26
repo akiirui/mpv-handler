@@ -63,20 +63,6 @@ impl Handler {
         let mut downloader_options: Vec<&String> = Vec::new();
         let downloader = self.config.downloader(&self.protocol.downloader)?;
 
-        // Append video URL to arguments
-        downloader_options.push(&self.protocol.url);
-
-        // Append quality option
-        if self.protocol.quality.len() != 0 {
-            let quality = downloader.quality(&self.protocol.downloader, &self.protocol.quality)?;
-
-            downloader_options.push(quality)
-        } else if downloader.require_quality {
-            return Err(HandlerError::DownloaderRequireQuality(
-                self.protocol.downloader.clone(),
-            ));
-        }
-
         // Append cookies option and cookies file path to arguments
         let mut cookies_path: String;
 
@@ -114,6 +100,17 @@ impl Handler {
             }
         }
 
+        // Append quality option
+        if self.protocol.quality.len() != 0 {
+            let quality = downloader.quality(&self.protocol.downloader, &self.protocol.quality)?;
+
+            downloader_options.push(quality)
+        } else if downloader.require_quality {
+            return Err(HandlerError::DownloaderRequireQuality(
+                self.protocol.downloader.clone(),
+            ));
+        }
+
         // Append output or player options
         for option in &downloader.options {
             downloader_options.push(option);
@@ -142,6 +139,7 @@ impl Handler {
     ) -> Result<(), HandlerError> {
         let downloader = std::process::Command::new(bin)
             .args(downloader_options)
+            .arg(&self.protocol.url)
             .status();
 
         match downloader {
@@ -174,6 +172,7 @@ impl Handler {
         let downloader = std::process::Command::new(bin)
             .args(downloader_options)
             .arg(player)
+            .arg(&self.protocol.url)
             .status();
 
         match downloader {
@@ -198,6 +197,7 @@ impl Handler {
     ) -> Result<(), HandlerError> {
         let downloader = match std::process::Command::new(downloader_bin)
             .args(downloader_options)
+            .arg(&self.protocol.url)
             .stdout(std::process::Stdio::piped())
             .spawn()
         {
