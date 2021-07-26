@@ -66,6 +66,17 @@ impl Handler {
         // Append video URL to arguments
         downloader_options.push(&self.protocol.url);
 
+        // Append quality option
+        if self.protocol.quality.len() != 0 {
+            let quality = downloader.quality(&self.protocol.downloader, &self.protocol.quality)?;
+
+            downloader_options.push(quality)
+        } else if downloader.require_quality {
+            return Err(HandlerError::DownloaderRequireQuality(
+                self.protocol.downloader.clone(),
+            ));
+        }
+
         // Append cookies option and cookies file path to arguments
         let mut cookies_path: String;
 
@@ -103,17 +114,6 @@ impl Handler {
             }
         }
 
-        // Append quality option
-        if self.protocol.quality.len() != 0 {
-            let quality = downloader.quality(&self.protocol.downloader, &self.protocol.quality)?;
-
-            downloader_options.push(quality)
-        } else if downloader.require_quality {
-            return Err(HandlerError::DownloaderRequireQuality(
-                self.protocol.downloader.clone(),
-            ));
-        }
-
         // Append output or player options
         for option in &downloader.options {
             downloader_options.push(option);
@@ -124,6 +124,8 @@ impl Handler {
         let bin = downloader.bin(&self.protocol.downloader)?;
         let player = self.config.player()?;
         let player_options = &downloader.player_options;
+
+        println!("Playing: {}", self.protocol.url);
 
         match play_mode {
             PlayMode::Direct => self.play_direct(&bin, downloader_options),
@@ -138,8 +140,6 @@ impl Handler {
         bin: &String,
         downloader_options: Vec<&String>,
     ) -> Result<(), HandlerError> {
-        println!("Playing: {}", self.protocol.url);
-
         let downloader = std::process::Command::new(bin)
             .args(downloader_options)
             .status();
@@ -164,8 +164,6 @@ impl Handler {
         downloader_options: Vec<&String>,
         player_options: &Vec<String>,
     ) -> Result<(), HandlerError> {
-        println!("Playing: {}", self.protocol.url);
-
         let mut player = player.clone();
 
         for option in player_options {
@@ -198,8 +196,6 @@ impl Handler {
         downloader_options: Vec<&String>,
         player_options: &Vec<String>,
     ) -> Result<(), HandlerError> {
-        println!("Playing: {}", self.protocol.url);
-
         let downloader = match std::process::Command::new(downloader_bin)
             .args(downloader_options)
             .stdout(std::process::Stdio::piped())
@@ -214,23 +210,11 @@ impl Handler {
             }
         };
 
-        let player;
-
-        match player_options.len() != 0 {
-            true => {
-                player = std::process::Command::new(player_bin)
-                    .args(player_options)
-                    .arg("-")
-                    .stdin(downloader.stdout.unwrap())
-                    .status()
-            }
-            false => {
-                player = std::process::Command::new(player_bin)
-                    .arg("-")
-                    .stdin(downloader.stdout.unwrap())
-                    .status()
-            }
-        }
+        let player = std::process::Command::new(player_bin)
+            .args(player_options)
+            .arg("-")
+            .stdin(downloader.stdout.unwrap())
+            .status();
 
         match player {
             Ok(status) => match status.success() {
