@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-use crate::config::Config;
+use crate::config::{Config, PlayMode};
 use crate::protocol::Protocol;
 
 #[derive(Error, Debug)]
@@ -18,22 +18,8 @@ pub enum HandlerError {
     #[cfg(unix)]
     #[error("Error: Failed to get config directory")]
     FailedGetConfigDir,
-    #[error("Error: The player value is empty")]
-    ConfigPlayerEmptyValue,
-    #[error("Error: The downloader \"{0}\" settings is not found")]
-    ConfigDownloaderNotFound(String),
-    #[error("Error: The downloader \"{0}\" bin value is empty")]
-    ConfigDownloaderBinEmptyValue(String),
-    #[error("Error: The downloader \"{0}\" cookies value is empty, but you passed cookies")]
-    ConfigDownloaderCookiesEmptyValue(String),
     #[error("Error: The downloader \"{0}\" requires a quality LEVEL")]
-    ConfigDownloaderRequireQuality(String),
-    #[error("Error: The downloader \"{0}\" quality \"{1}\" is not found")]
-    ConfigDownloaderQualityNotFound(String, String),
-    #[error("Error: The downloader \"{0}\" quailty \"{1}\" value is empty")]
-    ConfigDownloaderQualityEmptyValue(String, String),
-    #[error("Error: The downloader \"{0}\" play mode is wrong")]
-    ConfigDownloaderWrongPlayMode(String),
+    DownloaderRequireQuality(String),
     #[error("Error: Downloader or player exited with error or termination signal")]
     DownloaderExited,
     #[error("Error: Failed to run downloader \"{0}\": {1}")]
@@ -44,22 +30,12 @@ pub enum HandlerError {
 
 #[derive(Debug)]
 pub struct Handler {
-    config: Config,
     protocol: Protocol,
+    config: Config,
 }
 
 impl Handler {
-    /// Generate Handler struct
-    ///
-    /// Read configuration file and parse protocol URL
-    ///
-    /// ## Errors
-    ///
-    /// - `ConfigError`
-    /// - `ProtocolError`
-    /// - `NoArg`
-    /// - `TooManyArgs`
-    /// - `GetHomeDirFailed` (unix only)
+    /// Generate a Handler
     pub fn new() -> Result<Self, HandlerError> {
         let mut args: Vec<String> = std::env::args().collect();
         let arg: &mut String = match args.len() {
@@ -73,85 +49,29 @@ impl Handler {
             _ => {}
         };
 
-        let config: Config;
         let protocol: Protocol;
+        let config: Config;
 
-        config = Config::load()?;
         protocol = Protocol::parse(arg)?;
+        config = Config::load()?;
 
-        Ok(Handler {
-            config: config,
-            protocol: protocol,
-        })
+        Ok(Handler { protocol, config })
     }
 
-    /// Generate arguments for downloader or player
-    ///
-    /// ## Errors
-    ///
-    /// - `IoError`
-    /// - `ConfigPlayerNotFound`
-    /// - `ConfigPlayerEmptyValue`
-    /// - `ConfigDownloaderNotFound`
-    /// - `ConfigDownloaderBinEmptyValue`
-    /// - `ConfigDownloaderCookiesEmptyValue`
-    /// - `ConfigDownloaderQualityNotFound`
-    /// - `ConfigDownloaderQualityEmptyValue`
+    /// Prepare arguments and run downloader & player
     pub fn run(&self) -> Result<(), HandlerError> {
-        let mut args: Vec<&String> = Vec::new();
-        let mut cookies: String;
-
-        // Check player setting
-        if self.config.player.len() == 0 {
-            return Err(HandlerError::ConfigPlayerEmptyValue);
-        }
-
-        // Check downloader settings
-        if !self
-            .config
-            .downloader
-            .contains_key(&self.protocol.downloader)
-        {
-            return Err(HandlerError::ConfigDownloaderNotFound(
-                self.protocol.downloader.clone(),
-            ));
-        }
-
-        // Check downloader setting - bin
-        if self.config.downloader[&self.protocol.downloader].bin.len() == 0 {
-            return Err(HandlerError::ConfigDownloaderBinEmptyValue(
-                self.protocol.downloader.clone(),
-            ));
-        }
-
-        // Check downloader requires quality.LEVEL
-        if self.config.downloader[&self.protocol.downloader].require_quality == true
-            && self.protocol.quality.len() == 0
-        {
-            return Err(HandlerError::ConfigDownloaderRequireQuality(
-                self.protocol.downloader.clone(),
-            ));
-        }
+        let mut downloader_options: Vec<&String> = Vec::new();
+        let downloader = self.config.downloader(&self.protocol.downloader)?;
 
         // Append video URL to arguments
-        {
-            args.push(&self.protocol.url);
-        }
+        downloader_options.push(&self.protocol.url);
 
         // Append cookies option and cookies file path to arguments
-        if self.protocol.cookies.len() != 0 {
-            // Check downloader setting - cookies
-            if self.config.downloader[&self.protocol.downloader]
-                .cookies
-                .len()
-                == 0
-            {
-                return Err(HandlerError::ConfigDownloaderCookiesEmptyValue(
-                    self.protocol.downloader.clone(),
-                ));
-            }
+        let mut cookies_path: String;
 
+        if self.protocol.cookies.len() != 0 {
             let mut path: std::path::PathBuf;
+            let cookies = downloader.cookies(&self.protocol.downloader)?;
 
             #[cfg(unix)]
             {
@@ -172,101 +92,55 @@ impl Handler {
                 path.push(&self.protocol.cookies);
             }
 
-            cookies = path.as_path().display().to_string();
+            cookies_path = path.as_path().display().to_string();
 
-            if self.config.downloader[&self.protocol.downloader].cookies_prefix == false {
-                args.push(&self.config.downloader[&self.protocol.downloader].cookies);
-                args.push(&cookies);
+            if downloader.cookies_prefix {
+                cookies_path.insert_str(0, &cookies);
+                downloader_options.push(&cookies_path);
             } else {
-                cookies.insert_str(
-                    0,
-                    &self.config.downloader[&self.protocol.downloader].cookies,
-                );
-                args.push(&cookies);
+                downloader_options.push(&cookies);
+                downloader_options.push(&cookies_path);
             }
         }
 
         // Append quality option
         if self.protocol.quality.len() != 0 {
-            // Check downloader setting - quality.LEVEL
-            if !self.config.downloader[&self.protocol.downloader]
-                .quality
-                .contains_key(&self.protocol.quality)
-            {
-                return Err(HandlerError::ConfigDownloaderQualityNotFound(
-                    self.protocol.downloader.clone(),
-                    self.protocol.quality.clone(),
-                ));
-            }
+            let quality = downloader.quality(&self.protocol.downloader, &self.protocol.quality)?;
 
-            // Check downloader setting - quality.LEVEL value
-            if self.config.downloader[&self.protocol.downloader].quality[&self.protocol.quality]
-                .len()
-                == 0
-            {
-                return Err(HandlerError::ConfigDownloaderQualityEmptyValue(
-                    self.protocol.downloader.clone(),
-                    self.protocol.quality.clone(),
-                ));
-            }
-
-            args.push(
-                &self.config.downloader[&self.protocol.downloader].quality[&self.protocol.quality],
-            )
+            downloader_options.push(quality)
+        } else if downloader.require_quality {
+            return Err(HandlerError::DownloaderRequireQuality(
+                self.protocol.downloader.clone(),
+            ));
         }
 
         // Append output or player options
-        if self.config.downloader[&self.protocol.downloader]
-            .options
-            .len()
-            != 0
-        {
-            for option in &self.config.downloader[&self.protocol.downloader].options {
-                args.push(option);
-            }
+        for option in &downloader.options {
+            downloader_options.push(option);
         }
 
         // Choose downloader play mode
-        match self.config.downloader[&self.protocol.downloader]
-            .play_mode
-            .as_str()
-        {
-            "normal" => self.play(
-                args,
-                &self.config.downloader[&self.protocol.downloader].bin,
-                &self.config.player,
-            ),
-            "direct" => {
-                self.play_direct(args, &self.config.downloader[&self.protocol.downloader].bin)
-            }
-            "pipe" => self.play_pipe(
-                args,
-                &self.config.downloader[&self.protocol.downloader].bin,
-                &self.config.player,
-            ),
-            _ => Err(HandlerError::ConfigDownloaderWrongPlayMode(
-                self.protocol.downloader.clone(),
-            )),
+        let play_mode = downloader.play_mode()?;
+        let bin = downloader.bin(&self.protocol.downloader)?;
+        let player = self.config.player()?;
+
+        match play_mode {
+            PlayMode::Direct => self.play_direct(&bin, downloader_options),
+            PlayMode::Normal => self.play(&bin, &player, downloader_options),
+            PlayMode::Pipe => self.play_pipe(&bin, &player, downloader_options),
         }
     }
 
-    /// Run downloader and set player
-    ///
-    /// ## Errors
-    ///
-    /// - `DownloaderExited`
-    /// - `FailedRunDownloader`
-    fn play(
+    /// Run downloader directly (mpv has ytdl-hooks)
+    fn play_direct(
         &self,
-        args: Vec<&String>,
-        downloader_bin: &String,
-        player_bin: &String,
+        bin: &String,
+        downloader_options: Vec<&String>,
     ) -> Result<(), HandlerError> {
         println!("Playing: {}", self.protocol.url);
 
-        let downloader = std::process::Command::new(downloader_bin)
-            .args(args)
-            .arg(player_bin)
+        let downloader = std::process::Command::new(bin)
+            .args(downloader_options)
             .status();
 
         match downloader {
@@ -281,17 +155,18 @@ impl Handler {
         }
     }
 
-    /// Run downloader directly (mpv has ytdl-hooks)
-    ///
-    /// ## Errors
-    ///
-    /// - `DownloaderExited`
-    /// - `FailedRunDownloader`
-    fn play_direct(&self, args: Vec<&String>, downloader_bin: &String) -> Result<(), HandlerError> {
+    /// Run downloader and set player
+    fn play(
+        &self,
+        bin: &String,
+        player: &String,
+        downloader_options: Vec<&String>,
+    ) -> Result<(), HandlerError> {
         println!("Playing: {}", self.protocol.url);
 
-        let downloader = std::process::Command::new(downloader_bin)
-            .args(args)
+        let downloader = std::process::Command::new(bin)
+            .args(downloader_options)
+            .arg(player)
             .status();
 
         match downloader {
@@ -307,22 +182,16 @@ impl Handler {
     }
 
     /// Run downloader and transfer video data through pipeline
-    ///
-    /// ## Errors
-    ///
-    /// - `DownloaderExited`
-    /// - `FailedRunDownloader`
-    /// - `FailedRunPlayer`
     fn play_pipe(
         &self,
-        args: Vec<&String>,
         downloader_bin: &String,
         player_bin: &String,
+        downloader_options: Vec<&String>,
     ) -> Result<(), HandlerError> {
         println!("Playing: {}", self.protocol.url);
 
         let downloader = match std::process::Command::new(downloader_bin)
-            .args(args)
+            .args(downloader_options)
             .stdout(std::process::Stdio::piped())
             .spawn()
         {

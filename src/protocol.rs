@@ -24,12 +24,6 @@ pub struct Protocol {
 
 impl Protocol {
     /// Parse the protocol URL
-    ///
-    /// ## Errors
-    ///
-    /// - `WrongProtocol`
-    /// - `MissingVideoUrl`
-    /// - `MissingDownloader`
     pub fn parse(arg: &mut String) -> Result<Protocol, ProtocolError> {
         if arg.starts_with("mpv://") {
             arg.replace_range(0.."mpv.//".len(), "");
@@ -72,9 +66,9 @@ impl Protocol {
                     };
 
                     match option_name {
-                        "cookies" => protocol.cookies = option_value.to_string(),
-                        "downloader" => protocol.downloader = option_value.to_string(),
-                        "quality" => protocol.quality = option_value.to_string(),
+                        "c" | "cookies" => protocol.cookies = option_value.to_string(),
+                        "d" | "downloader" => protocol.downloader = option_value.to_string(),
+                        "q" | "quality" => protocol.quality = option_value.to_string(),
                         _ => return Err(ProtocolError::WrongProtocol),
                     }
                 }
@@ -92,12 +86,6 @@ impl Protocol {
 }
 
 /// Get the video url from base64 encoded data
-///
-/// ## Errors
-///
-/// - `MissingVideoUrl`
-/// - `WrongProtocolBase64`
-/// - `WrongProtocolFromUtf8`
 fn decode_url(data: &&str) -> Result<String, ProtocolError> {
     match data.len() {
         0 => Err(ProtocolError::MissingVideoUrl),
