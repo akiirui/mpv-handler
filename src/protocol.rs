@@ -35,13 +35,13 @@ impl Protocol {
             arg.pop();
         }
 
-        let args: Vec<&str> = arg.split("/?").collect();
         let mut protocol = Protocol {
             cookies: String::new(),
             downloader: String::from(DEFAULT_DOWNLOADER),
             quality: String::new(),
             url: String::new(),
         };
+        let args: Vec<&str> = arg.split("/?").collect();
 
         match args.get(0) {
             Some(data) => protocol.url = decode_url(data)?,
@@ -65,12 +65,7 @@ impl Protocol {
                         None => return Err(ProtocolError::WrongProtocol),
                     };
 
-                    match option_name {
-                        "c" | "cookies" => protocol.cookies = option_value.to_string(),
-                        "d" | "downloader" => protocol.downloader = option_value.to_string(),
-                        "q" | "quality" => protocol.quality = option_value.to_string(),
-                        _ => return Err(ProtocolError::WrongProtocol),
-                    }
+                    parse_option(&mut protocol, option_name, option_value)?;
                 }
             }
             None => {}
@@ -91,4 +86,20 @@ fn decode_url(data: &&str) -> Result<String, ProtocolError> {
         0 => Err(ProtocolError::MissingVideoUrl),
         _ => Ok(String::from_utf8(base64::decode(data)?)?),
     }
+}
+
+/// Parse the options
+fn parse_option(
+    protocol: &mut Protocol,
+    option_name: &str,
+    option_value: &str,
+) -> Result<(), ProtocolError> {
+    match option_name {
+        "c" | "cookies" => protocol.cookies = option_value.to_string(),
+        "d" | "downloader" => protocol.downloader = option_value.to_string(),
+        "q" | "quality" => protocol.quality = option_value.to_string(),
+        _ => return Err(ProtocolError::WrongProtocol),
+    }
+
+    Ok(())
 }
