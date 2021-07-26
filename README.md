@@ -66,15 +66,21 @@ Optional parameters:
 cookies     = [ www.domain.com.txt ]
 downloader  = [ mpv, ytdl, you-get, streamlink, and more...] (default: mpv)
 quality     = [ best, 2160p, 1440p, 1080p, 720p, 480p, 360p, and more... ]
+
+c = cookies
+d = downloader
+q = quality
 ```
 
 Example:
 
 ```
 mpv://aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj01cWFwNWFPNGk5QQ==/?cookies=www.youtube.com.txt&downloader=mpv&quality=best
+
+mpv://aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1wNVFmeUY5cGtIVQ==/?c=www.youtube.com.txt&d=mpv&q=best
 ```
 
-## Customize Configuration
+## Custom Configuration
 
 The default `config.toml` configuration is like this:
 
@@ -157,6 +163,7 @@ cookies_prefix = false
 require_quality = false
 play_mode = "normal"
 options = ["--player"]
+player_options = ["--http-header-fields='referer: https://www.domain.com'"]
 quality.best = "--quality=best"
 quality.worst = "--quality=worst"
 
@@ -174,6 +181,8 @@ quality.worst = "--quality=worst"
 #                     The mode of downloader to run player
 # options         Optional, Type: Array of Strings (default: [])
 #                     The parameters of downloader to set player or output
+# player_options  Optional, Type: Array of Strings (default: [])
+#                     The parameters of player for some special purposes
 # quality.LEVEL   Optional, Type: String
 #                     The LEVEL is a key name
 #                     The value is parameter of downloader to choose quality/format

@@ -66,12 +66,18 @@ mpv://BASE64_ENCODE_VIDEO_URL/
 cookies     = [ www.domain.com.txt ]
 downloader  = [ mpv, ytdl, you-get, streamlink, and more...] (default: mpv)
 quality     = [ best, 2160p, 1440p, 1080p, 720p, 480p, 360p, and more... ]
+
+c = cookies
+d = downloader
+q = quality
 ```
 
 例：
 
 ```
 mpv://aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj01cWFwNWFPNGk5QQ==/?cookies=www.youtube.com.txt&downloader=mpv&quality=best
+
+mpv://aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1wNVFmeUY5cGtIVQ==/?c=www.youtube.com.txt&d=mpv&q=best
 ```
 
 ## 自定义配置
@@ -157,6 +163,7 @@ cookies_prefix = false
 require_quality = false
 play_mode = "normal"
 options = ["--player"]
+player_options = ["--http-header-fields='referer: https://www.domain.com'"]
 quality.best = "--quality=best"
 quality.worst = "--quality=worst"
 
@@ -174,6 +181,8 @@ quality.worst = "--quality=worst"
 #                     下载器的运行播放器的模式
 # options         可选，类型：字符串数组（默认：[]）
 #                     下载器设置播放器或者输出位置的参数。
+# player_options  可选，类型：字符串数组（默认：[]）
+#                     用于特殊用途的播放器参数。
 # quality.LEVEL   可选，类型：字符串
 #                     LEVEL 是品质的关键词
 #                     它的值是下载器选择品质或格式的参数。
