@@ -123,11 +123,12 @@ impl Handler {
         let play_mode = downloader.play_mode()?;
         let bin = downloader.bin(&self.protocol.downloader)?;
         let player = self.config.player()?;
+        let player_options = &downloader.player_options;
 
         match play_mode {
             PlayMode::Direct => self.play_direct(&bin, downloader_options),
-            PlayMode::Normal => self.play(&bin, &player, downloader_options),
-            PlayMode::Pipe => self.play_pipe(&bin, &player, downloader_options),
+            PlayMode::Normal => self.play(&bin, &player, downloader_options, player_options),
+            PlayMode::Pipe => self.play_pipe(&bin, &player, downloader_options, player_options),
         }
     }
 
@@ -161,8 +162,16 @@ impl Handler {
         bin: &String,
         player: &String,
         downloader_options: Vec<&String>,
+        player_options: &Vec<String>,
     ) -> Result<(), HandlerError> {
         println!("Playing: {}", self.protocol.url);
+
+        let mut player = player.clone();
+
+        for option in player_options {
+            player.push(' ');
+            player.push_str(option);
+        }
 
         let downloader = std::process::Command::new(bin)
             .args(downloader_options)
@@ -187,6 +196,7 @@ impl Handler {
         downloader_bin: &String,
         player_bin: &String,
         downloader_options: Vec<&String>,
+        player_options: &Vec<String>,
     ) -> Result<(), HandlerError> {
         println!("Playing: {}", self.protocol.url);
 
@@ -204,10 +214,23 @@ impl Handler {
             }
         };
 
-        let player = std::process::Command::new(player_bin)
-            .arg("-")
-            .stdin(downloader.stdout.unwrap())
-            .status();
+        let player;
+
+        match player_options.len() != 0 {
+            true => {
+                player = std::process::Command::new(player_bin)
+                    .args(player_options)
+                    .arg("-")
+                    .stdin(downloader.stdout.unwrap())
+                    .status()
+            }
+            false => {
+                player = std::process::Command::new(player_bin)
+                    .arg("-")
+                    .stdin(downloader.stdout.unwrap())
+                    .status()
+            }
+        }
 
         match player {
             Ok(status) => match status.success() {

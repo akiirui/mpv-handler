@@ -53,6 +53,8 @@ pub struct Downloader {
     #[serde(default)]
     pub options: Vec<String>,
     #[serde(default)]
+    pub player_options: Vec<String>,
+    #[serde(default)]
     quality: HashMap<String, String>,
 }
 
@@ -71,6 +73,7 @@ struct CustomDownloader {
     require_quality: Option<bool>,
     play_mode: Option<String>,
     options: Option<Vec<String>>,
+    player_options: Option<Vec<String>>,
     quality: Option<HashMap<String, String>>,
 }
 
@@ -272,6 +275,9 @@ fn merge_downloader(d: &mut Downloader, c: CustomDownloader) {
     }
     if let Some(v) = c.options {
         d.options = v;
+    }
+    if let Some(v) = c.player_options {
+        d.player_options = v;
     }
     if let Some(v) = c.quality {
         d.quality = v;
