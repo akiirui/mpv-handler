@@ -24,21 +24,3 @@ quality.1080p = "--ytdl-format=bestvideo[height<=1080]+bestaudio/best[height<=10
 quality.720p = "--ytdl-format=bestvideo[height<=720]+bestaudio/best[height<=720]/best"
 quality.480p = "--ytdl-format=bestvideo[height<=480]+bestaudio/best[height<=480]/best"
 quality.360p = "--ytdl-format=bestvideo[height<=360]+bestaudio/best[height<=360]/best"
-
-[ytdl]
-bin = "/usr/bin/youtube-dl"
-cookies = "--cookies"
-play_mode = "pipe"
-options = ["--quiet", "--output", "-"]
-
-[you-get]
-bin = "/usr/bin/you-get"
-cookies = "--cookies"
-options = ["--player"]
-
-[streamlink]
-bin = "/usr/bin/streamlink"
-require_quality = true
-options = ["--player"]
-quality.best = "--default-stream=best"
-quality.worst = "--default-stream=worst"

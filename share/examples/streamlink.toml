@@ -1,0 +1,6 @@
+[streamlink]
+bin = "/usr/bin/streamlink"
+require_quality = true
+options = ["--player"]
+quality.best = "--default-stream=best"
+quality.worst = "--default-stream=worst"

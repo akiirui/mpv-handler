@@ -111,24 +111,6 @@ quality.1080p = "--ytdl-format=bestvideo[height<=1080]+bestaudio/best[height<=10
 quality.720p = "--ytdl-format=bestvideo[height<=720]+bestaudio/best[height<=720]/best"
 quality.480p = "--ytdl-format=bestvideo[height<=480]+bestaudio/best[height<=480]/best"
 quality.360p = "--ytdl-format=bestvideo[height<=360]+bestaudio/best[height<=360]/best"
-
-[ytdl]
-bin = "/usr/bin/youtube-dl"
-cookies = "--cookies"
-play_mode = "pipe"
-options = ["--quiet", "--output", "-"]
-
-[you-get]
-bin = "/usr/bin/you-get"
-cookies = "--cookies"
-options = ["--player"]
-
-[streamlink]
-bin = "/usr/bin/streamlink"
-require_quality = true
-options = ["--player"]
-quality.best = "--default-stream=best"
-quality.worst = "--default-stream=worst"
 ```
 
 Generally, users only need to edit `player` and downloader `bin` to corresponding executable binary.
@@ -140,18 +122,14 @@ For this, users can create `custom.toml` to overwrite default settings:
 # The path format can be "C:\\folder\\some.exe" or "C:/folder/some.exe"
 player = "/usr/bin/vlc"
 
-[ytdl]
-bin = "/usr/local/bin/youtube-dl"
-options = ["-o", "-"]
-
 # Warning:
 # Developer isn't recommend users change default downloader settings except "bin".
 #
 # If you've changed "quality.LEVEL" for default downloader,
 # You will lost other "quality.LEVEL" from default settings.
-# Here, you will be lost "quality.worst".
-[streamlink]
-quality.best = "bestvideo"
+[mpv]
+bin = "/usr/local/bin/mpv"
+quality.best = "--ytdl-format=best"
 
 # For advanced user, you can add other downloader manually.
 #
@@ -187,3 +165,9 @@ quality.worst = "--quality=worst"
 #                     The LEVEL is a key name
 #                     The value is parameter of downloader to choose quality/format
 ```
+
+### Downloader examples
+
+See [share/examples][examples].
+
+[examples]: https://github.com/akiirui/mpv-handler/tree/main/share/examples

@@ -1,0 +1,5 @@
+[youtube-dl]
+bin = "/usr/bin/youtube-dl"
+cookies = "--cookies"
+play_mode = "pipe"
+options = ["--quiet", "--output", "-"]

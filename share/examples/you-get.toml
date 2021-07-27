@@ -1,0 +1,4 @@
+[you-get]
+bin = "/usr/bin/you-get"
+cookies = "--cookies"
+options = ["--player"]

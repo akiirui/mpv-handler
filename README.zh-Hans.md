@@ -111,24 +111,6 @@ quality.1080p = "--ytdl-format=bestvideo[height<=1080]+bestaudio/best[height<=10
 quality.720p = "--ytdl-format=bestvideo[height<=720]+bestaudio/best[height<=720]/best"
 quality.480p = "--ytdl-format=bestvideo[height<=480]+bestaudio/best[height<=480]/best"
 quality.360p = "--ytdl-format=bestvideo[height<=360]+bestaudio/best[height<=360]/best"
-
-[ytdl]
-bin = "/usr/bin/youtube-dl"
-cookies = "--cookies"
-play_mode = "pipe"
-options = ["--quiet", "--output", "-"]
-
-[you-get]
-bin = "/usr/bin/you-get"
-cookies = "--cookies"
-options = ["--player"]
-
-[streamlink]
-bin = "/usr/bin/streamlink"
-require_quality = true
-options = ["--player"]
-quality.best = "--default-stream=best"
-quality.worst = "--default-stream=worst"
 ```
 
 一般来说，用户只需要编辑 `player` 和所需下载器的 `bin` 至相应的可执行文件路径。
@@ -140,18 +122,14 @@ quality.worst = "--default-stream=worst"
 # 路径格式可以是 "C:\\folder\\some.exe" 也可以是 "C:/folder/some.exe"
 player = "/usr/bin/vlc"
 
-[ytdl]
-bin = "/usr/local/bin/youtube-dl"
-options = ["-o", "-"]
-
 # 警告：
 # 开发者不建议用户修改除了 "bin" 以外的默认下载器设置。
 #
 # 如果你修改了默认下载器的 "quality.LEVEL"，
 # 你将丢失其他的来自默认设置的 "quality.LEVEL"。
-# 在这个例子中，你将丢失 "quality.worst"。
-[streamlink]
-quality.best = "bestvideo"
+[mpv]
+bin = "/usr/local/bin/mpv"
+quality.best = "--ytdl-format=best"
 
 # 如果你是高级用户，你可以手动添加其他的下载器。
 #
@@ -187,3 +165,9 @@ quality.worst = "--quality=worst"
 #                     LEVEL 是品质的关键词
 #                     它的值是下载器选择品质或格式的参数。
 ```
+
+### 下载器示例
+
+参见 [share/examples][examples]。
+
+[examples]: https://github.com/akiirui/mpv-handler/tree/main/share/examples
