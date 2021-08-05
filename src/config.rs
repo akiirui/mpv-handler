@@ -79,8 +79,8 @@ struct CustomDownloader {
 
 #[derive(Debug)]
 pub enum PlayMode {
-    Normal,
     Direct,
+    Normal,
     Pipe,
 }
 
@@ -137,8 +137,8 @@ impl Downloader {
     /// Return the downloader play mode
     pub fn play_mode(&self) -> Result<PlayMode, ConfigError> {
         match self.play_mode.as_str() {
-            "normal" => Ok(PlayMode::Normal),
             "direct" => Ok(PlayMode::Direct),
+            "normal" => Ok(PlayMode::Normal),
             "pipe" => Ok(PlayMode::Pipe),
             _ => Err(ConfigError::DownloaderWrongPlayMode(self.play_mode.clone())),
         }
@@ -270,8 +270,6 @@ fn merge_downloader(d: &mut Downloader, c: CustomDownloader) {
     }
     if let Some(v) = c.play_mode {
         d.play_mode = v;
-    } else {
-        d.play_mode = Config::default_play_mode();
     }
     if let Some(v) = c.options {
         d.options = v;
