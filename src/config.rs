@@ -39,7 +39,7 @@ pub struct Config {
     downloader: HashMap<String, Downloader>,
 }
 
-#[derive(Debug, Default, Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct Downloader {
     bin: String,
     #[serde(default)]
@@ -48,7 +48,7 @@ pub struct Downloader {
     pub cookies_prefix: bool,
     #[serde(default)]
     pub require_quality: bool,
-    #[serde(default = "Config::default_play_mode")]
+    #[serde(default = "Downloader::default_play_mode")]
     play_mode: String,
     #[serde(default)]
     pub options: Vec<String>,
@@ -110,11 +110,6 @@ impl Config {
             None => Err(ConfigError::DownloaderNotFound(downloader.clone())),
         }
     }
-
-    /// The default value of play_mode
-    fn default_play_mode() -> String {
-        "normal".to_string()
-    }
 }
 
 impl Downloader {
@@ -162,6 +157,26 @@ impl Downloader {
                 downloader.clone(),
                 level.clone(),
             )),
+        }
+    }
+
+    /// The default value of play_mode
+    fn default_play_mode() -> String {
+        "normal".to_string()
+    }
+}
+
+impl Default for Downloader {
+    fn default() -> Self {
+        Downloader {
+            bin: String::new(),
+            cookies: String::new(),
+            cookies_prefix: false,
+            require_quality: false,
+            play_mode: Downloader::default_play_mode(),
+            options: Vec::new(),
+            player_options: Vec::new(),
+            quality: HashMap::new(),
         }
     }
 }
