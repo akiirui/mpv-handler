@@ -1,3 +1,9 @@
+[English][readme-en] | [簡體中文][readme-zh-hans] | [繁體中文][readme-zh-hant]
+
+[readme-en]: https://github.com/akiirui/mpv-handler/blob/main/README.md
+[readme-zh-hans]: https://github.com/akiirui/mpv-handler/blob/main/README.zh-Hans.md
+[readme-zh-hant]: https://github.com/akiirui/mpv-handler/blob/main/README.zh-Hant.md
+
 # mpv handler
 
 一個爲 mpv 提供的協議處理程序，使用 Rust 編寫。

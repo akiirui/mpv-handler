@@ -1,3 +1,9 @@
+[English][readme-en] | [简体中文][readme-zh-hans] | [繁体中文][readme-zh-hant]
+
+[readme-en]: https://github.com/akiirui/mpv-handler/blob/main/README.md
+[readme-zh-hans]: https://github.com/akiirui/mpv-handler/blob/main/README.zh-Hans.md
+[readme-zh-hant]: https://github.com/akiirui/mpv-handler/blob/main/README.zh-Hant.md
+
 # mpv handler
 
 A protocol handler for mpv, written by Rust.
