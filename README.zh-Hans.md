@@ -129,7 +129,7 @@ quality.360p = "--ytdl-format=bestvideo[height<=360]+bestaudio/best[height<=360]
 player = "/usr/bin/vlc"
 
 # 警告：
-# 开发者不建议用户修改除了 "bin" 以外的默认下载器设置。
+# 不建议用户修改除了 "bin" 以外的默认下载器设置。
 #
 # 如果你修改了默认下载器的 "quality.LEVEL"，
 # 你将丢失其他的来自默认设置的 "quality.LEVEL"。

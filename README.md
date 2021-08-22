@@ -129,7 +129,7 @@ For this, users can create `custom.toml` to overwrite default settings:
 player = "/usr/bin/vlc"
 
 # Warning:
-# Developer isn't recommend users change default downloader settings except "bin".
+# Users are not recommended to change default downloader settings except "bin".
 #
 # If you've changed "quality.LEVEL" for default downloader,
 # You will lost other "quality.LEVEL" from default settings.
