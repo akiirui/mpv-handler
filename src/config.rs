@@ -35,6 +35,7 @@ pub enum ConfigError {
 #[derive(Debug, Deserialize)]
 pub struct Config {
     player: String,
+    ld_path: String,
     #[serde(flatten)]
     downloader: HashMap<String, Downloader>,
 }
@@ -61,6 +62,7 @@ pub struct Downloader {
 #[derive(Debug, Deserialize)]
 struct CustomConfig {
     player: Option<String>,
+    ld_path: Option<String>,
     #[serde(flatten)]
     downloader: HashMap<String, CustomDownloader>,
 }
@@ -100,6 +102,14 @@ impl Config {
         match self.player.len() != 0 {
             true => Ok(&self.player),
             false => Err(ConfigError::PlayerEmptyValue),
+        }
+    }
+
+    /// Return the ld path
+    pub fn ld_path(&self) -> Result<Option<&String>, ConfigError> {
+        match self.ld_path.len() != 0 {
+            true => Ok(Some(&self.ld_path)),
+            false => Ok(None),
         }
     }
 
@@ -250,6 +260,9 @@ fn merge(default: Config, custom: CustomConfig) -> Result<Config, ConfigError> {
 
     if let Some(player) = custom.player {
         config.player = player;
+    }
+    if let Some(ld_path) = custom.ld_path {
+        config.ld_path = ld_path;
     }
 
     for (n, c) in custom.downloader {

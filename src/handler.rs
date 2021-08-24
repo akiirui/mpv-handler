@@ -122,6 +122,11 @@ impl Handler {
         let player = self.config.player()?;
         let player_options = &downloader.player_options;
 
+        #[cfg(unix)]
+        {
+            self.set_environment()?;
+        }
+
         println!("Playing: {}", self.protocol.url);
 
         match play_mode {
@@ -129,6 +134,23 @@ impl Handler {
             PlayMode::Normal => self.play(&bin, &player, downloader_options, player_options),
             PlayMode::Pipe => self.play_pipe(&bin, &player, downloader_options, player_options),
         }
+    }
+
+    /// Set environment variables for player and downloader if needed (Unix only)
+    #[cfg(unix)]
+    fn set_environment(&self) -> Result<(), HandlerError> {
+        // Fix google-chrome overwrite "LD_LIBRARY_PATH" on Linux
+        // It will be let mpv exit with error:
+        // mpv: symbol lookup error: mpv: undefined symbol: vkCreateWaylandSurfaceKHR
+        std::env::remove_var("LD_LIBRARY_PATH");
+
+        // Set "LD_LIBRARY_PATH" if needed
+        // When "ld_path" option is given in "config.toml" or "custom.toml"
+        if let Some(ld_path) = self.config.ld_path()? {
+            std::env::set_var("LD_LIBRARY_PATH", ld_path)
+        }
+
+        Ok(())
     }
 
     /// Run downloader directly (mpv has ytdl-hooks)
