@@ -107,6 +107,7 @@ impl Config {
     }
 
     /// Return the ld path
+    #[cfg(unix)]
     pub fn ld_path(&self) -> Result<Option<&String>, ConfigError> {
         match self.ld_path.len() != 0 {
             true => Ok(Some(&self.ld_path)),
