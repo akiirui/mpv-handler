@@ -130,8 +130,8 @@ player = "/usr/bin/vlc"
 
 # Optional (Linux only).
 # Set environment variable "LD_LIBRARY_PATH" for player and downloader, if needed.
-# Use ":" to split paths.
-# For more details for this option, see:
+# Use ":" to separate paths.
+# For more details about this option, see:
 # https://github.com/akiirui/mpv-handler/commit/4ad298ddd82bc3fa0303f8cc11474df506531d33
 ld_path = "/usr/lib/:/usr/local/lib"
 
