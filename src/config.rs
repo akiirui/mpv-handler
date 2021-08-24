@@ -35,6 +35,7 @@ pub enum ConfigError {
 #[derive(Debug, Deserialize)]
 pub struct Config {
     player: String,
+    #[serde(default)]
     ld_path: String,
     #[serde(flatten)]
     downloader: HashMap<String, Downloader>,

@@ -144,10 +144,9 @@ impl Handler {
         // mpv: symbol lookup error: mpv: undefined symbol: vkCreateWaylandSurfaceKHR
         std::env::remove_var("LD_LIBRARY_PATH");
 
-        // Set "LD_LIBRARY_PATH" if needed
-        // When "ld_path" option is given in "config.toml" or "custom.toml"
+        // Set "LD_LIBRARY_PATH" if "ld_path" option is given in "custom.toml"
         if let Some(ld_path) = self.config.ld_path()? {
-            std::env::set_var("LD_LIBRARY_PATH", ld_path)
+            std::env::set_var("LD_LIBRARY_PATH", ld_path);
         }
 
         Ok(())
