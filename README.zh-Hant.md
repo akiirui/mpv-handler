@@ -125,8 +125,15 @@ quality.360p = "--ytdl-format=bestvideo[height<=360]+bestaudio/best[height<=360]
 
 ```toml
 # 對於 Windows 用戶，
-# 路徑格式可以是 "C:\\folder\\some.exe" 也可以是 "C:/folder/some.exe"
+# 路徑格式可以是 "C:\\folder\\some.exe"，也可以是 "C:/folder/some.exe"。
 player = "/usr/bin/vlc"
+
+# 可選，僅適用於 Linux。
+# 如果需要，爲播放器和下載器設置環境變量 "LD_LIBRARY_PATH"。
+# 使用 ":" 來分割多個路徑。
+# 更多有關此選項的詳情，見：
+# https://github.com/akiirui/mpv-handler/commit/4ad298ddd82bc3fa0303f8cc11474df506531d33
+ld_path = "/usr/lib/:/usr/local/lib"
 
 # 警告：
 # 不建議用戶修改除了 "bin" 以外的默認下載器設置。

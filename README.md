@@ -125,8 +125,15 @@ For this, users can create `custom.toml` to overwrite default settings:
 
 ```toml
 # For Windows users,
-# The path format can be "C:\\folder\\some.exe" or "C:/folder/some.exe"
+# The path format can be "C:\\folder\\some.exe" or "C:/folder/some.exe".
 player = "/usr/bin/vlc"
+
+# Optional (Linux only).
+# Set environment variable "LD_LIBRARY_PATH" for player and downloader, if needed.
+# Use ":" to split paths.
+# For more details for this option, see:
+# https://github.com/akiirui/mpv-handler/commit/4ad298ddd82bc3fa0303f8cc11474df506531d33
+ld_path = "/usr/lib/:/usr/local/lib"
 
 # Warning:
 # Users are not recommended to change default downloader settings except "bin".
