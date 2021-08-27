@@ -140,6 +140,7 @@ ld_path = "/usr/lib/:/usr/local/lib"
 #
 # 如果你修改了默認下載器的 "quality.LEVEL"，
 # 你將丟失其他的來自默認設置的 "quality.LEVEL"。
+# 此處的 "quality.best" 只是一個例子，不要複製這一行。
 [mpv]
 bin = "/usr/local/bin/mpv"
 quality.best = "--ytdl-format=best"
