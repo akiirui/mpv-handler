@@ -12,6 +12,34 @@
 
 [![play-with-mpv][badges-play-with-mpv]][greasyfork-play-with-mpv]
 
+## 協議 URL
+
+基礎 URL：
+
+```
+mpv://BASE64_ENCODE_VIDEO_URL/
+```
+
+可選參數：
+
+```
+cookies     = [ www.domain.com.txt ]
+downloader  = [ mpv, ytdl, you-get, streamlink, and more...] (default: mpv)
+quality     = [ best, 2160p, 1440p, 1080p, 720p, 480p, 360p, and more... ]
+
+c = cookies
+d = downloader
+q = quality
+```
+
+例：
+
+```
+mpv://aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj01cWFwNWFPNGk5QQ==/?cookies=www.youtube.com.txt&downloader=mpv&quality=best
+
+mpv://aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1wNVFmeUY5cGtIVQ==/?c=www.youtube.com.txt&d=mpv&q=best
+```
+
 ## 安裝
 
 ### Linux
@@ -57,34 +85,6 @@ Windows 用戶目前只能手動安裝 `mpv-handler`。
 [download-windows]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-windows-x64.zip
 [greasyfork-play-with-mpv]: https://greasyfork.org/scripts/416271-play-with-mpv
 [linuxuprising]: https://www.linuxuprising.com/2021/07/open-youtube-and-more-videos-from-your.html
-
-## 協議 URL
-
-基礎 URL：
-
-```
-mpv://BASE64_ENCODE_VIDEO_URL/
-```
-
-可選參數：
-
-```
-cookies     = [ www.domain.com.txt ]
-downloader  = [ mpv, ytdl, you-get, streamlink, and more...] (default: mpv)
-quality     = [ best, 2160p, 1440p, 1080p, 720p, 480p, 360p, and more... ]
-
-c = cookies
-d = downloader
-q = quality
-```
-
-例：
-
-```
-mpv://aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj01cWFwNWFPNGk5QQ==/?cookies=www.youtube.com.txt&downloader=mpv&quality=best
-
-mpv://aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1wNVFmeUY5cGtIVQ==/?c=www.youtube.com.txt&d=mpv&q=best
-```
 
 ## 自定義配置
 

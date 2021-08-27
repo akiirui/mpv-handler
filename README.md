@@ -12,6 +12,34 @@ Please use with userscript:
 
 [![play-with-mpv][badges-play-with-mpv]][greasyfork-play-with-mpv]
 
+## Protocol URL
+
+Base URL:
+
+```
+mpv://BASE64_ENCODE_VIDEO_URL/
+```
+
+Optional parameters:
+
+```
+cookies     = [ www.domain.com.txt ]
+downloader  = [ mpv, ytdl, you-get, streamlink, and more...] (default: mpv)
+quality     = [ best, 2160p, 1440p, 1080p, 720p, 480p, 360p, and more... ]
+
+c = cookies
+d = downloader
+q = quality
+```
+
+Example:
+
+```
+mpv://aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj01cWFwNWFPNGk5QQ==/?cookies=www.youtube.com.txt&downloader=mpv&quality=best
+
+mpv://aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1wNVFmeUY5cGtIVQ==/?c=www.youtube.com.txt&d=mpv&q=best
+```
+
 ## Installation
 
 ### Linux
@@ -57,34 +85,6 @@ Windows users need to install `mpv-handler` manually.
 [download-windows]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-windows-x64.zip
 [greasyfork-play-with-mpv]: https://greasyfork.org/scripts/416271-play-with-mpv
 [linuxuprising]: https://www.linuxuprising.com/2021/07/open-youtube-and-more-videos-from-your.html
-
-## Protocol URL
-
-Base URL:
-
-```
-mpv://BASE64_ENCODE_VIDEO_URL/
-```
-
-Optional parameters:
-
-```
-cookies     = [ www.domain.com.txt ]
-downloader  = [ mpv, ytdl, you-get, streamlink, and more...] (default: mpv)
-quality     = [ best, 2160p, 1440p, 1080p, 720p, 480p, 360p, and more... ]
-
-c = cookies
-d = downloader
-q = quality
-```
-
-Example:
-
-```
-mpv://aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj01cWFwNWFPNGk5QQ==/?cookies=www.youtube.com.txt&downloader=mpv&quality=best
-
-mpv://aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1wNVFmeUY5cGtIVQ==/?c=www.youtube.com.txt&d=mpv&q=best
-```
 
 ## Custom Configuration
 
