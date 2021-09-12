@@ -86,20 +86,21 @@ Windows users need to install `mpv-handler` manually.
 [greasyfork-play-with-mpv]: https://greasyfork.org/scripts/416271-play-with-mpv
 [linuxuprising]: https://www.linuxuprising.com/2021/07/open-youtube-and-more-videos-from-your.html
 
-## Custom Configuration
+## Configuration
 
-The default `config.toml` configuration is like this:
+### Default configuration
 
 ```toml
 # Don't edit this file!
-# This is default settings, It will be overwritten when update mpv-handler.
+# This is default settings, It will be overwritten when update mpv-handler
 #
 # For customize settings, create and edit file:
 # - Linux:
 #     - $HOME/.config/mpv-handler/custom.toml
 #     - /etc/mpv-handler/custom.toml
-#   If the first one is found, the second one will not be loaded.
-# - Windows: custom.toml (in the same directory as mpv-handler.exe)
+#     If the first one is found, the second one will not be loaded
+# - Windows: custom.toml
+#     In the same directory as mpv-handler.exe
 
 ### Player ###
 player = "/usr/bin/mpv"
@@ -119,33 +120,49 @@ quality.480p = "--ytdl-format=bestvideo[height<=480]+bestaudio/best[height<=480]
 quality.360p = "--ytdl-format=bestvideo[height<=360]+bestaudio/best[height<=360]/best"
 ```
 
-Generally, users only need to edit `player` and downloader `bin` to corresponding executable binary.
+### Custom configuration
+
+Generally, users need to change `player` and downloader `bin` to its executable binary.
 
 For this, users can create `custom.toml` to overwrite default settings:
 
 ```toml
-# For Windows users,
-# The path format can be "C:\\folder\\some.exe" or "C:/folder/some.exe".
 player = "/usr/bin/vlc"
-
-# Optional (Linux only).
-# Set environment variable "LD_LIBRARY_PATH" for player and downloader, if needed.
-# Use ":" to separate paths.
-# For more details about this option, see:
-# https://github.com/akiirui/mpv-handler/commit/4ad298ddd82bc3fa0303f8cc11474df506531d33
 ld_path = "/usr/lib/:/usr/local/lib"
 
+# player    Required, Type: String
+#             The player executable binary path
+#             For Windows users:
+#             The path can be "C:\\folder\\some.exe" or "C:/folder/some.exe"
+# ld_path   Optional, Type: String (Linux only)
+#             Set environment variable "LD_LIBRARY_PATH" for player and downloader
+#             Use ":" to separate paths
+#             For more details about this option, see:
+#             https://github.com/akiirui/mpv-handler/commit/4ad298ddd82bc3fa0303f8cc11474df506531d33
+
 # Warning:
-# Users are not recommended to change default downloader settings except "bin".
+# Users are not recommended to change default downloader settings except "bin"
 #
-# If you've changed "quality.LEVEL" for default downloader,
-# You will lost other "quality.LEVEL" from default settings.
-# The "quality.best" here is just an example, don't copy this line.
+# If you've changed "quality.LEVEL" for default downloader
+# You will lost other "quality.LEVEL" from default settings
 [mpv]
 bin = "/usr/local/bin/mpv"
-quality.best = "--ytdl-format=best"
 
-# For advanced user, you can add other downloader manually.
+# bin       Required, Type: String
+#             The downloader executable binary path
+#             For Windows users:
+#             The path can be "C:\\folder\\some.exe" or "C:/folder/some.exe"
+```
+
+### Custom downloader
+
+By default, `mpv-handler` only has a downloader `mpv`.
+
+If users need other downloader for special purpose, users need to add a custom downloader.
+
+```toml
+# For advanced user, you can add other downloader manually
+# Append your custom downloader to the "custom.toml"
 #
 # Example:
 [example]
@@ -160,28 +177,32 @@ quality.best = "--quality=best"
 quality.worst = "--quality=worst"
 
 # [example]       Required, Type: String
-#                     The value "example" is downloader table name
+#                   The value "example" is downloader table name
 # bin             Required, Type: String
-#                     The downloader executable binary path
+#                   The downloader executable binary path
+#                   For Windows users:
+#                   The path can be "C:\\folder\\some.exe" or "C:/folder/some.exe"
 # cookies         Optional, Type: String (default: "")
-#                     The downloader parameter of passthorgh cookies
+#                   The downloader parameter of passthorgh cookies
 # cookies_prefix  Optional, Type: Boolen (default: false)
-#                     Set to true to mark cookies parameter as prefix
+#                   Set to true to mark cookies parameter as prefix
 # require_quality Optional, Type: Boolen (default: false)
-#                     Set to true to mark the downloader requires a quality LEVEL given
+#                   Set to true to mark the downloader requires a quality LEVEL given
 # play_mode       Optional, Type: String [normal, direct, pipe] (default: "normal")
-#                     The mode of downloader to run player
+#                   The mode of downloader to run player
 # options         Optional, Type: Array of Strings (default: [])
-#                     The parameters of downloader to set player or output
+#                   The parameters of downloader to set player or output
 # player_options  Optional, Type: Array of Strings (default: [])
-#                     The parameters of player for some special purposes
+#                   The parameters of player for some special purposes
 # quality.LEVEL   Optional, Type: String
-#                     The LEVEL is a key name
-#                     The value is parameter of downloader to choose quality/format
+#                   The LEVEL is a key name
+#                   The value is parameter of downloader to choose quality/format
 ```
 
 ### Downloader examples
 
 See [share/examples][examples].
+
+Welcome to share your custom downloader!
 
 [examples]: https://github.com/akiirui/mpv-handler/tree/main/share/examples

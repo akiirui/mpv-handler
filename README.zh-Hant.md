@@ -86,20 +86,21 @@ Windows 用戶目前只能手動安裝 `mpv-handler`。
 [greasyfork-play-with-mpv]: https://greasyfork.org/scripts/416271-play-with-mpv
 [linuxuprising]: https://www.linuxuprising.com/2021/07/open-youtube-and-more-videos-from-your.html
 
-## 自定義配置
+## 配置
 
-默認的 `config.toml` 配置如下（已翻譯註釋爲中文）：
+## 默認配置
 
 ```toml
 # 不要編輯此文件！
-# 這是默認設置，並且它在 mpv-handler 更新時會被覆蓋。
+# 這是默認設置，它會在 mpv-handler 更新時會被覆蓋
 #
 # 對於自定義設置，創建並且編輯以下文件：
 # - Linux:
 #     - $HOME/.config/mpv-handler/custom.toml
 #     - /etc/mpv-handler/custom.toml
-#   如果找到了第一個，那麼第二個不會被加載。
-# - Windows: custom.toml (在放置 mpv-handler.exe 的同一個目錄中)
+#     如果找到了第一個，那麼第二個不會被加載
+# - Windows: custom.toml
+#     在放置 mpv-handler.exe 的同一個目錄中
 
 ### 播放器 ###
 player = "/usr/bin/mpv"
@@ -119,33 +120,49 @@ quality.480p = "--ytdl-format=bestvideo[height<=480]+bestaudio/best[height<=480]
 quality.360p = "--ytdl-format=bestvideo[height<=360]+bestaudio/best[height<=360]/best"
 ```
 
-一般來說，用戶只需要編輯 `player` 和所需下載器的 `bin` 至相應的可執行文件路徑。
+### 自定義配置
 
-爲此，用戶可以創建 `custom.toml` 來覆寫默認設置。
+一般來說，用戶只需編輯 `player` 和下載器的 `bin` 至相應的可執行文件路徑。
+
+爲此，用戶可以創建 `custom.toml` 來覆蓋默認設置：
 
 ```toml
-# 對於 Windows 用戶，
-# 路徑格式可以是 "C:\\folder\\some.exe"，也可以是 "C:/folder/some.exe"。
 player = "/usr/bin/vlc"
-
-# 可選，僅適用於 Linux。
-# 如果需要，爲播放器和下載器設置環境變量 "LD_LIBRARY_PATH"。
-# 使用 ":" 來分割多個路徑。
-# 更多有關此選項的詳情，見：
-# https://github.com/akiirui/mpv-handler/commit/4ad298ddd82bc3fa0303f8cc11474df506531d33
 ld_path = "/usr/lib/:/usr/local/lib"
 
+# player    必須，類型：字符串
+#             播放器可執行文件的路徑
+#             對於 Windows 用戶：
+#             路徑格式可以是 "C:\\folder\\some.exe"，也可以是 "C:/folder/some.exe"
+# ld_path   可選，類型：字符串（僅適用於 Linux）
+#             爲播放器和下載器設置環境變量 "LD_LIBRARY_PATH"
+#             使用 ":" 來分割多個路徑
+#             更多有關此選項的詳情，見：
+#             https://github.com/akiirui/mpv-handler/commit/4ad298ddd82bc3fa0303f8cc11474df506531d33
+
 # 警告：
-# 不建議用戶修改除了 "bin" 以外的默認下載器設置。
+# 不建議用戶修改除了 "bin" 以外的默認下載器設置
 #
-# 如果你修改了默認下載器的 "quality.LEVEL"，
-# 你將丟失其他的來自默認設置的 "quality.LEVEL"。
-# 此處的 "quality.best" 只是一個例子，不要複製這一行。
+# 如果你修改了默認下載器的 "quality.LEVEL"
+# 你將丟失其他的來自默認設置的 "quality.LEVEL"
 [mpv]
 bin = "/usr/local/bin/mpv"
-quality.best = "--ytdl-format=best"
 
-# 如果你是高級用戶，你可以手動添加其他的下載器。
+# bin       必須，類型：字符串
+#             下載器可執行文件的路徑
+#             對於 Windows 用戶：
+#             路徑格式可以是 "C:\\folder\\some.exe"，也可以是 "C:/folder/some.exe"
+```
+
+### 自定義下載器
+
+默認情況下，`mpv-handler` 只有一個下載器 `mpv`。
+
+如果用戶出於特殊目的需要其他下載器，則需要添加自定義下載器。
+
+```toml
+# 如果你是高級用戶，你可以手動添加其他的下載器
+# 將你的自定義下載器添加到 "custom.toml" 中
 #
 # 例：
 [example]
@@ -160,28 +177,32 @@ quality.best = "--quality=best"
 quality.worst = "--quality=worst"
 
 # [example]       必須，類型：字符串
-#                     值 "example" 是下載器表的名稱。
+#                   值 "example" 是下載器表的名稱
 # bin             必須，類型：字符串
-#                     下載器可執行文件的路徑。
+#                   下載器可執行文件的路徑
+#                   對於 Windows 用戶：
+#                   路徑格式可以是 "C:\\folder\\some.exe"，也可以是 "C:/folder/some.exe"
 # cookies         可選，類型：字符串（默認：""）
-#                     下載器傳遞 cookies 的參數。
+#                   下載器傳遞 cookies 的參數
 # cookies_prefix  可選，類型：布爾值（默認：false）
-#                     設置爲 ture 以標記 cookies 參數爲前綴。
+#                   設置爲 ture 以標記 cookies 參數爲前綴
 # require_quality 可選，類型：布爾值（默認：false）
-#                     設置爲 ture 以標記下載器需要一個 quality LEVEL。
+#                   設置爲 ture 以標記下載器需要一個 quality LEVEL
 # play_mode       可選, 類型：字符串 [normal, direct, pipe] （默認："normal")
-#                     下載器的運行播放器的模式
+#                   下載器的運行播放器的模式
 # options         可選，類型：字符串數組（默認：[]）
-#                     下載器設置播放器或者輸出位置的參數。
+#                   下載器設置播放器或者輸出位置的參數
 # player_options  可選，類型：字符串數組（默認：[]）
-#                     用於特殊用途的播放器參數。
+#                   用於特殊用途的播放器參數
 # quality.LEVEL   可選，類型：字符串
-#                     LEVEL 是品質的關鍵詞
-#                     它的值是下載器選擇品質或格式的參數。
+#                   LEVEL 是品質的關鍵詞
+#                   它的值是下載器選擇品質或格式的參數
 ```
 
 ### 下載器示例
 
 參見 [share/examples][examples]。
+
+歡迎分享你的自定義下載器！
 
 [examples]: https://github.com/akiirui/mpv-handler/tree/main/share/examples

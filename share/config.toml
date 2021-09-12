@@ -1,12 +1,13 @@
 # Don't edit this file!
-# This is default settings, It will be overwritten when mpv-handler is updated.
+# This is default settings, It will be overwritten when update mpv-handler
 #
 # For customize settings, create and edit file:
 # - Linux:
 #     - $HOME/.config/mpv-handler/custom.toml
 #     - /etc/mpv-handler/custom.toml
-#   If the first one is found, the second one will not be loaded.
-# - Windows:  custom.toml (in the same directory as mpv-handler.exe)
+#     If the first one is found, the second one will not be loaded
+# - Windows: custom.toml
+#     In the same directory as mpv-handler.exe
 
 ### Player ###
 player = "/usr/bin/mpv"
