@@ -25,8 +25,8 @@ pub struct Protocol {
 impl Protocol {
     /// Parse the protocol URL
     pub fn parse(arg: &mut String) -> Result<Protocol, ProtocolError> {
-        if arg.starts_with("mpv://") {
-            arg.replace_range(0.."mpv.//".len(), "");
+        if arg.starts_with("mpv://play/") {
+            arg.replace_range(0.."mpv.//play/".len(), "");
         } else {
             return Err(ProtocolError::WrongProtocol);
         }
