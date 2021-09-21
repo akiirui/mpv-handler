@@ -17,7 +17,7 @@ Please use with userscript:
 Base URL:
 
 ```
-mpv://BASE64_ENCODE_VIDEO_URL/
+mpv://play/BASE64_ENCODE_VIDEO_URL/
 ```
 
 Optional parameters:
@@ -35,9 +35,9 @@ q = quality
 Example:
 
 ```
-mpv://aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj01cWFwNWFPNGk5QQ==/?cookies=www.youtube.com.txt&downloader=mpv&quality=best
+mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj01cWFwNWFPNGk5QQ==/?cookies=www.youtube.com.txt&downloader=mpv&quality=best
 
-mpv://aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1wNVFmeUY5cGtIVQ==/?c=www.youtube.com.txt&d=mpv&q=best
+mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1wNVFmeUY5cGtIVQ==/?c=www.youtube.com.txt&d=mpv&q=best
 ```
 
 ## Installation
