@@ -133,7 +133,7 @@ ld_path = "/usr/lib/:/usr/local/lib"
 # player    必須，類型：字符串
 #             播放器可執行文件的路徑
 #             對於 Windows 用戶：
-#             路徑格式可以是 "C:\\folder\\some.exe"，也可以是 "C:/folder/some.exe"
+#               路徑格式可以是 "C:\\folder\\some.exe"，也可以是 "C:/folder/some.exe"
 # ld_path   可選，類型：字符串（僅適用於 Linux）
 #             爲播放器和下載器設置環境變量 "LD_LIBRARY_PATH"
 #             使用 ":" 來分割多個路徑
@@ -151,7 +151,9 @@ bin = "/usr/local/bin/mpv"
 # bin       必須，類型：字符串
 #             下載器可執行文件的路徑
 #             對於 Windows 用戶：
-#             路徑格式可以是 "C:\\folder\\some.exe"，也可以是 "C:/folder/some.exe"
+#               路徑格式可以是 "C:\\folder\\some.exe"，也可以是 "C:/folder/some.exe"
+#               並且建議你選擇 "mpv.com" 而不是 "mpv.exe"
+#               因為 "mpv.exe" 不輸出任何命令行信息，發生問題時難以定位問題所在
 ```
 
 ### 自定義下載器

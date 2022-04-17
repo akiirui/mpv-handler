@@ -133,7 +133,7 @@ ld_path = "/usr/lib/:/usr/local/lib"
 # player    Required, Type: String
 #             The player executable binary path
 #             For Windows users:
-#             The path can be "C:\\folder\\some.exe" or "C:/folder/some.exe"
+#               The path can be "C:\\folder\\some.exe" or "C:/folder/some.exe"
 # ld_path   Optional, Type: String (Linux only)
 #             Set environment variable "LD_LIBRARY_PATH" for player and downloader
 #             Use ":" to separate paths
@@ -151,7 +151,9 @@ bin = "/usr/local/bin/mpv"
 # bin       Required, Type: String
 #             The downloader executable binary path
 #             For Windows users:
-#             The path can be "C:\\folder\\some.exe" or "C:/folder/some.exe"
+#               The path can be "C:\\folder\\some.exe" or "C:/folder/some.exe"
+#               And recommend you to select "mpv.com" instead of "mpv.exe"
+#               Because "mpv.exe" doesn't output command line informations
 ```
 
 ### Custom downloader
