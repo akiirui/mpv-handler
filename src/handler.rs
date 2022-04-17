@@ -89,14 +89,21 @@ impl Handler {
                 path.push(&self.protocol.cookies);
             }
 
-            cookies_path = path.as_path().display().to_string();
+            if path.exists() {
+                cookies_path = path.as_path().display().to_string();
 
-            if downloader.cookies_prefix {
-                cookies_path.insert_str(0, &cookies);
-                downloader_options.push(&cookies_path);
+                if downloader.cookies_prefix {
+                    cookies_path.insert_str(0, &cookies);
+                    downloader_options.push(&cookies_path);
+                } else {
+                    downloader_options.push(&cookies);
+                    downloader_options.push(&cookies_path);
+                }
             } else {
-                downloader_options.push(&cookies);
-                downloader_options.push(&cookies_path);
+                eprintln!(
+                    "Warning: Cookies file {:?} doesn't exist",
+                    self.protocol.cookies
+                );
             }
         }
 
