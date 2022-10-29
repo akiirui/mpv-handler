@@ -1,6 +1,9 @@
 use thiserror::Error;
 
 const DEFAULT_DOWNLOADER: &str = "mpv";
+const SAFE_SCHEMES: [&str; 11] = [
+    "http", "https", "ftp", "ftps", "rtmp", "rtmps", "rtmpe", "rtmpt", "rtmpts", "rtmpte", "data",
+];
 
 #[derive(Error, Debug)]
 pub enum ProtocolError {
@@ -12,6 +15,10 @@ pub enum ProtocolError {
     WrongProtocolFromUtf8(#[from] std::string::FromUtf8Error),
     #[error("Error: Not found video URL")]
     MissingVideoUrl,
+    #[error("Error: Not found video URL Scheme")]
+    MissingVideoUrlScheme,
+    #[error("Error: Dangerous URL \"{0}\"")]
+    DangerousVideoUrlScheme(String),
 }
 
 #[derive(Debug)]
@@ -76,6 +83,9 @@ impl Protocol {
             return Err(ProtocolError::MissingVideoUrl);
         }
 
+        // Check URL scheme
+        check_url(&protocol.url)?;
+
         Ok(protocol)
     }
 }
@@ -86,6 +96,23 @@ fn decode_url(data: &&str) -> Result<String, ProtocolError> {
         0 => Err(ProtocolError::MissingVideoUrl),
         _ => Ok(String::from_utf8(base64::decode(data)?)?),
     }
+}
+
+/// Check URL scheme
+fn check_url(data: &String) -> Result<(), ProtocolError> {
+    let url: Vec<&str> = data.split("://").collect();
+    let protocol: &str;
+
+    match url.get(0) {
+        Some(value) => protocol = value,
+        None => return Err(ProtocolError::MissingVideoUrlScheme),
+    };
+
+    if !SAFE_SCHEMES.contains(&protocol) {
+        return Err(ProtocolError::DangerousVideoUrlScheme(data.clone()));
+    }
+
+    Ok(())
 }
 
 /// Parse the options
