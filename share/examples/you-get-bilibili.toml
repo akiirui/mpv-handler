@@ -1,5 +1,0 @@
-[you-get-bilibili]
-bin = "/usr/bin/you-get"
-cookies = "--cookies"
-options = ["--player"]
-player_options = ["--http-header-fields='referer: https://www.bilibili.com'"]

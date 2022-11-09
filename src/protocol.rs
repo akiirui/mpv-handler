@@ -1,132 +1,151 @@
-use thiserror::Error;
+use crate::error::Error;
+use crate::plugins::Plugins;
 
-const DEFAULT_DOWNLOADER: &str = "mpv";
-const SAFE_SCHEMES: [&str; 11] = [
+const SAFE_PROTOS: [&str; 11] = [
     "http", "https", "ftp", "ftps", "rtmp", "rtmps", "rtmpe", "rtmpt", "rtmpts", "rtmpte", "data",
 ];
 
-#[derive(Error, Debug)]
-pub enum ProtocolError {
-    #[error("Error: Wrong protocol URL")]
-    WrongProtocol,
-    #[error("Error: Failed to decode video URL data: {0}")]
-    WrongProtocolBase64(#[from] base64::DecodeError),
-    #[error("Error: Failed to convert video URL string: {0}")]
-    WrongProtocolFromUtf8(#[from] std::string::FromUtf8Error),
-    #[error("Error: Not found video URL")]
-    MissingVideoUrl,
-    #[error("Error: Not found video URL Scheme")]
-    MissingVideoUrlScheme,
-    #[error("Error: Dangerous URL \"{0}\"")]
-    DangerousVideoUrlScheme(String),
-}
-
-#[derive(Debug)]
-pub struct Protocol {
-    pub cookies: String,
-    pub downloader: String,
-    pub quality: String,
+/// Protocol of mpv-handler
+///
+/// ```
+/// mpv://PLUGINS/ENCODED_VIDEO_URL/?PARAMETERS=VALUES
+///
+/// PLUGINS:
+/// - play
+///
+/// ENCODED_VIDEO_URL:
+/// URL-Safe base64 encoded data
+///
+/// PARAMETERS:
+/// - cookies
+/// - quality
+/// ```
+#[derive(Debug, PartialEq)]
+pub struct Protocol<'a> {
+    pub plugin: Plugins,
     pub url: String,
+    pub cookies: Option<&'a str>,
+    pub quality: Option<&'a str>,
 }
 
-impl Protocol {
-    /// Parse the protocol URL
-    pub fn parse(arg: &mut String) -> Result<Protocol, ProtocolError> {
-        if arg.starts_with("mpv://play/") {
-            arg.replace_range(0.."mpv://play/".len(), "");
-        } else {
-            return Err(ProtocolError::WrongProtocol);
+impl Protocol<'_> {
+    /// Parse the given argument and returns `Protocol`
+    pub fn parse(arg: &str) -> Result<Protocol, Error> {
+        let plugin;
+        let url;
+        let mut cookies: Option<&str> = None;
+        let mut quality: Option<&str> = None;
+
+        let mut i = "mpv://".len();
+
+        // Remove scheme `mpv://`
+        if !arg.starts_with("mpv://") {
+            return Err(Error::IncorrectProtocol(arg.to_string()));
         }
 
-        if arg.ends_with('/') {
-            arg.pop();
-        }
-
-        let mut protocol = Protocol {
-            cookies: String::new(),
-            downloader: String::from(DEFAULT_DOWNLOADER),
-            quality: String::new(),
-            url: String::new(),
-        };
-        let args: Vec<&str> = arg.split("/?").collect();
-
-        match args.get(0) {
-            Some(data) => protocol.url = decode_url(data)?,
-            None => return Err(ProtocolError::MissingVideoUrl),
-        };
-
-        match args.get(1) {
-            Some(data) => {
-                let options: Vec<&str> = data.split('&').collect();
-
-                for option in options {
-                    let option_data: Vec<&str> = option.split('=').collect();
-
-                    let option_name: &str = match option_data.get(0) {
-                        Some(name) => *name,
-                        None => return Err(ProtocolError::WrongProtocol),
-                    };
-
-                    let option_value: &str = match option_data.get(1) {
-                        Some(value) => *value,
-                        None => return Err(ProtocolError::WrongProtocol),
-                    };
-
-                    parse_option(&mut protocol, option_name, option_value)?;
-                }
+        // Get plugin
+        (i, plugin) = if let Some(s) = arg[i..].find("/") {
+            match &arg[i..i + s] {
+                "play" => (i + s + 1, Plugins::Play),
+                _ => return Err(Error::IncorrectProtocol(arg.to_string())),
             }
-            None => {}
+        } else {
+            return Err(Error::IncorrectProtocol(arg.to_string()));
         };
 
-        // Check required options are already exists
-        if protocol.url.len() == 0 {
-            return Err(ProtocolError::MissingVideoUrl);
+        // Get url and decode base64
+        (i, url) = if let Some(s) = arg[i..].find("/?") {
+            (i + s + 1, decode(&arg[i..i + s])?)
+        } else if arg[i..].ends_with('/') {
+            (arg.len(), decode(&arg[i..arg.len() - 1])?)
+        } else {
+            (arg.len(), decode(&arg[i..])?)
+        };
+
+        // Get parameters
+        if let Some(s) = arg[i..].find("?") {
+            let params: Vec<&str> = arg[i + s + 1..].split('&').collect();
+
+            for param in params {
+                let data: Vec<&str> = param.split('=').collect();
+
+                let k: &str = match data.get(0) {
+                    Some(name) => name,
+                    None => return Err(Error::IncorrectProtocol(arg.to_string())),
+                };
+
+                let v: &str = match data.get(1) {
+                    Some(value) => value,
+                    None => return Err(Error::IncorrectProtocol(arg.to_string())),
+                };
+
+                match k {
+                    "cookies" => cookies = Some(v),
+                    "quality" => quality = Some(v),
+                    _ => {}
+                };
+            }
         }
 
-        // Check URL scheme
-        check_url(&protocol.url)?;
-
-        Ok(protocol)
+        Ok(Protocol {
+            plugin,
+            url,
+            cookies,
+            quality,
+        })
     }
 }
 
-/// Get the video url from base64 encoded data
-fn decode_url(data: &&str) -> Result<String, ProtocolError> {
-    match data.len() {
-        0 => Err(ProtocolError::MissingVideoUrl),
-        _ => Ok(String::from_utf8(base64::decode(data)?)?),
-    }
-}
+/// Decode base64 data (URL-Safe) and check video protocol
+///
+/// Allowed video protocols:
+///
+/// ```
+/// "http", "https", "ftp", "ftps", "rtmp", "rtmps",
+/// "rtmpe", "rtmpt", "rtmpts", "rtmpte", "data"
+/// ```
+fn decode(data: &str) -> Result<String, Error> {
+    let tmp = data.to_string().replace('-', "+").replace('_', "/");
+    let url = String::from_utf8(base64::decode(tmp)?)?;
 
-/// Check URL scheme
-fn check_url(data: &String) -> Result<(), ProtocolError> {
-    let url: Vec<&str> = data.split("://").collect();
-    let protocol: &str;
-
-    match url.get(0) {
-        Some(value) => protocol = value,
-        None => return Err(ProtocolError::MissingVideoUrlScheme),
+    match url.find("://") {
+        Some(s) => {
+            if !SAFE_PROTOS.contains(&&url[..s]) {
+                return Err(Error::DangerousVideoProtocol(url[..s].to_string()));
+            }
+        }
+        None => return Err(Error::IncorrectVideoURL(url)),
     };
 
-    if !SAFE_SCHEMES.contains(&protocol) {
-        return Err(ProtocolError::DangerousVideoUrlScheme(data.clone()));
-    }
-
-    Ok(())
+    Ok(url)
 }
 
-/// Parse the options
-fn parse_option(
-    protocol: &mut Protocol,
-    option_name: &str,
-    option_value: &str,
-) -> Result<(), ProtocolError> {
-    match option_name {
-        "c" | "cookies" => protocol.cookies = option_value.to_string(),
-        "d" | "downloader" => protocol.downloader = option_value.to_string(),
-        "q" | "quality" => protocol.quality = option_value.to_string(),
-        _ => return Err(ProtocolError::WrongProtocol),
-    }
+#[test]
+fn test_protocol_parse() {
+    // Full
+    let proto =
+        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1HZ2tuMmY1ZS1JVQ==/?cookies=www.youtube.com.txt&quality=best").unwrap();
 
-    Ok(())
+    assert_eq!(proto.plugin, Plugins::Play);
+    assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
+    assert_eq!(proto.cookies, Some("www.youtube.com.txt"));
+    assert_eq!(proto.quality, Some("best"));
+
+    // None parameters
+    let proto =
+        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1HZ2tuMmY1ZS1JVQ==/")
+            .unwrap();
+    assert_eq!(proto.plugin, Plugins::Play);
+    assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
+    assert_eq!(proto.cookies, None);
+    assert_eq!(proto.quality, None);
+
+    // None parameters and last slash
+    let proto =
+        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1HZ2tuMmY1ZS1JVQ==")
+            .unwrap();
+    assert_eq!(proto.plugin, Plugins::Play);
+    assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
+    assert_eq!(proto.cookies, None);
+    assert_eq!(proto.quality, None);
 }

@@ -1,0 +1,15 @@
+# mpv = "/path/of/mpv"
+
+# Optional, Type: String
+# The path of mpv binary
+# Default value:
+# - Linux: mpv
+# - Windows: mpv.com
+
+# ytdl = "/path/of/ytdl"
+
+# Optional, Type: String
+# The path of youtube-dl binary
+# Default value:
+# - Linux: yt-dlp
+# - Windows: yt-dlp.exe

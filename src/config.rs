@@ -1,313 +1,117 @@
+use crate::error::Error;
 use serde::Deserialize;
-use thiserror::Error;
+use std::path::PathBuf;
 
-use std::{collections::HashMap, path::PathBuf};
-
-const DEFAULT_CONFIG_FILE: &str = "config.toml";
-const CUSTOM_CONFIG_FILE: &str = "custom.toml";
-
-#[derive(Error, Debug)]
-pub enum ConfigError {
-    #[error(transparent)]
-    IoError(#[from] std::io::Error),
-    #[error("Error: Failed to decode config file:\n{0}: {1}")]
-    FailedDeserializeToml(PathBuf, toml::de::Error),
-    #[error("Error: Failed to read config file:\n{0}: {1}")]
-    FailedReadConfig(PathBuf, std::io::Error),
-    #[cfg(unix)]
-    #[error("Error: Failed to get config directory")]
-    FailedGetConfigDir,
-    #[error("Error: The player value is empty")]
-    PlayerEmptyValue,
-    #[error("Error: The downloader \"{0}\" settings is not found")]
-    DownloaderNotFound(String),
-    #[error("Error: The downloader \"{0}\" bin value is empty")]
-    DownloaderBinEmptyValue(String),
-    #[error("Error: The downloader \"{0}\" cookies value is empty, but you passed cookies")]
-    DownloaderCookiesEmptyValue(String),
-    #[error("Error: The downloader \"{0}\" quality \"{1}\" is not found")]
-    DownloaderQualityNotFound(String, String),
-    #[error("Error: The downloader \"{0}\" quality \"{1}\" value is empty")]
-    DownloaderQualityEmptyValue(String, String),
-    #[error("Error: The downloader \"{0}\" play mode is wrong")]
-    DownloaderWrongPlayMode(String),
-}
+/// Config of mpv-handler
+///
+/// - `mpv`: MPV player binary path
+/// - `ytdl`: Youtube-DL binary path
 #[derive(Debug, Deserialize)]
 pub struct Config {
-    player: String,
-    #[serde(default)]
-    ld_path: String,
-    #[serde(flatten)]
-    downloader: HashMap<String, Downloader>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct Downloader {
-    bin: String,
-    #[serde(default)]
-    cookies: String,
-    #[serde(default)]
-    pub cookies_prefix: bool,
-    #[serde(default)]
-    pub require_quality: bool,
-    #[serde(default = "Downloader::default_play_mode")]
-    play_mode: String,
-    #[serde(default)]
-    pub options: Vec<String>,
-    #[serde(default)]
-    pub player_options: Vec<String>,
-    #[serde(default)]
-    quality: HashMap<String, String>,
-}
-
-#[derive(Debug, Deserialize)]
-struct CustomConfig {
-    player: Option<String>,
-    ld_path: Option<String>,
-    #[serde(flatten)]
-    downloader: HashMap<String, CustomDownloader>,
-}
-
-#[derive(Debug, Deserialize)]
-struct CustomDownloader {
-    bin: Option<String>,
-    cookies: Option<String>,
-    cookies_prefix: Option<bool>,
-    require_quality: Option<bool>,
-    play_mode: Option<String>,
-    options: Option<Vec<String>>,
-    player_options: Option<Vec<String>>,
-    quality: Option<HashMap<String, String>>,
-}
-
-#[derive(Debug)]
-pub enum PlayMode {
-    Direct,
-    Normal,
-    Pipe,
+    #[serde(default = "default_mpv")]
+    pub mpv: String,
+    #[serde(default = "default_ytdl")]
+    pub ytdl: String,
 }
 
 impl Config {
-    /// Load configs and merge default and custom (if it exist)
-    pub fn load() -> Result<Config, ConfigError> {
-        let default: Config = load_default()?;
+    /// Load config file and retruns `Config`
+    ///
+    /// If config file doesn't exists, returns default value
+    pub fn load() -> Result<Config, Error> {
+        let path = config_path()?;
 
-        match load_custom()? {
-            Some(custom) => merge(default, custom),
-            None => Ok(default),
-        }
-    }
+        if path.exists() {
+            let data: Vec<u8> = std::fs::read(&path)?;
+            let config: Config = toml::from_slice(&data)?;
 
-    /// Return the player binary path
-    pub fn player(&self) -> Result<&String, ConfigError> {
-        match self.player.len() != 0 {
-            true => Ok(&self.player),
-            false => Err(ConfigError::PlayerEmptyValue),
+            return Ok(config);
         }
-    }
 
-    /// Return the ld path
-    #[cfg(unix)]
-    pub fn ld_path(&self) -> Result<Option<&String>, ConfigError> {
-        match self.ld_path.len() != 0 {
-            true => Ok(Some(&self.ld_path)),
-            false => Ok(None),
-        }
-    }
-
-    /// Return the downloader from the given name
-    pub fn downloader(&self, downloader: &String) -> Result<&Downloader, ConfigError> {
-        match self.downloader.get(downloader) {
-            Some(v) => Ok(v),
-            None => Err(ConfigError::DownloaderNotFound(downloader.clone())),
-        }
+        Ok(default_config())
     }
 }
 
-impl Downloader {
-    /// Return the downloader binary path
-    pub fn bin(&self, downloader: &String) -> Result<&String, ConfigError> {
-        match self.bin.len() != 0 {
-            true => Ok(&self.bin),
-            false => Err(ConfigError::DownloaderBinEmptyValue(downloader.clone())),
-        }
-    }
-
-    /// Return the downloader cookies option
-    pub fn cookies(&self, downloader: &String) -> Result<&String, ConfigError> {
-        match self.cookies.len() != 0 {
-            true => Ok(&self.cookies),
-            false => Err(ConfigError::DownloaderCookiesEmptyValue(downloader.clone())),
-        }
-    }
-
-    /// Return the downloader play mode
-    pub fn play_mode(&self) -> Result<PlayMode, ConfigError> {
-        match self.play_mode.as_str() {
-            "direct" => Ok(PlayMode::Direct),
-            "normal" => Ok(PlayMode::Normal),
-            "pipe" => Ok(PlayMode::Pipe),
-            _ => Err(ConfigError::DownloaderWrongPlayMode(self.play_mode.clone())),
-        }
-    }
-
-    /// Return the downloader quality.LEVEL value from the given level
-    pub fn quality(&self, downloader: &String, level: &String) -> Result<&String, ConfigError> {
-        let v = match self.quality.get(level) {
-            Some(v) => v,
-            None => {
-                return Err(ConfigError::DownloaderQualityNotFound(
-                    downloader.clone(),
-                    level.clone(),
-                ))
-            }
-        };
-
-        match v.len() != 0 {
-            true => Ok(v),
-            false => Err(ConfigError::DownloaderQualityEmptyValue(
-                downloader.clone(),
-                level.clone(),
-            )),
-        }
-    }
-
-    /// The default value of play_mode
-    fn default_play_mode() -> String {
-        "normal".to_string()
-    }
-}
-
-impl Default for Downloader {
-    fn default() -> Self {
-        Downloader {
-            bin: String::new(),
-            cookies: String::new(),
-            cookies_prefix: false,
-            require_quality: false,
-            play_mode: Downloader::default_play_mode(),
-            options: Vec::new(),
-            player_options: Vec::new(),
-            quality: HashMap::new(),
-        }
-    }
-}
-
-/// Load default config
-fn load_default() -> Result<Config, ConfigError> {
-    let path = get_path(DEFAULT_CONFIG_FILE)?;
-
-    let data: Vec<u8> = match std::fs::read(&path) {
-        Ok(data) => data,
-        Err(error) => return Err(ConfigError::FailedReadConfig(path, error)),
-    };
-
-    match toml::from_slice(&data) {
-        Ok(config) => Ok(config),
-        Err(error) => Err(ConfigError::FailedDeserializeToml(path, error)),
-    }
-}
-
-/// Load custom config
-fn load_custom() -> Result<Option<CustomConfig>, ConfigError> {
-    let path = get_path(CUSTOM_CONFIG_FILE)?;
-
-    if !path.exists() {
-        return Ok(None);
-    }
-
-    let data: Vec<u8> = match std::fs::read(&path) {
-        Ok(path) => path,
-        Err(error) => return Err(ConfigError::FailedReadConfig(path, error)),
-    };
-
-    match toml::from_slice(&data) {
-        Ok(config) => Ok(Some(config)),
-        Err(error) => Err(ConfigError::FailedDeserializeToml(path, error)),
-    }
-}
-
-/// Rerturn the config path per OS
-fn get_path(file: &str) -> Result<PathBuf, ConfigError> {
+#[cfg(unix)]
+/// Returns a path of config on Unix
+fn config_path() -> Result<PathBuf, Error> {
     let mut path: PathBuf;
 
-    #[cfg(unix)]
-    {
-        path = match dirs::config_dir() {
-            Some(path) => path,
-            None => return Err(ConfigError::FailedGetConfigDir),
-        };
-        path.push("mpv-handler");
-        path.push(file);
-
-        if !path.exists() {
-            path = PathBuf::from("/etc/mpv-handler/");
-            path.push(file);
-        }
-    }
-
-    #[cfg(windows)]
-    {
-        path = std::env::current_exe()?;
-        path.pop();
-        path.push(file);
-    }
+    path = match dirs::config_dir() {
+        Some(path) => path,
+        None => return Err(Error::FailedGetConfigDir),
+    };
+    path.push("mpv-handler");
+    path.push("config.toml");
 
     Ok(path)
 }
 
-/// Merge custom config to default
-fn merge(default: Config, custom: CustomConfig) -> Result<Config, ConfigError> {
-    let mut config: Config = default;
+#[cfg(windows)]
+/// Returns a path of config on Windows
+fn config_path() -> Result<PathBuf, Error> {
+    let mut path: PathBuf;
 
-    if let Some(player) = custom.player {
-        config.player = player;
-    }
-    if let Some(ld_path) = custom.ld_path {
-        config.ld_path = ld_path;
-    }
+    path = std::env::current_exe()?;
+    path.pop();
+    path.push("config.toml");
 
-    for (n, c) in custom.downloader {
-        match config.downloader.get_mut(&n) {
-            Some(d) => merge_downloader(d, c),
-            None => {
-                let mut d: Downloader = Downloader {
-                    ..Default::default()
-                };
-
-                merge_downloader(&mut d, c);
-                config.downloader.insert(n, d);
-            }
-        }
-    }
-
-    Ok(config)
+    Ok(path)
 }
 
-/// Merge custom downloader to default
-fn merge_downloader(d: &mut Downloader, c: CustomDownloader) {
-    if let Some(v) = c.bin {
-        d.bin = v;
+/// The defalut value of `Config`
+fn default_config() -> Config {
+    Config {
+        mpv: default_mpv(),
+        ytdl: default_ytdl(),
     }
-    if let Some(v) = c.cookies {
-        d.cookies = v;
+}
+
+/// The default value of `Config.mpv`
+fn default_mpv() -> String {
+    #[cfg(unix)]
+    return "mpv".to_string();
+    #[cfg(windows)]
+    return "mpv.com".to_string();
+}
+
+/// The default value of `Config.ytdl`
+fn default_ytdl() -> String {
+    #[cfg(unix)]
+    return "yt-dlp".to_string();
+    #[cfg(windows)]
+    return "yt-dlp.exe".to_string();
+}
+
+#[test]
+fn test_config_parse() {
+    let config: Config = toml::from_str(
+        r#"
+            mpv = "/usr/bin/mpv"
+            ytdl = "/usr/bin/yt-dlp"
+        "#,
+    )
+    .unwrap();
+
+    assert_eq!(config.mpv, "/usr/bin/mpv");
+    assert_eq!(config.ytdl, "/usr/bin/yt-dlp");
+
+    let config: Config = toml::from_str(
+        r#"
+            key1 = "value1"
+            key2 = "value2"
+        "#,
+    )
+    .unwrap();
+
+    #[cfg(unix)]
+    {
+        assert_eq!(config.mpv, "mpv");
+        assert_eq!(config.ytdl, "yt-dlp");
     }
-    if let Some(v) = c.cookies_prefix {
-        d.cookies_prefix = v;
-    }
-    if let Some(v) = c.require_quality {
-        d.require_quality = v;
-    }
-    if let Some(v) = c.play_mode {
-        d.play_mode = v;
-    }
-    if let Some(v) = c.options {
-        d.options = v;
-    }
-    if let Some(v) = c.player_options {
-        d.player_options = v;
-    }
-    if let Some(v) = c.quality {
-        d.quality = v;
+    #[cfg(windows)]
+    {
+        assert_eq!(config.mpv, "mpv.com");
+        assert_eq!(config.ytdl, "yt-dlp.exe");
     }
 }
