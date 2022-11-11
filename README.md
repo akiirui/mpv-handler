@@ -78,9 +78,7 @@ Windows users need to install `mpv-handler` manually.
 
 ## Configuration
 
-> For Linux users, manual configuration is usually not required.
->
-> For Windows users, if you have already added **MPV** and **yt-dlp** to `PATH`, you don't need to configure them manually.
+If you have already added **MPV** and **yt-dlp** to `PATH`, manual configuration is usually not required.
 
 ```toml
 mpv = "/usr/bin/mpv"

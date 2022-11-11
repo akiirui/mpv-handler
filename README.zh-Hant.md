@@ -78,9 +78,7 @@ Windows 用戶目前只能手動安裝 `mpv-handler`。
 
 ## 配置
 
-> 對於 Linux 用戶，一般情況下不需要手動配置。
->
-> 對於 WIndows 用戶，如果您已經把 **MPV** 和 **yt-dlp** 添加到了 `PATH`，就不需要手動配置。
+如果您已經把 **MPV** 和 **yt-dlp** 添加到了 `PATH`，通常來說不需要手動配置。
 
 ```toml
 mpv = "/usr/bin/mpv"
