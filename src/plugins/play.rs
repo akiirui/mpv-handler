@@ -62,14 +62,14 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     };
 
     // Fix some browsers to overwrite "LD_LIBRARY_PATH" on Linux
-    // It will be broken MPV player
+    // It will be broken mpv player
     // mpv: symbol lookup error: mpv: undefined symbol: vkCreateWaylandSurfaceKHR
     #[cfg(unix)]
     std::env::remove_var("LD_LIBRARY_PATH");
 
     println!("Playing: {}", proto.url);
 
-    // Execute MPV player
+    // Execute mpv player
     let player = std::process::Command::new(&config.mpv)
         .args(options)
         .arg("--")

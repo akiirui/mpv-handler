@@ -4,11 +4,11 @@
 [readme-zh-hans]: https://github.com/akiirui/mpv-handler/blob/main/README.zh-Hans.md
 [readme-zh-hant]: https://github.com/akiirui/mpv-handler/blob/main/README.zh-Hant.md
 
-# MPV handler
+# mpv handler
 
-一个 **MPV** 的协议处理程序，使用 Rust 编写。
+一个 **mpv** 的协议处理程序，使用 Rust 编写。
 
-使用 **MPV** 和 **yt-dlp** 播放网站上的视频与音乐。
+使用 **mpv** 和 **yt-dlp** 播放网站上的视频与音乐。
 
 请配合用户脚本使用：
 
@@ -20,7 +20,7 @@
 
 ### 插件 / Plugins
 
-- `play`: 使用 MPV 播放视频
+- `play`: 使用 mpv 播放视频
 
 ### 编码的视频网址 / Encoded Video URL
 
@@ -71,20 +71,20 @@ Windows 用户目前只能手动安装 `mpv-handler`。
 #### 手动安装
 
 1. 下载 [latest/mpv-handler-windows-x64.zip][download-windows]
-2. 解压缩档案到你想要的文件夹里（从 `v0.2.x` 起，不再需要和 MPV 安装至同一个文件夹）
+2. 解压缩档案到你想要的位置
 3. 运行 `handler-install.bat` 注册协议处理程序
-4. 添加 **MPV** 和 **yt-dlp** 到环境变量 `PATH`
+4. 添加 **mpv** 和 **yt-dlp** 到环境变量 `PATH`
 5. 如果需要，更改 `config.toml`
 
 ## 配置
 
-如果您已经把 **MPV** 和 **yt-dlp** 添加到了 `PATH`，通常来说不需要手动配置。
+如果您已经把 **mpv** 和 **yt-dlp** 添加到了 `PATH`，通常来说不需要手动配置。
 
 ```toml
 mpv = "/usr/bin/mpv"
 
 # 可选，类型：字符串
-# MPV 可执行文件的路径
+# mpv 可执行文件的路径
 # 默认值:
 # - Linux: mpv
 # - Windows: mpv.com

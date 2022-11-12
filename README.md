@@ -4,11 +4,11 @@
 [readme-zh-hans]: https://github.com/akiirui/mpv-handler/blob/main/README.zh-Hans.md
 [readme-zh-hant]: https://github.com/akiirui/mpv-handler/blob/main/README.zh-Hant.md
 
-# MPV handler
+# mpv handler
 
-A protocol handler for **MPV**, written by Rust.
+A protocol handler for **mpv**, written by Rust.
 
-Use **MPV** and **yt-dlp** to play video and music from the websites.
+Use **mpv** and **yt-dlp** to play video and music from the websites.
 
 Please use it with userscript:
 
@@ -20,7 +20,7 @@ Please use it with userscript:
 
 ### Plugins
 
-- `play`: Use MPV player to play video
+- `play`: Use mpv player to play video
 
 ### Encode Video URL
 
@@ -71,14 +71,14 @@ Windows users need to install `mpv-handler` manually.
 #### Manual installation
 
 1. Download [latest/mpv-handler-windows-x64.zip][download-windows]
-2. Unzip the archive to the directory you want (since v0.2.x, not requires to install in the same directory with MPV anymore)
+2. Unzip the archive to the directory you want
 3. Run `handler-install.bat` register protocol handler
-4. Add **MPV** and **yt-dlp** to environment variable `PATH` (if needed)
+4. Add **mpv** and **yt-dlp** to environment variable `PATH` (if needed)
 5. Edit `config.toml` (if needed)
 
 ## Configuration
 
-If you have already added **MPV** and **yt-dlp** to `PATH`, manual configuration is usually not required.
+If you have already added **mpv** and **yt-dlp** to `PATH`, manual configuration is usually not required.
 
 ```toml
 mpv = "/usr/bin/mpv"
