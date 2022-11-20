@@ -22,7 +22,7 @@ Please use it with userscript:
 
 - `play`: Use mpv player to play video
 
-### Encode Video URL
+### Encoded Video URL
 
 Use [URL-Safe base64][wiki-url-base64] to encode the video URL.
 
