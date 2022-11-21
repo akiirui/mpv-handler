@@ -25,6 +25,7 @@ pub struct Protocol<'a> {
     pub plugin: Plugins,
     pub url: String,
     pub cookies: Option<&'a str>,
+    pub profile: Option<&'a str>,
     pub quality: Option<&'a str>,
 }
 
@@ -34,6 +35,7 @@ impl Protocol<'_> {
         let plugin;
         let url;
         let mut cookies: Option<&str> = None;
+        let mut profile: Option<&str> = None;
         let mut quality: Option<&str> = None;
 
         let mut i = "mpv://".len();
@@ -81,6 +83,7 @@ impl Protocol<'_> {
 
                 match k {
                     "cookies" => cookies = Some(v),
+                    "profile" => profile = Some(v),
                     "quality" => quality = Some(v),
                     _ => {}
                 };
@@ -91,6 +94,7 @@ impl Protocol<'_> {
             plugin,
             url,
             cookies,
+            profile,
             quality,
         })
     }
@@ -124,11 +128,12 @@ fn decode(data: &str) -> Result<String, Error> {
 fn test_protocol_parse() {
     // Full
     let proto =
-        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1HZ2tuMmY1ZS1JVQ==/?cookies=www.youtube.com.txt&quality=best").unwrap();
+        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1HZ2tuMmY1ZS1JVQ==/?cookies=www.youtube.com.txt&profile=low-latency&quality=best").unwrap();
 
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
     assert_eq!(proto.cookies, Some("www.youtube.com.txt"));
+    assert_eq!(proto.profile, Some("low-latency"));
     assert_eq!(proto.quality, Some("best"));
 
     // None parameters
@@ -138,6 +143,7 @@ fn test_protocol_parse() {
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
     assert_eq!(proto.cookies, None);
+    assert_eq!(proto.profile, None);
     assert_eq!(proto.quality, None);
 
     // None parameters and last slash
@@ -147,5 +153,6 @@ fn test_protocol_parse() {
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
     assert_eq!(proto.cookies, None);
+    assert_eq!(proto.profile, None);
     assert_eq!(proto.quality, None);
 }

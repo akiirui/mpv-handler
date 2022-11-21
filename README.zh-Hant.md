@@ -37,6 +37,7 @@ let safe = data.replace(/\//g, "_").replace(/\+/g, "-");
 
 ```
 cookies = [ www.domain.com.txt ]
+profile = [ default, low-latency, etc... ]
 quality = [ best, 2160p, 1440p, 1080p, 720p, 480p, 360p ]
 ```
 

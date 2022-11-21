@@ -3,6 +3,7 @@ use crate::error::Error;
 use crate::protocol::Protocol;
 
 const C_PREFIX: &str = "--ytdl-raw-options-append=cookies=";
+const P_PREFIX: &str = "--profile=";
 const Q_2160: &str = "--ytdl-format=bestvideo[height<=2160]+bestaudio/best[height<=2160]/best";
 const Q_1440: &str = "--ytdl-format=bestvideo[height<=1440]+bestaudio/best[height<=1440]/best";
 const Q_1080: &str = "--ytdl-format=bestvideo[height<=1080]+bestaudio/best[height<=1080]/best";
@@ -46,6 +47,15 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
         } else {
             eprintln!("Cookies file {} doesn't exist", v);
         }
+    }
+
+    // Append profile option
+    let mut profile_option: String;
+
+    if let Some(v) = proto.profile {
+        profile_option = String::from(P_PREFIX);
+        profile_option.push_str(v);
+        options.push(&profile_option);
     }
 
     // Append quality option
