@@ -9,17 +9,18 @@ const SAFE_PROTOS: [&str; 11] = [
 ///
 /// ```
 /// mpv://PLUGINS/ENCODED_VIDEO_URL/?PARAMETERS=VALUES
+/// ```
 ///
 /// PLUGINS:
 /// - play
 ///
 /// ENCODED_VIDEO_URL:
-/// URL-Safe base64 encoded data
+/// - URL-safe base64 encoded data
 ///
 /// PARAMETERS:
 /// - cookies
+/// - profile
 /// - quality
-/// ```
 #[derive(Debug, PartialEq)]
 pub struct Protocol<'a> {
     pub plugin: Plugins,
@@ -128,7 +129,7 @@ fn decode(data: &str) -> Result<String, Error> {
 fn test_protocol_parse() {
     // Full
     let proto =
-        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1HZ2tuMmY1ZS1JVQ==/?cookies=www.youtube.com.txt&profile=low-latency&quality=best").unwrap();
+        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ==/?cookies=www.youtube.com.txt&profile=low-latency&quality=best").unwrap();
 
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
@@ -138,7 +139,7 @@ fn test_protocol_parse() {
 
     // None parameters
     let proto =
-        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1HZ2tuMmY1ZS1JVQ==/")
+        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ==/")
             .unwrap();
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
@@ -148,7 +149,7 @@ fn test_protocol_parse() {
 
     // None parameters and last slash
     let proto =
-        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1HZ2tuMmY1ZS1JVQ==")
+        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ==")
             .unwrap();
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");

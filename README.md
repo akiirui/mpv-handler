@@ -16,7 +16,7 @@ Please use it with userscript:
 
 ## Protocol
 
-![](share/proto.png)
+![](share/proto.svg)
 
 ### Plugins
 
@@ -24,7 +24,7 @@ Please use it with userscript:
 
 ### Encoded Video URL
 
-Use [URL-Safe base64][wiki-url-base64] to encode the video URL.
+Use [URL-safe base64][wiki-url-base64] to encode the video URL.
 
 Example (JavaScript):
 

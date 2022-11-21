@@ -16,7 +16,7 @@
 
 ## 協議
 
-![](share/proto.png)
+![](share/proto.svg)
 
 ### 插件 / Plugins
 
