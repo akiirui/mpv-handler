@@ -81,7 +81,8 @@ Windows users need to install `mpv-handler` manually.
 If you have already added **mpv** and **yt-dlp** to `PATH`, manual configuration is usually not required.
 
 ```toml
-mpv = "/usr/bin/mpv"
+# scoop install mpv
+mpv = "/usr/bin/mpv"   // for scoop "mpv
 
 # Optional, Type: String
 # The path of mpv binary
@@ -89,7 +90,8 @@ mpv = "/usr/bin/mpv"
 # - Linux: mpv
 # - Windows: mpv.com
 
-ytdl = "/usr/bin/yt-dlp"
+# scoop install yt-dlp
+ytdl = "/usr/bin/yt-dlp"   // for scoop "yt-dlp"
 
 # Optional, Type: String
 # The path of youtube-dl binary
