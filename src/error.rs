@@ -12,8 +12,8 @@ pub enum Error {
     DangerousVideoProtocol(String),
     #[error("Failed to get config directory")]
     FailedGetConfigDir,
-    #[error("Player exited with error or termination signal")]
-    PlayerExited,
+    #[error("Player exited by error")]
+    PlayerExited(u8),
     #[error("Failed to run player. {0}")]
     PlayerRunFailed(std::io::Error),
     #[error("Failed to decode ({0})")]

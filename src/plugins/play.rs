@@ -45,7 +45,7 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
             cookies_option.push_str(&p.display().to_string());
             options.push(&cookies_option);
         } else {
-            eprintln!("Cookies file {} doesn't exist", v);
+            eprintln!("Cookies file {v} doesn't exist");
         }
     }
 
@@ -80,16 +80,19 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     println!("Playing: {}", proto.url);
 
     // Execute mpv player
-    let player = std::process::Command::new(&config.mpv)
+    let status = std::process::Command::new(&config.mpv)
         .args(options)
         .arg("--")
         .arg(&proto.url)
         .status();
 
-    match player {
-        Ok(o) => match o.success() {
-            true => Ok(()),
-            false => Err(Error::PlayerExited),
+    match status {
+        Ok(o) => match o.code() {
+            Some(code) => match code {
+                0 => Ok(()),
+                _ => Err(Error::PlayerExited(code as u8)),
+            },
+            None => Ok(()),
         },
         Err(e) => Err(Error::PlayerRunFailed(e)),
     }
