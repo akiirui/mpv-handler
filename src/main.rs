@@ -3,14 +3,16 @@ mod error;
 mod plugins;
 mod protocol;
 
+use std::process::ExitCode;
+
 use crate::config::Config;
 use crate::error::Error;
 use crate::plugins::Plugins;
 use crate::protocol::Protocol;
 
-fn main() {
+fn main() -> ExitCode {
     match run() {
-        Ok(_) => (),
+        Ok(_) => ExitCode::SUCCESS,
         Err(e) => print_error(e),
     }
 }
@@ -47,8 +49,12 @@ fn print_usage() {
 }
 
 /// Print error
-fn print_error(e: Error) {
-    eprint!("ERROR: {}", e);
-    std::io::Read::read(&mut std::io::stdin(), &mut [0]).unwrap();
-    std::process::exit(1);
+fn print_error(e: Error) -> ExitCode {
+    eprint!("{e}");
+    std::io::Read::read(&mut std::io::stdin(), &mut []).unwrap();
+
+    match e {
+        Error::PlayerExited(code) => ExitCode::from(code),
+        _ => ExitCode::FAILURE,
+    }
 }
