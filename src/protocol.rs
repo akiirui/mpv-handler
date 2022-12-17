@@ -47,7 +47,7 @@ impl Protocol<'_> {
         }
 
         // Get plugin
-        (i, plugin) = if let Some(s) = arg[i..].find("/") {
+        (i, plugin) = if let Some(s) = arg[i..].find('/') {
             match &arg[i..i + s] {
                 "play" => (i + s + 1, Plugins::Play),
                 _ => return Err(Error::IncorrectProtocol(arg.to_string())),
@@ -66,21 +66,18 @@ impl Protocol<'_> {
         };
 
         // Get parameters
-        if let Some(s) = arg[i..].find("?") {
+        if let Some(s) = arg[i..].find('?') {
             let params: Vec<&str> = arg[i + s + 1..].split('&').collect();
 
             for param in params {
-                let data: Vec<&str> = param.split('=').collect();
+                let data: Vec<&str> = param.split_terminator('=').collect();
 
-                let k: &str = match data.get(0) {
-                    Some(name) => name,
-                    None => return Err(Error::IncorrectProtocol(arg.to_string())),
-                };
+                if data.len() != 2 {
+                    return Err(Error::IncorrectProtocol(arg.to_string()));
+                }
 
-                let v: &str = match data.get(1) {
-                    Some(value) => value,
-                    None => return Err(Error::IncorrectProtocol(arg.to_string())),
-                };
+                let k = data[0];
+                let v = data[1];
 
                 match k {
                     "cookies" => cookies = Some(v),
