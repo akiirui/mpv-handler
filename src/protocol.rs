@@ -41,7 +41,7 @@ impl Protocol<'_> {
 
         let mut i = "mpv://".len();
 
-        // Remove scheme `mpv://`
+        // Check scheme `mpv://`
         if !arg.starts_with("mpv://") {
             return Err(Error::IncorrectProtocol(arg.to_string()));
         }
@@ -56,11 +56,9 @@ impl Protocol<'_> {
             return Err(Error::IncorrectProtocol(arg.to_string()));
         };
 
-        // Get url and decode base64
-        (i, url) = if let Some(s) = arg[i..].find("/?") {
+        // Get url and decode by base64
+        (i, url) = if let Some(s) = arg[i..].find('/') {
             (i + s + 1, decode(&arg[i..i + s])?)
-        } else if arg[i..].ends_with('/') {
-            (arg.len(), decode(&arg[i..arg.len() - 1])?)
         } else {
             (arg.len(), decode(&arg[i..])?)
         };
