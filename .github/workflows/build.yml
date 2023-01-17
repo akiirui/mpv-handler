@@ -10,40 +10,79 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Build for ${{ matrix.os}}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact_name: mpv-handler
+            asset_name: linux-amd64
+
+          - os: windows-latest
+            artifact_name: mpv-handler.exe
+            asset_name: windows-amd64
+
+          - os: macos-latest
+            artifact_name: mpv-handler
+            asset_name: macos-amd64
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Install makedeps
-        run: |
-          rustup target add x86_64-pc-windows-gnu
-          sudo apt-get update -yq
-          sudo apt-get install -yq --no-install-recommends mingw-w64
+        uses: actions/checkout@v3
 
       - name: Build
         run: |
           cargo build --release --locked
-          cargo build --release --locked --target=x86_64-pc-windows-gnu
 
-      - name: Package
+      - name: Upload to artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.asset_name }}
+          path: target/release/${{ matrix.artifact_name }}
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Package Linux
         run: |
-          strip target/release/mpv-handler
-          zip -j mpv-handler-linux-x64.zip \
+          strip linux-amd64/mpv-handler
+          zip -j mpv-handler-linux-amd64.zip \
             README*.md \
             share/linux/* \
-            target/release/mpv-handler
+            linux-amd64/mpv-handler
 
-          strip target/x86_64-pc-windows-gnu/release/mpv-handler.exe
-          zip -j mpv-handler-windows-x64.zip \
+      - name: Package Windows
+        run: |
+          strip windows-amd64/mpv-handler.exe
+          zip -j mpv-handler-windows-amd64.zip \
             README*.md \
             share/windows/* \
-            target/x86_64-pc-windows-gnu/release/mpv-handler.exe
+            windows-amd64/mpv-handler.exe
 
-          sha512sum mpv-handler-linux-x64.zip mpv-handler-windows-x64.zip > sha512sum
+      - name: Package macOS
+        run: |
+          mkdir -p macos-amd64/mpv-handler.app/Contents/MacOS
+          cp README*.md macos-amd64
+          cp share/macos/Info.plist macos-amd64/mpv-handler.app/Contents
+          mv macos-amd64/mpv-handler macos-amd64/mpv-handler.app/Contents/MacOS
+          cd macos-amd64
+          zip -r ../mpv-handler-macos-amd64.zip .
+
+      - name: SHA512SUM
+        run: |
+          sha512sum mpv-handler-*.zip > sha512sum
 
       - name: Publish
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "mpv-handler-*-x64.zip,sha512sum"
+          artifacts: "mpv-handler-*.zip,sha512sum"
+          generateReleaseNotes: true
           token: ${{ secrets.GITHUB_TOKEN }}
