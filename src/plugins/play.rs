@@ -5,6 +5,7 @@ use crate::protocol::Protocol;
 const PREFIX_COOKIES: &str = "--ytdl-raw-options-append=cookies=";
 const PREFIX_PROFILE: &str = "--profile=";
 const PREFIX_QUALITY: &str = "--ytdl-format=";
+const PREFIX_V_CODEC: &str = "--ytdl-raw-options-append=format-sort=";
 
 /// Execute player with given options
 pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
@@ -38,6 +39,7 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
         if p.exists() {
             option_cookies = String::from(PREFIX_COOKIES);
             option_cookies.push_str(&p.display().to_string());
+
             options.push(&option_cookies);
         } else {
             eprintln!("Cookies file {v} doesn't exist");
@@ -50,6 +52,7 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     if let Some(v) = proto.profile {
         option_profile = String::from(PREFIX_PROFILE);
         option_profile.push_str(v);
+
         options.push(&option_profile);
     }
 
@@ -72,12 +75,22 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
         }
     };
 
+    // Append v_codec option
+    let option_v_codec: String;
+
+    if let Some(v) = proto.v_codec {
+        option_v_codec = v_codec(v);
+
+        options.push(&option_v_codec);
+    }
+
     // Fix some browsers to overwrite "LD_LIBRARY_PATH" on Linux
     // It will be broken mpv player
     // mpv: symbol lookup error: mpv: undefined symbol: vkCreateWaylandSurfaceKHR
     #[cfg(unix)]
     std::env::remove_var("LD_LIBRARY_PATH");
 
+    // Print video URL
     println!("Playing: {}", proto.url);
 
     // Execute mpv player
@@ -103,6 +116,14 @@ fn quality(height: i32) -> String {
     let mut option = String::from(PREFIX_QUALITY);
 
     option.push_str(&format!("bv*[height<={height}]+ba/b[height<={height}]/b"));
+
+    option
+}
+
+fn v_codec(vcodec: &str) -> String {
+    let mut option = String::from(PREFIX_V_CODEC);
+
+    option.push_str(&format!("+vcodec:{vcodec}"));
 
     option
 }

@@ -21,6 +21,7 @@ const SAFE_PROTOS: [&str; 11] = [
 /// - cookies
 /// - profile
 /// - quality
+/// - v_codec
 #[derive(Debug, PartialEq)]
 pub struct Protocol<'a> {
     pub plugin: Plugins,
@@ -28,6 +29,7 @@ pub struct Protocol<'a> {
     pub cookies: Option<&'a str>,
     pub profile: Option<&'a str>,
     pub quality: Option<&'a str>,
+    pub v_codec: Option<&'a str>,
 }
 
 impl Protocol<'_> {
@@ -38,6 +40,7 @@ impl Protocol<'_> {
         let mut cookies: Option<&str> = None;
         let mut profile: Option<&str> = None;
         let mut quality: Option<&str> = None;
+        let mut v_codec: Option<&str> = None;
 
         let mut i = "mpv://".len();
 
@@ -81,6 +84,7 @@ impl Protocol<'_> {
                     "cookies" => cookies = Some(v),
                     "profile" => profile = Some(v),
                     "quality" => quality = Some(v),
+                    "v_codec" => v_codec = Some(v),
                     _ => {}
                 };
             }
@@ -92,6 +96,7 @@ impl Protocol<'_> {
             cookies,
             profile,
             quality,
+            v_codec,
         })
     }
 }
@@ -124,13 +129,14 @@ fn decode(data: &str) -> Result<String, Error> {
 fn test_protocol_parse() {
     // Full
     let proto =
-        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ==/?cookies=www.youtube.com.txt&profile=low-latency&quality=best").unwrap();
+        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ==/?cookies=www.youtube.com.txt&profile=low-latency&quality=best&v_codec=av01").unwrap();
 
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
     assert_eq!(proto.cookies, Some("www.youtube.com.txt"));
     assert_eq!(proto.profile, Some("low-latency"));
     assert_eq!(proto.quality, Some("best"));
+    assert_eq!(proto.v_codec, Some("av01"));
 
     // None parameters
     let proto =
