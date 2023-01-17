@@ -10,6 +10,7 @@ pub enum Error {
     IncorrectVideoURL(String),
     #[error("Dangerous video protocol \"{0}\"")]
     DangerousVideoProtocol(String),
+    #[cfg(unix)]
     #[error("Failed to get config directory")]
     FailedGetConfigDir,
     #[error("Player exited by error")]
