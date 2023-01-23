@@ -127,18 +127,18 @@ fn decode(data: &str) -> Result<String, Error> {
 
 #[test]
 fn test_protocol_parse() {
-    // Full
+    // All parameters
     let proto =
-        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ==/?cookies=www.youtube.com.txt&profile=low-latency&quality=best&v_codec=av01").unwrap();
+        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ==/?cookies=www.youtube.com.txt&profile=low-latency&quality=1080p&v_codec=av01").unwrap();
 
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
     assert_eq!(proto.cookies, Some("www.youtube.com.txt"));
     assert_eq!(proto.profile, Some("low-latency"));
-    assert_eq!(proto.quality, Some("best"));
+    assert_eq!(proto.quality, Some("1080p"));
     assert_eq!(proto.v_codec, Some("av01"));
 
-    // None parameters
+    // None parameter
     let proto =
         Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ==/")
             .unwrap();
@@ -147,8 +147,9 @@ fn test_protocol_parse() {
     assert_eq!(proto.cookies, None);
     assert_eq!(proto.profile, None);
     assert_eq!(proto.quality, None);
+    assert_eq!(proto.v_codec, None);
 
-    // None parameters and last slash
+    // None parameter and last slash
     let proto =
         Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ==")
             .unwrap();
@@ -157,4 +158,5 @@ fn test_protocol_parse() {
     assert_eq!(proto.cookies, None);
     assert_eq!(proto.profile, None);
     assert_eq!(proto.quality, None);
+    assert_eq!(proto.v_codec, None);
 }
