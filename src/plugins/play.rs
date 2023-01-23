@@ -10,10 +10,12 @@ const PREFIX_V_CODEC: &str = "--ytdl-raw-options-append=format-sort=";
 /// Execute player with given options
 pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     let mut options: Vec<&str> = Vec::new();
+    let option_cookies: String;
+    let option_profile: String;
+    let option_quality: String;
+    let option_v_codec: String;
 
     // Append cookies option
-    let mut option_cookies: String;
-
     if let Some(v) = proto.cookies {
         let mut p: std::path::PathBuf;
 
@@ -37,8 +39,7 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
         }
 
         if p.exists() {
-            option_cookies = String::from(PREFIX_COOKIES);
-            option_cookies.push_str(&p.display().to_string());
+            option_cookies = cookies(p.display());
 
             options.push(&option_cookies);
         } else {
@@ -47,18 +48,13 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     }
 
     // Append profile option
-    let mut option_profile: String;
-
     if let Some(v) = proto.profile {
-        option_profile = String::from(PREFIX_PROFILE);
-        option_profile.push_str(v);
+        option_profile = profile(v);
 
         options.push(&option_profile);
     }
 
     // Append quality option
-    let option_quality: String;
-
     if let Some(v) = proto.quality {
         option_quality = match v {
             "2160p" => quality(2160),
@@ -76,8 +72,6 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     };
 
     // Append v_codec option
-    let option_v_codec: String;
-
     if let Some(v) = proto.v_codec {
         option_v_codec = v_codec(v);
 
@@ -112,18 +106,80 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     }
 }
 
-fn quality(height: i32) -> String {
-    let mut option = String::from(PREFIX_QUALITY);
-
-    option.push_str(&format!("bv*[height<={height}]+ba/b[height<={height}]/b"));
-
-    option
+/// Return cookies option
+fn cookies(cookies: std::path::Display) -> String {
+    format!("{PREFIX_COOKIES}{cookies}").to_string()
 }
 
-fn v_codec(vcodec: &str) -> String {
-    let mut option = String::from(PREFIX_V_CODEC);
+/// Return profile option
+fn profile(profile: &str) -> String {
+    format!("{PREFIX_PROFILE}{profile}").to_string()
+}
 
-    option.push_str(&format!("+vcodec:{vcodec}"));
+/// Return quality option
+fn quality(quality: i32) -> String {
+    format!("{PREFIX_QUALITY}bv*[height<={quality}]+ba/b[height<={quality}]/b").to_string()
+}
 
-    option
+/// Return v_codec option
+fn v_codec(v_codec: &str) -> String {
+    format!("{PREFIX_V_CODEC}+vcodec:{v_codec}").to_string()
+}
+
+#[test]
+fn test_cookies_option() {
+    let option_cookies =
+        cookies(std::path::PathBuf::from("/some/cookies/domain.com.txt").display());
+
+    assert_eq!(
+        option_cookies,
+        "--ytdl-raw-options-append=cookies=/some/cookies/domain.com.txt".to_string()
+    )
+}
+
+#[test]
+fn test_profile_option() {
+    let option_profile = profile("low-latency");
+
+    assert_eq!(option_profile, "--profile=low-latency".to_string());
+}
+
+#[test]
+fn test_quality_option() {
+    let option_quality_1080 = quality(1080);
+    let option_quality_2160 = quality(2160);
+
+    assert_eq!(
+        option_quality_1080,
+        "--ytdl-format=bv*[height<=1080]+ba/b[height<=1080]/b".to_string()
+    );
+    assert_eq!(
+        option_quality_2160,
+        "--ytdl-format=bv*[height<=2160]+ba/b[height<=2160]/b".to_string()
+    );
+}
+
+#[test]
+fn test_v_codec_option() {
+    let option_v_codec_av01 = v_codec("av01");
+    let option_v_codec_h265 = v_codec("h265");
+    let option_v_codec_vp92 = v_codec("vp9.2");
+    let option_v_codec_vp9 = v_codec("vp9");
+
+    assert_eq!(
+        option_v_codec_av01,
+        "--ytdl-raw-options-append=format-sort=+vcodec:av01".to_string()
+    );
+    assert_eq!(
+        option_v_codec_h265,
+        "--ytdl-raw-options-append=format-sort=+vcodec:h265".to_string()
+    );
+    assert_eq!(
+        option_v_codec_vp92,
+        "--ytdl-raw-options-append=format-sort=+vcodec:vp9.2".to_string()
+    );
+    assert_eq!(
+        option_v_codec_vp9,
+        "--ytdl-raw-options-append=format-sort=+vcodec:vp9".to_string()
+    );
 }
