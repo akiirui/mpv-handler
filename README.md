@@ -53,7 +53,7 @@ v_codec = [ av01, vp9, h265, h264 ]
 
 #### Manual installation
 
-1. Download [latest/linux][download-linux]
+1. Download [latest Linux release][download-linux]
 2. Unzip the archive
 3. Copy `mpv-handler` to `$HOME/.local/bin`
 4. Copy `mpv-handler.desktop` to `$HOME/.local/share/applications/`
@@ -74,15 +74,28 @@ $ xdg-mime default mpv-handler.desktop x-scheme-handler/mpv
 
 ### Windows
 
-Windows users need to install `mpv-handler` manually.
+Windows users need to install manually.
 
 #### Manual installation
 
-1. Download [latest/windows][download-windows]
+1. Download [latest Windows release][download-windows]
 2. Unzip the archive to the directory you want
 3. Run `handler-install.bat` register protocol handler
 4. Add **mpv** and **yt-dlp** to environment variable `PATH` (if needed)
 5. Edit `config.toml` (if needed)
+
+### macOS (Alpha)
+
+**I haven't tested it, if it doesn't work, please open an issue.**
+
+macOS users need to install manually
+
+#### Manual installation
+
+1. Download [latest macOS release][download-macos]
+2. Unzip the archive and copy `mpv-handler.app` directory to `$HOME/Applications`
+3. Add **mpv** and **yt-dlp** to environment variable `PATH` (if needed)
+4. Create `$HOME/Library/Application Support/mpv-handler/config.toml` and edit it (if needed)
 
 ## Configuration
 
@@ -115,7 +128,8 @@ ytdl = "/usr/bin/yt-dlp"
 [badges-play-with-mpv]: https://img.shields.io/badge/dynamic/json?style=for-the-badge&label=play-with-mpv&prefix=v&query=version&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F416271.json
 [download-aur-git]: https://aur.archlinux.org/packages/mpv-handler-git/
 [download-aur]: https://aur.archlinux.org/packages/mpv-handler/
-[download-linux]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-linux-x64.zip
-[download-windows]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-windows-x64.zip
+[download-linux]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-linux-amd64.zip
+[download-macos]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-macos-amd64.zip
+[download-windows]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-windows-amd64.zip
 [greasyfork-play-with-mpv]: https://greasyfork.org/scripts/416271-play-with-mpv
 [linuxuprising]: https://www.linuxuprising.com/2021/07/open-youtube-and-more-videos-from-your.html
