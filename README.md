@@ -57,7 +57,13 @@ v_codec = [ av01, vp9, h265, h264 ]
 2. Unzip the archive
 3. Copy `mpv-handler` to `$HOME/.local/bin`
 4. Copy `mpv-handler.desktop` to `$HOME/.local/share/applications/`
-5. Register xdg-mime (thanks for the [linuxuprising][linuxuprising] reminder)
+5. Set executable permission for binary
+
+```
+$ chmod +x $HOME/.local/bin/mpv-handler
+```
+
+6. Register xdg-mime (thanks for the [linuxuprising][linuxuprising] reminder)
 
 ```
 $ xdg-mime default mpv-handler.desktop x-scheme-handler/mpv

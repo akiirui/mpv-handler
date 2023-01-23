@@ -57,7 +57,13 @@ v_codec = [ av01, vp9, h265, h264 ]
 2. 解壓縮壓縮包
 3. 複製 `mpv-handler` 至 `$HOME/.local/bin`
 4. 複製 `mpv-handler.desktop` 至 `$HOME/.local/share/applications/`
-5. 註冊 xdg-mime（感謝 [linuxuprising][linuxuprising] 的提醒）
+5. 爲二進制文件設置可執行權限
+
+```
+$ chmod +x $HOME/.local/bin/mpv-handler
+```
+
+6. 註冊 xdg-mime（感謝 [linuxuprising][linuxuprising] 的提醒）
 
 ```
 $ xdg-mime default mpv-handler.desktop x-scheme-handler/mpv
