@@ -53,7 +53,7 @@ v_codec = [ av01, vp9, h265, h264 ]
 
 #### 手动安装
 
-1. 下载 [latest/mpv-handler-linux-x64.zip][download-linux]
+1. 下载 [latest/linux][download-linux]
 2. 解压缩压缩包
 3. 复制 `mpv-handler` 至 `$HOME/.local/bin`
 4. 复制 `mpv-handler.desktop` 至 `$HOME/.local/share/applications/`
@@ -72,7 +72,7 @@ Windows 用户目前只能手动安装 `mpv-handler`。
 
 #### 手动安装
 
-1. 下载 [latest/mpv-handler-windows-x64.zip][download-windows]
+1. 下载 [latest/windows][download-windows]
 2. 解压缩档案到你想要的位置
 3. 运行 `handler-install.bat` 注册协议处理程序
 4. 添加 **mpv** 和 **yt-dlp** 到环境变量 `PATH`

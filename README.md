@@ -53,7 +53,7 @@ v_codec = [ av01, vp9, h265, h264 ]
 
 #### Manual installation
 
-1. Download [latest/mpv-handler-linux-x64.zip][download-linux]
+1. Download [latest/linux][download-linux]
 2. Unzip the archive
 3. Copy `mpv-handler` to `$HOME/.local/bin`
 4. Copy `mpv-handler.desktop` to `$HOME/.local/share/applications/`
@@ -72,7 +72,7 @@ Windows users need to install `mpv-handler` manually.
 
 #### Manual installation
 
-1. Download [latest/mpv-handler-windows-x64.zip][download-windows]
+1. Download [latest/windows][download-windows]
 2. Unzip the archive to the directory you want
 3. Run `handler-install.bat` register protocol handler
 4. Add **mpv** and **yt-dlp** to environment variable `PATH` (if needed)
