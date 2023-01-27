@@ -1,12 +1,14 @@
 name: Build
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - "*"
 
 env:
   CARGO_TERM_COLOR: always
+  RUSTFLAGS: "-C strip=symbols"
 
 jobs:
   build:
@@ -62,7 +64,6 @@ jobs:
 
       - name: Package Linux
         run: |
-          strip linux-amd64/mpv-handler
           zip -j mpv-handler-linux-amd64.zip \
             README*.md \
             share/linux/* \
@@ -70,7 +71,6 @@ jobs:
 
       - name: Package Windows
         run: |
-          strip windows-amd64/mpv-handler.exe
           zip -j mpv-handler-windows-amd64.zip \
             README*.md \
             share/windows/* \
