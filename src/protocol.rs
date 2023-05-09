@@ -110,8 +110,10 @@ impl Protocol<'_> {
 /// "rtmpe", "rtmpt", "rtmpts", "rtmpte", "data"
 /// ```
 fn decode(data: &str) -> Result<String, Error> {
-    let tmp = data.to_string().replace('-', "+").replace('_', "/");
-    let url = String::from_utf8(base64::decode(tmp)?)?;
+    let url = String::from_utf8(base64::Engine::decode(
+        &base64::prelude::BASE64_URL_SAFE_NO_PAD,
+        data,
+    )?)?;
 
     match url.find("://") {
         Some(s) => {
@@ -129,7 +131,7 @@ fn decode(data: &str) -> Result<String, Error> {
 fn test_protocol_parse() {
     // All parameters
     let proto =
-        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ==/?cookies=www.youtube.com.txt&profile=low-latency&quality=1080p&v_codec=av01").unwrap();
+        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ/?cookies=www.youtube.com.txt&profile=low-latency&quality=1080p&v_codec=av01").unwrap();
 
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
@@ -140,7 +142,7 @@ fn test_protocol_parse() {
 
     // None parameter
     let proto =
-        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ==/")
+        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ/")
             .unwrap();
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
@@ -151,7 +153,7 @@ fn test_protocol_parse() {
 
     // None parameter and last slash
     let proto =
-        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ==")
+        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ")
             .unwrap();
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
