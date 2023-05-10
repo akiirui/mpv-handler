@@ -1,6 +1,6 @@
 [package]
 name = "mpv-handler"
-version = "0.3.3"
+version = "0.3.4"
 edition = "2021"
 authors = ["Akatsuki Rui <akiirui@outlook.com>"]
 description = "Play website videos and songs with mpv & youtube-dl"
