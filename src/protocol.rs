@@ -8,20 +8,21 @@ const SAFE_PROTOS: [&str; 11] = [
 /// Protocol of mpv-handler
 ///
 /// ```
-/// mpv://PLUGINS/ENCODED_VIDEO_URL/?PARAMETERS=VALUES
+/// mpv://PLUGINS/ENCODED_URL/?PARAMETERS=VALUES
 /// ```
 ///
 /// PLUGINS:
 /// - play
 ///
-/// ENCODED_VIDEO_URL:
-/// - URL-safe base64 encoded data
+/// ENCODED_URL:
+/// - URL-safe base64 encoded URL
 ///
 /// PARAMETERS:
 /// - cookies
 /// - profile
 /// - quality
 /// - v_codec
+/// - subfile
 #[derive(Debug, PartialEq)]
 pub struct Protocol<'a> {
     pub plugin: Plugins,
@@ -30,6 +31,7 @@ pub struct Protocol<'a> {
     pub profile: Option<&'a str>,
     pub quality: Option<&'a str>,
     pub v_codec: Option<&'a str>,
+    pub subfile: Option<String>,
 }
 
 impl Protocol<'_> {
@@ -41,6 +43,7 @@ impl Protocol<'_> {
         let mut profile: Option<&str> = None;
         let mut quality: Option<&str> = None;
         let mut v_codec: Option<&str> = None;
+        let mut subfile: Option<String> = None;
 
         let mut i = "mpv://".len();
 
@@ -85,6 +88,7 @@ impl Protocol<'_> {
                     "profile" => profile = Some(v),
                     "quality" => quality = Some(v),
                     "v_codec" => v_codec = Some(v),
+                    "subfile" => subfile = Some(decode(v)?),
                     _ => {}
                 };
             }
@@ -97,13 +101,14 @@ impl Protocol<'_> {
             profile,
             quality,
             v_codec,
+            subfile,
         })
     }
 }
 
-/// Decode base64 data (URL-Safe) and check video protocol
+/// Decode base64 data (URL-safe) and check URL protocol
 ///
-/// Allowed video protocols:
+/// Allowed protocols:
 ///
 /// ```
 /// "http", "https", "ftp", "ftps", "rtmp", "rtmps",
@@ -131,7 +136,7 @@ fn decode(data: &str) -> Result<String, Error> {
 fn test_protocol_parse() {
     // All parameters
     let proto =
-        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ/?cookies=www.youtube.com.txt&profile=low-latency&quality=1080p&v_codec=av01").unwrap();
+        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ/?cookies=www.youtube.com.txt&profile=low-latency&quality=1080p&v_codec=av01&subfile=aHR0cDovL2V4YW1wbGUuY29tL2VuLmFzcw").unwrap();
 
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
@@ -139,6 +144,7 @@ fn test_protocol_parse() {
     assert_eq!(proto.profile, Some("low-latency"));
     assert_eq!(proto.quality, Some("1080p"));
     assert_eq!(proto.v_codec, Some("av01"));
+    assert_eq!(proto.subfile, Some("http://example.com/en.ass".to_string()));
 
     // None parameter
     let proto =
@@ -150,6 +156,7 @@ fn test_protocol_parse() {
     assert_eq!(proto.profile, None);
     assert_eq!(proto.quality, None);
     assert_eq!(proto.v_codec, None);
+    assert_eq!(proto.subfile, None);
 
     // None parameter and last slash
     let proto =
@@ -161,4 +168,5 @@ fn test_protocol_parse() {
     assert_eq!(proto.profile, None);
     assert_eq!(proto.quality, None);
     assert_eq!(proto.v_codec, None);
+    assert_eq!(proto.subfile, None);
 }
