@@ -6,6 +6,7 @@ const PREFIX_COOKIES: &str = "--ytdl-raw-options-append=cookies=";
 const PREFIX_PROFILE: &str = "--profile=";
 const PREFIX_QUALITY: &str = "--ytdl-format=";
 const PREFIX_V_CODEC: &str = "--ytdl-raw-options-append=format-sort=";
+const PREFIX_SUBFILE: &str = "--sub-file=";
 
 /// Execute player with given options
 pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
@@ -14,6 +15,7 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     let option_profile: String;
     let option_quality: String;
     let option_v_codec: String;
+    let option_subfile: String;
 
     // Append cookies option
     if let Some(v) = proto.cookies {
@@ -78,6 +80,13 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
         options.push(&option_v_codec);
     }
 
+    // Append subfile option
+    if let Some(v) = &proto.subfile {
+        option_subfile = subfile(v);
+
+        options.push(&option_subfile);
+    }
+
     // Fix some browsers to overwrite "LD_LIBRARY_PATH" on Linux
     // It will be broken mpv player
     // mpv: symbol lookup error: mpv: undefined symbol: vkCreateWaylandSurfaceKHR
@@ -124,6 +133,11 @@ fn quality(quality: i32) -> String {
 /// Return v_codec option
 fn v_codec(v_codec: &str) -> String {
     format!("{PREFIX_V_CODEC}+vcodec:{v_codec}").to_string()
+}
+
+/// Return subfile option
+fn subfile(subfile: &str) -> String {
+    format!("{PREFIX_SUBFILE}{subfile}").to_string()
 }
 
 #[test]
@@ -181,5 +195,15 @@ fn test_v_codec_option() {
     assert_eq!(
         option_v_codec_vp9,
         "--ytdl-raw-options-append=format-sort=+vcodec:vp9".to_string()
+    );
+}
+
+#[test]
+fn test_subfile_option() {
+    let option_profile = subfile("http://example.com/en.ass");
+
+    assert_eq!(
+        option_profile,
+        "--sub-file=http://example.com/en.ass".to_string()
     );
 }
