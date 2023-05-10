@@ -24,13 +24,15 @@
 
 ### 编码的视频网址 / Encoded Video URL
 
-使用 [URL 安全的 base64][wiki-url-base64] 编码视频网址。
+使用 [URL 安全的 base64][rfc-base64-url] 编码视频网址。
+
+替换 `/` 至 `_`, `+` 至 `-` 并且删除填充的 `=`。
 
 示例 (JavaScript):
 
 ```javascript
 let data = btoa("https://www.youtube.com/watch?v=Ggkn2f5e-IU");
-let safe = data.replace(/\//g, "_").replace(/\+/g, "-");
+let safe = data.replace(/\//g, "_").replace(/\+/g, "-").replace(/\=/g, "");
 ```
 
 ### 参数 / Parameters (可选)
@@ -122,7 +124,7 @@ ytdl = "/usr/bin/yt-dlp"
 #   路径格式可以是 "C:\\folder\\some.exe"，也可以是 "C:/folder/some.exe"
 ```
 
-[wiki-url-base64]: https://en.wikipedia.org/wiki/Base64#URL_applications
+[rfc-base64-url]: https://datatracker.ietf.org/doc/html/rfc4648#section-5
 [badges-aur-git]: https://img.shields.io/aur/version/mpv-handler-git?label=mpv-handler-git&style=for-the-badge
 [badges-aur]: https://img.shields.io/aur/version/mpv-handler?label=mpv-handler&style=for-the-badge
 [badges-play-with-mpv]: https://img.shields.io/badge/dynamic/json?style=for-the-badge&label=play-with-mpv&prefix=v&query=version&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F416271.json

@@ -24,13 +24,15 @@ Please use it with userscript:
 
 ### Encoded Video URL
 
-Use [URL-safe base64][wiki-url-base64] to encode the video URL.
+Use [URL-safe base64][rfc-base64-url] to encode the video URL.
+
+Replace `/` to `_`, `+` to `-` and remove padding `=`.
 
 Example (JavaScript):
 
 ```javascript
 let data = btoa("https://www.youtube.com/watch?v=Ggkn2f5e-IU");
-let safe = data.replace(/\//g, "_").replace(/\+/g, "-");
+let safe = data.replace(/\//g, "_").replace(/\+/g, "-").replace(/\=/g, "");
 ```
 
 ### Parameters (Optional)
@@ -122,7 +124,7 @@ ytdl = "/usr/bin/yt-dlp"
 #   The path can be "C:\\folder\\some.exe" or "C:/folder/some.exe"
 ```
 
-[wiki-url-base64]: https://en.wikipedia.org/wiki/Base64#URL_applications
+[rfc-base64-url]: https://datatracker.ietf.org/doc/html/rfc4648#section-5
 [badges-aur-git]: https://img.shields.io/aur/version/mpv-handler-git?label=mpv-handler-git&style=for-the-badge
 [badges-aur]: https://img.shields.io/aur/version/mpv-handler?label=mpv-handler&style=for-the-badge
 [badges-play-with-mpv]: https://img.shields.io/badge/dynamic/json?style=for-the-badge&label=play-with-mpv&prefix=v&query=version&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F416271.json
