@@ -22,9 +22,9 @@
 
 - `play`: 使用 mpv 播放視頻
 
-### 編碼的視頻網址 / Encoded Video URL
+### 編碼的網址 / Encoded URL
 
-使用 [URL 安全的 base64][rfc-base64-url] 編碼視頻網址。
+使用 [URL 安全的 base64][rfc-base64-url] 編碼網址。
 
 替換 `/` 至 `_`, `+` 至 `-` 並且刪除填充的 `=`。
 
@@ -42,6 +42,7 @@ cookies = [ www.domain.com.txt ]
 profile = [ default, low-latency, etc... ]
 quality = [ best, 2160p, 1440p, 1080p, 720p, 480p, 360p ]
 v_codec = [ av01, vp9, h265, h264 ]
+subfile = [ Encoded URL ]
 ```
 
 ## 安裝
