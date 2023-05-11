@@ -16,7 +16,7 @@ Please use it with userscript:
 
 ## Protocol
 
-![](share/proto.svg)
+![](share/proto.png)
 
 ### Plugins
 

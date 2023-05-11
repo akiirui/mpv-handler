@@ -200,10 +200,10 @@ fn test_v_codec_option() {
 
 #[test]
 fn test_subfile_option() {
-    let option_profile = subfile("http://example.com/en.ass");
+    let option_subfile = subfile("http://example.com/en.ass");
 
     assert_eq!(
-        option_profile,
+        option_subfile,
         "--sub-file=http://example.com/en.ass".to_string()
     );
 }
