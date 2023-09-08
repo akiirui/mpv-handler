@@ -4,8 +4,8 @@ use std::path::PathBuf;
 
 /// Config of mpv-handler
 ///
-/// - `mpv`: mpv player binary path
-/// - `ytdl`: Youtube-DL binary path
+/// - `mpv`: mpv binary path
+/// - `ytdl`: yt-dlp binary path
 /// - `proxy: HTTP(S) proxy server address
 #[derive(Debug, Deserialize)]
 pub struct Config {
