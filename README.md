@@ -116,10 +116,15 @@ mpv = "/usr/bin/mpv"
 ytdl = "/usr/bin/yt-dlp"
 
 # Optional, Type: String
-# The path of youtube-dl binary
+# The path of yt-dlp binary
 # Default value:
 # - Linux: yt-dlp
 # - Windows: yt-dlp.exe
+
+proxy = "http://example.com:8080"
+
+# Optional, Type: String
+# The proxy server address
 
 # For Windows users:
 #   The path can be "C:\\folder\\some.exe" or "C:/folder/some.exe"

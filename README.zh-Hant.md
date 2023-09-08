@@ -116,10 +116,15 @@ mpv = "/usr/bin/mpv"
 ytdl = "/usr/bin/yt-dlp"
 
 # 可選，類型：字符串
-# youtube-dl 可執行文件的路徑
+# yt-dlp 可執行文件的路徑
 # 默認值:
 # - Linux: yt-dlp
 # - Windows: yt-dlp.exe
+
+proxy = "http://example.com:8080"
+
+# 可選，類型：字符串
+# 代理服務器的地址
 
 # 對於 Windows 用戶：
 #   路徑格式可以是 "C:\\folder\\some.exe"，也可以是 "C:/folder/some.exe"
