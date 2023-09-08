@@ -93,6 +93,13 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     #[cfg(unix)]
     std::env::remove_var("LD_LIBRARY_PATH");
 
+    // Set HTTP(S) proxy environment variables
+    if let Some(proxy) = &config.proxy {
+        std::env::set_var("http_proxy", proxy);
+        std::env::set_var("HTTP_PROXY", proxy);
+        std::env::set_var("https_proxy", proxy);
+        std::env::set_var("HTTPS_PROXY", proxy);
+    }
     // Print video URL
     println!("Playing: {}", proto.url);
 

@@ -6,12 +6,14 @@ use std::path::PathBuf;
 ///
 /// - `mpv`: mpv player binary path
 /// - `ytdl`: Youtube-DL binary path
+/// - `proxy: HTTP(S) proxy server address
 #[derive(Debug, Deserialize)]
 pub struct Config {
     #[serde(default = "default_mpv")]
     pub mpv: String,
     #[serde(default = "default_ytdl")]
     pub ytdl: String,
+    pub proxy: Option<String>,
 }
 
 impl Config {
@@ -64,6 +66,7 @@ fn default_config() -> Config {
     Config {
         mpv: default_mpv(),
         ytdl: default_ytdl(),
+        proxy: None,
     }
 }
 
@@ -89,17 +92,20 @@ fn test_config_parse() {
         r#"
             mpv = "/usr/bin/mpv"
             ytdl = "/usr/bin/yt-dlp"
+            proxy = "http://example.com:8080"
         "#,
     )
     .unwrap();
 
     assert_eq!(config.mpv, "/usr/bin/mpv");
     assert_eq!(config.ytdl, "/usr/bin/yt-dlp");
+    assert_eq!(config.proxy, Some("http://example.com:8080".to_string()));
 
     let config: Config = toml::from_str(
         r#"
             key1 = "value1"
             key2 = "value2"
+            key3 = "value3"
         "#,
     )
     .unwrap();
@@ -108,10 +114,12 @@ fn test_config_parse() {
     {
         assert_eq!(config.mpv, "mpv");
         assert_eq!(config.ytdl, "yt-dlp");
+        assert_eq!(config.proxy, None);
     }
     #[cfg(windows)]
     {
         assert_eq!(config.mpv, "mpv.com");
         assert_eq!(config.ytdl, "yt-dlp.exe");
+        assert_eq!(config.proxy, None);
     }
 }
