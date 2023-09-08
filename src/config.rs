@@ -22,8 +22,8 @@ impl Config {
         let path = config_path()?;
 
         if path.exists() {
-            let data: Vec<u8> = std::fs::read(&path)?;
-            let config: Config = toml::from_slice(&data)?;
+            let data: String = std::fs::read_to_string(&path)?;
+            let config: Config = toml::from_str(&data)?;
 
             return Ok(config);
         }
