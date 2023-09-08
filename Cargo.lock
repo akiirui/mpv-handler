@@ -88,7 +88,7 @@ checksum = "8f232d6ef707e1956a43342693d2a31e72989554d58299d7a88738cc95b0d35c"
 
 [[package]]
 name = "mpv-handler"
-version = "0.3.4"
+version = "0.3.5"
 dependencies = [
  "base64",
  "dirs",
