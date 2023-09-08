@@ -9,7 +9,7 @@
 # ytdl = "/path/of/ytdl"
 
 # Optional, Type: String
-# The path of youtube-dl binary
+# The path of yt-dlp binary
 # Default value:
 # - Linux: yt-dlp
 # - Windows: yt-dlp.exe

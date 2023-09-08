@@ -2,7 +2,7 @@
 Type=Application
 Name=mpv-handler
 GenericName=Multimedia player
-Comment=Play website videos and songs with mpv & youtube-dl
+Comment=Play website videos and songs with mpv & yt-dlp
 NoDisplay=true
 Icon=mpv
 Exec=mpv-handler %u
