@@ -13,3 +13,8 @@
 # Default value:
 # - Linux: yt-dlp
 # - Windows: yt-dlp.exe
+
+# proxy = "http://example.com:8080"
+
+# Optional, Type: String
+# The proxy server address
