@@ -18,6 +18,7 @@ const SAFE_PROTOS: [&str; 11] = [
 /// - URL-safe base64 encoded URL
 ///
 /// PARAMETERS:
+/// - referer
 /// - cookies
 /// - profile
 /// - quality
@@ -27,6 +28,7 @@ const SAFE_PROTOS: [&str; 11] = [
 pub struct Protocol<'a> {
     pub plugin: Plugins,
     pub url: String,
+    pub referer: Option<String>,
     pub cookies: Option<&'a str>,
     pub profile: Option<&'a str>,
     pub quality: Option<&'a str>,
@@ -39,6 +41,7 @@ impl Protocol<'_> {
     pub fn parse(arg: &str) -> Result<Protocol, Error> {
         let plugin;
         let url;
+        let mut referer: Option<String> = None;
         let mut cookies: Option<&str> = None;
         let mut profile: Option<&str> = None;
         let mut quality: Option<&str> = None;
@@ -56,6 +59,8 @@ impl Protocol<'_> {
         (i, plugin) = if let Some(s) = arg[i..].find('/') {
             match &arg[i..i + s] {
                 "play" => (i + s + 1, Plugins::Play),
+                "stream" => (i + s + 1, Plugins::Stream),
+                "pipe" => (i + s + 1, Plugins::Pipe),
                 _ => return Err(Error::IncorrectProtocol(arg.to_string())),
             }
         } else {
@@ -84,6 +89,7 @@ impl Protocol<'_> {
                 let v = data[1];
 
                 match k {
+                    "referer" => referer = Some(decode(v)?),
                     "cookies" => cookies = Some(v),
                     "profile" => profile = Some(v),
                     "quality" => quality = Some(v),
@@ -97,6 +103,7 @@ impl Protocol<'_> {
         Ok(Protocol {
             plugin,
             url,
+            referer,
             cookies,
             profile,
             quality,
@@ -136,11 +143,12 @@ fn decode(data: &str) -> Result<String, Error> {
 fn test_protocol_parse() {
     // All parameters
     let proto =
-        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ/?cookies=www.youtube.com.txt&profile=low-latency&quality=1080p&v_codec=av01&subfile=aHR0cDovL2V4YW1wbGUuY29tL2VuLmFzcw").unwrap();
+        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ/?referer=aHR0cHM6Ly93d3cueW91dHViZS5jb20=&cookies=firefox&profile=low-latency&quality=1080p&v_codec=av01&subfile=aHR0cDovL2V4YW1wbGUuY29tL2VuLmFzcw").unwrap();
 
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
-    assert_eq!(proto.cookies, Some("www.youtube.com.txt"));
+    assert_eq!(proto.referer, Some("https://www.youtube.com".to_string()));
+    assert_eq!(proto.cookies, Some("firefox"));
     assert_eq!(proto.profile, Some("low-latency"));
     assert_eq!(proto.quality, Some("1080p"));
     assert_eq!(proto.v_codec, Some("av01"));
@@ -152,6 +160,7 @@ fn test_protocol_parse() {
             .unwrap();
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
+    assert_eq!(proto.referer, None);
     assert_eq!(proto.cookies, None);
     assert_eq!(proto.profile, None);
     assert_eq!(proto.quality, None);
@@ -164,6 +173,7 @@ fn test_protocol_parse() {
             .unwrap();
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
+    assert_eq!(proto.referer, None);
     assert_eq!(proto.cookies, None);
     assert_eq!(proto.profile, None);
     assert_eq!(proto.quality, None);

@@ -8,7 +8,7 @@
 
 A protocol handler for **mpv**, written by Rust.
 
-Use **mpv** and **yt-dlp** to play video and music from the websites.
+Use **mpv** and **yt-dlp** and **streamlink** to play video and music from the websites.
 
 Please use it with userscript:
 
@@ -20,7 +20,9 @@ Please use it with userscript:
 
 ### Plugins
 
-- `play`: Use mpv player to play video
+- `play`  : Use mpv player to play video
+- `stream`: Use streamlink to play video
+- `pipe`  : Use yl-dlp stdout send to mpv player to play video
 
 ### Encoded URL
 
@@ -38,16 +40,20 @@ let safe = data.replace(/\//g, "_").replace(/\+/g, "-").replace(/\=/g, "");
 ### Parameters (Optional)
 
 ```
-cookies = [ www.domain.com.txt ]
-profile = [ default, low-latency, etc... ]
-quality = [ 2160p, 1440p, 1080p, 720p, 480p, 360p ]
-v_codec = [ av01, vp9, h265, h264 ]
-subfile = [ Encoded URL ]
+referer = [ Encoded URL ]
+cookies = [ firefox, chorme,.. ] (for plugin: play)
+profile = [ default, low-latency, etc... ] (for plugin: play, pipe)
+quality = [ 2160p, 1440p, 1080p, 720p, 480p, 360p ] (for plugin: play, pipe)
+          [ best, 1080p, 720p, 480p, worst ] (for plugin: stream)
+v_codec = [ av01, vp9, h265, h264 ] (for plugin: play)
+subfile = [ Encoded URL ] (for plugin: play)
 ```
 
 ## Installation
 
 ### Linux
+
+**I haven't tested for new plugin(stream, pipe) cause i'm using windows.**
 
 - Arch Linux
 
@@ -84,7 +90,7 @@ Windows users need to install manually.
 1. Download [latest Windows release][download-windows]
 2. Unzip the archive to the directory you want
 3. Run `handler-install.bat` register protocol handler
-4. Add **mpv** and **yt-dlp** to environment variable `PATH` (if needed)
+4. Add **mpv** and **yt-dlp** and **streamlink** to environment variable `PATH` (if needed)
 5. Edit `config.toml` (if needed)
 
 ### macOS (Alpha)
@@ -121,10 +127,31 @@ ytdl = "/usr/bin/yt-dlp"
 # - Linux: yt-dlp
 # - Windows: yt-dlp.exe
 
-proxy = "http://example.com:8080"
+streamlink = "/usr/bin/streamlink"
+
+# Optional, Type: String
+# The path of streamlink binary
+# Default value:
+# - Linux: streamlink
+# - Windows: streamlink.exe
+
+stream_conf = "/usr/local/share/streamlink/confing"
+
+# Optional, Type: String
+# The path of streamlink config file
+
+# proxy = "http://example.com:8080"
 
 # Optional, Type: String
 # The proxy server address
+
+
+hide_log = true
+
+# Optional, Type: bool
+# Hide log in console
+# Work only for windows
+# Defaut value false
 
 # For Windows users:
 #   The path can be "C:\\folder\\some.exe" or "C:/folder/some.exe"

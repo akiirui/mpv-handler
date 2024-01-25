@@ -14,10 +14,31 @@
 # - Linux: yt-dlp
 # - Windows: yt-dlp.exe
 
+# streamlink = "C:\\path\\of\\streamlink.exe"
+
+# Optional, Type: String
+# The path of streamlink binary
+# Default value:
+# - Linux: streamlink
+# - Windows: streamlink.exe
+
+# stream_conf = "C:\\path\\of\\streamlink.conf"
+
+# Optional, Type: String
+# The path of streamlink config file
+
 # proxy = "http://example.com:8080"
 
 # Optional, Type: String
 # The proxy server address
+
+
+# hide_log = true
+
+# Optional, Type: bool
+# Hide log in console
+# Work only for windows
+# Defaut value false
 
 # For Windows users:
 #   The path can be "C:\\folder\\some.exe" or "C:/folder/some.exe"

@@ -1,3 +1,11 @@
+#![cfg_attr(
+    all(
+        target_os = "windows",
+        not(feature = "console"),
+    ),
+    windows_subsystem = "windows"
+)]
+
 mod config;
 mod error;
 mod plugins;
@@ -34,6 +42,8 @@ fn run() -> Result<(), Error> {
 
             match proto.plugin {
                 Plugins::Play => crate::plugins::play::exec(&proto, &config),
+                Plugins::Stream => crate::plugins::stream::exec(&proto, &config),
+                Plugins::Pipe => crate::plugins::pipe::exec(&proto, &config),
             }
         }
     }

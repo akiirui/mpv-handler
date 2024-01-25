@@ -2,7 +2,7 @@
 name = "mpv-handler"
 version = "0.3.5"
 edition = "2021"
-authors = ["Akatsuki Rui <akiirui@outlook.com>"]
+authors = ["Akatsuki Rui <akiirui@outlook.com> - modify by Ranko"]
 description = "Play website videos and songs with mpv & yt-dlp"
 license = "MIT"
 readme = "README.md"
@@ -16,4 +16,8 @@ base64 = "0.21"
 dirs = "5.0"
 serde = { version = "1.0", features = ["derive"] }
 thiserror = "1.0"
-toml = "0.7"
+toml = "0.8.8"
+tempdir = "0.3"
+
+[features]
+console = []

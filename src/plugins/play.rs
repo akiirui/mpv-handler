@@ -2,51 +2,42 @@ use crate::config::Config;
 use crate::error::Error;
 use crate::protocol::Protocol;
 
-const PREFIX_COOKIES: &str = "--ytdl-raw-options-append=cookies=";
+use std::process::Command;
+#[cfg(windows)]
+use std::os::windows::process::CommandExt;
+
+const PREFIX_REFERER: &str = "--http-header-fields=Referer:";
+const PREFIX_COOKIES: &str = "--ytdl-raw-options-append=cookies-from-browser=";
 const PREFIX_PROFILE: &str = "--profile=";
 const PREFIX_QUALITY: &str = "--ytdl-format=";
 const PREFIX_V_CODEC: &str = "--ytdl-raw-options-append=format-sort=";
 const PREFIX_SUBFILE: &str = "--sub-file=";
 
+#[cfg(windows)]
+const DETACHED_PROCESS: u32 = 0x00000008;
+
 /// Execute player with given options
 pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     let mut options: Vec<&str> = Vec::new();
+    let option_referer: String;
     let option_cookies: String;
     let option_profile: String;
     let option_quality: String;
     let option_v_codec: String;
     let option_subfile: String;
 
+    // Append profile option
+    if let Some(v) = &proto.referer {
+        option_referer = referer(v);
+
+        options.push(&option_referer);
+    }
+
     // Append cookies option
     if let Some(v) = proto.cookies {
-        let mut p: std::path::PathBuf;
+        option_cookies = cookies(v);
 
-        #[cfg(unix)]
-        {
-            p = match dirs::config_dir() {
-                Some(path) => path,
-                None => return Err(Error::FailedGetConfigDir),
-            };
-            p.push("mpv-handler");
-            p.push("cookies");
-            p.push(v);
-        }
-
-        #[cfg(windows)]
-        {
-            p = std::env::current_exe()?;
-            p.pop();
-            p.push("cookies");
-            p.push(v);
-        }
-
-        if p.exists() {
-            option_cookies = cookies(p.display());
-
-            options.push(&option_cookies);
-        } else {
-            eprintln!("Cookies file {v} doesn't exist");
-        }
+        options.push(&option_cookies);
     }
 
     // Append profile option
@@ -102,14 +93,33 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     }
     // Print video URL
     println!("Playing: {}", proto.url);
+    // Print command
+    println!("Option: {:#?}", options);
 
     // Execute mpv player
-    let status = std::process::Command::new(&config.mpv)
+    #[cfg(unix)]
+    let status = Command::new(&config.mpv)
         .args(options)
         .arg("--")
         .arg(&proto.url)
         .status();
-
+    
+    #[cfg(windows)]
+    let status = if config.hide_log {
+        Command::new(&config.mpv)
+            .creation_flags(DETACHED_PROCESS)
+            .args(options)
+            .arg("--")
+            .arg(&proto.url)
+            .status()
+    } else {
+        Command::new(&config.mpv)
+            .args(options)
+            .arg("--")
+            .arg(&proto.url)
+            .status()
+    };
+    
     match status {
         Ok(o) => match o.code() {
             Some(code) => match code {
@@ -122,8 +132,13 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     }
 }
 
+/// Return referer option
+fn referer(referer: &str) -> String {
+    format!("{PREFIX_REFERER}{referer}").to_string()
+}
+
 /// Return cookies option
-fn cookies(cookies: std::path::Display) -> String {
+fn cookies(cookies: &str) -> String {
     format!("{PREFIX_COOKIES}{cookies}").to_string()
 }
 
@@ -149,13 +164,19 @@ fn subfile(subfile: &str) -> String {
 
 #[test]
 fn test_cookies_option() {
-    let option_cookies =
-        cookies(std::path::PathBuf::from("/some/cookies/domain.com.txt").display());
+    let option_cookies = cookies("firefox");
 
     assert_eq!(
         option_cookies,
-        "--ytdl-raw-options-append=cookies=/some/cookies/domain.com.txt".to_string()
+        "--ytdl-raw-options-append=cookies-from-browser=firefox".to_string()
     )
+}
+
+#[test]
+fn test_referer_option() {
+    let option_referer = referer("http://www.youtube.com");
+
+    assert_eq!(option_referer, "--http-header-fields=Referer=http://www.youtube.com".to_string());
 }
 
 #[test]
