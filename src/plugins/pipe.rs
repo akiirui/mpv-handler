@@ -136,7 +136,7 @@ fn quality(quality: i32) -> String {
 
 /// Return temp folder as working path
 fn temp() -> String {
-    return format!("cd {} &&", env::temp_dir().to_string_lossy().into_owned()).to_string();
+    format!("cd {} &&", env::temp_dir().to_string_lossy().into_owned()).to_string()
 }
 
 /// Return profile option

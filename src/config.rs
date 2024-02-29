@@ -76,8 +76,7 @@ fn default_config() -> Config {
         streamlink: default_streamlink(),
         stream_conf: String::new(),
         proxy: None,
-        hide_log: default_hide_log
-        ()
+        hide_log: default_hide_log()
     }
 }
 
@@ -107,7 +106,7 @@ fn default_streamlink() -> String {
 
 /// The default value of `Config.no_console`
 fn default_hide_log() -> bool {
-    return false;
+    false
 }
 
 #[test]
