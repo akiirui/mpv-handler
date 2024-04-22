@@ -16,9 +16,6 @@ call :check_binary
 :: Add registry
 call :add_verbs
 
-echo Sussessful install handler
-echo Enjoy!
-
 :die
     if not [%1] == [] echo %~1
     if [%unattended%] == [yes] exit 1
@@ -48,10 +45,12 @@ echo Enjoy!
 
 :check_binary
     cd /D %~dp0
-    set mpv_handler_path=%cd%\mpv-handler.exe
     set mpv_handler_conf=%cd%\config.toml
-    if not exist "%mpv_handler_path%" call :die "Not found mpv-handler.exe"
+    set mpv_handler_path=%cd%\mpv-handler.exe
+    set mpv_handler_debug_path=%cd%\mpv-handler-debug.exe
     if not exist "%mpv_handler_conf%" call :die "Not found config.toml"
+    if not exist "%mpv_handler_path%" call :die "Not found mpv-handler.exe"
+    if not exist "%mpv_handler_debug_path%" call :die "Not found mpv-handler-debug.exe"
     goto :EOF
 
 :reg
@@ -63,9 +62,21 @@ echo Enjoy!
     goto :EOF
 
 :add_verbs
+    :: Add the mpv protocol to the registry
     call :reg add "HKCR\mpv" /d "URL:mpv Handler link" /f
     call :reg add "HKCR\mpv" /v "Content Type" /d "application/x-mpv" /f
     call :reg add "HKCR\mpv" /v "URL Protocol" /f
     call :reg add "HKCR\mpv\DefaultIcon" /d "\"%mpv_exe_path%\",1" /f
     call :reg add "HKCR\mpv\shell\open\command" /d "\"%mpv_handler_path%\" \"%%%%1\"" /f
+
+    :: Add the mpv protocol to the registry
+    call :reg add "HKCR\mpv-debug" /d "URL:mpv Handler link" /f
+    call :reg add "HKCR\mpv-debug" /v "Content Type" /d "application/x-mpv-debug" /f
+    call :reg add "HKCR\mpv-debug" /v "URL Protocol" /f
+    call :reg add "HKCR\mpv-debug\DefaultIcon" /d "\"%mpv_exe_path%\",1" /f
+    call :reg add "HKCR\mpv-debug\shell\open\command" /d "\"%mpv_handler_debug_path%\" \"%%%%1\"" /f
+
+    echo Successfully installed mpv-handler
+    echo Enjoy!
+
     goto :EOF

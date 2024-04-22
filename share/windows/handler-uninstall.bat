@@ -13,7 +13,7 @@ call :ensure_admin
 :: Delete registry
 call :del_verbs
 
-echo Sussessful uninstall handler
+
 
 :die
     if not [%1] == [] echo %~1
@@ -51,5 +51,12 @@ echo Sussessful uninstall handler
     goto :EOF
 
 :del_verbs
+    :: Delete mpv protocol from the registry
     call :reg delete "HKCR\mpv" /f
+
+    :: Delete mpv-debug protocol from the registry
+    call :reg delete "HKCR\mpv-debug" /f
+
+    echo Successfully uninstalled mpv-handler
+
     goto :EOF

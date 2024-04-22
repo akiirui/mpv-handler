@@ -9,6 +9,7 @@ const SAFE_PROTOS: [&str; 11] = [
 ///
 /// ```
 /// mpv://PLUGINS/ENCODED_URL/?PARAMETERS=VALUES
+/// mpv-debug://PLUGINS/ENCODED_URL/?PARAMETERS=VALUES
 /// ```
 ///
 /// PLUGINS:
@@ -45,12 +46,17 @@ impl Protocol<'_> {
         let mut v_codec: Option<&str> = None;
         let mut subfile: Option<String> = None;
 
-        let mut i = "mpv://".len();
+        let mut i: usize;
 
-        // Check scheme `mpv://`
-        if !arg.starts_with("mpv://") {
+        // Check scheme `mpv://` and `mpv-debug://`
+        i = if let Some(protocol) = arg.find("://") {
+            match &arg[..protocol] {
+                "mpv" | "mpv-debug" => protocol + "://".len(),
+                _ => return Err(Error::IncorrectProtocol(arg.to_string())),
+            }
+        } else {
             return Err(Error::IncorrectProtocol(arg.to_string()));
-        }
+        };
 
         // Get plugin
         (i, plugin) = if let Some(s) = arg[i..].find('/') {
@@ -162,6 +168,19 @@ fn test_protocol_parse() {
     let proto =
         Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ")
             .unwrap();
+    assert_eq!(proto.plugin, Plugins::Play);
+    assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
+    assert_eq!(proto.cookies, None);
+    assert_eq!(proto.profile, None);
+    assert_eq!(proto.quality, None);
+    assert_eq!(proto.v_codec, None);
+    assert_eq!(proto.subfile, None);
+
+    // None parameter and protocol `mpv-debug`
+    let proto = Protocol::parse(
+        "mpv-debug://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ",
+    )
+    .unwrap();
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
     assert_eq!(proto.cookies, None);
