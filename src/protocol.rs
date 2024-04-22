@@ -1,6 +1,12 @@
 use crate::error::Error;
 use crate::plugins::Plugins;
 
+#[derive(Debug, PartialEq)]
+pub enum Schemes {
+    Mpv,
+    MpvDebug,
+}
+
 const SAFE_PROTOS: [&str; 11] = [
     "http", "https", "ftp", "ftps", "rtmp", "rtmps", "rtmpe", "rtmpt", "rtmpts", "rtmpte", "data",
 ];
@@ -26,6 +32,7 @@ const SAFE_PROTOS: [&str; 11] = [
 /// - subfile
 #[derive(Debug, PartialEq)]
 pub struct Protocol<'a> {
+    pub scheme: Schemes,
     pub plugin: Plugins,
     pub url: String,
     pub cookies: Option<&'a str>,
@@ -38,6 +45,7 @@ pub struct Protocol<'a> {
 impl Protocol<'_> {
     /// Parse the given argument and returns `Protocol`
     pub fn parse(arg: &str) -> Result<Protocol, Error> {
+        let scheme;
         let plugin;
         let url;
         let mut cookies: Option<&str> = None;
@@ -49,9 +57,10 @@ impl Protocol<'_> {
         let mut i: usize;
 
         // Check scheme `mpv://` and `mpv-debug://`
-        i = if let Some(protocol) = arg.find("://") {
-            match &arg[..protocol] {
-                "mpv" | "mpv-debug" => protocol + "://".len(),
+        (i, scheme) = if let Some(s) = arg.find("://") {
+            match &arg[..s] {
+                "mpv" => (s + "://".len(), Schemes::Mpv),
+                "mpv-debug" => (s + "://".len(), Schemes::MpvDebug),
                 _ => return Err(Error::IncorrectProtocol(arg.to_string())),
             }
         } else {
@@ -101,6 +110,7 @@ impl Protocol<'_> {
         }
 
         Ok(Protocol {
+            scheme,
             plugin,
             url,
             cookies,

@@ -104,13 +104,19 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     println!("Playing: {}", proto.url);
 
     // Execute mpv player
-    let status = std::process::Command::new(&config.mpv)
-        .args(options)
-        .arg("--")
-        .arg(&proto.url)
-        .status();
+    let mut command = std::process::Command::new(&config.mpv);
+    command.args(&options).arg("--").arg(&proto.url);
 
-    match status {
+    // Hide console window on Windows if not in debug mode
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        if &proto.scheme == &crate::protocol::Schemes::Mpv && !cfg!(debug_assertions) {
+            command.creation_flags(0x08000000);
+        }
+    }
+
+    match command.status() {
         Ok(o) => match o.code() {
             Some(code) => match code {
                 0 => Ok(()),
