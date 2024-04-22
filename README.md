@@ -18,6 +18,11 @@ Please use it with userscript:
 
 ![](share/proto.png)
 
+### Scheme
+
+- `mpv`: Run mpv-handler without console window
+- `mpv-debug`: Run mpv-handler with console window to view outputs and errors
+
 ### Plugins
 
 - `play`: Use mpv player to play video
@@ -60,20 +65,22 @@ subfile = [ Encoded URL ]
 2. Unzip the archive
 3. Copy `mpv-handler` to `$HOME/.local/bin`
 4. Copy `mpv-handler.desktop` to `$HOME/.local/share/applications/`
-5. Set executable permission for binary
+5. Copy `mpv-handler-debug.desktop` to `$HOME/.local/share/applications/`
+6. Set executable permission for binary
 
-```
-$ chmod +x $HOME/.local/bin/mpv-handler
-```
+   - ```
+     $ chmod +x $HOME/.local/bin/mpv-handler
+     ```
 
-6. Register xdg-mime (thanks for the [linuxuprising][linuxuprising] reminder)
+7. Register xdg-mime (thanks for the [linuxuprising][linuxuprising] reminder)
 
-```
-$ xdg-mime default mpv-handler.desktop x-scheme-handler/mpv
-```
+   - ```
+     $ xdg-mime default mpv-handler.desktop x-scheme-handler/mpv
+     $ xdg-mime default mpv-handler-debug.desktop x-scheme-handler/mpv-debug
+     ```
 
-6. Add `$HOME/.local/bin` to your environment variable `PATH` (if needed)
-7. Create `$HOME/.config/mpv-handler/config.toml` and edit it (if needed)
+8. Add `$HOME/.local/bin` to your environment variable `PATH` (if needed)
+9. Create `$HOME/.config/mpv-handler/config.toml` and edit it (if needed)
 
 ### Windows
 

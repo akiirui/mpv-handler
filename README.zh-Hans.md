@@ -18,6 +18,11 @@
 
 ![](share/proto.png)
 
+### 协议名
+
+- `mpv`: 在没有命令行窗口的情况下运行 mpv-handler
+- `mpv-debug`: 在有命令行窗口的情况下运行 mpv-handler 以便于查看输出和错误
+
 ### 插件 / Plugins
 
 - `play`: 使用 mpv 播放视频
@@ -60,20 +65,22 @@ subfile = [ Encoded URL ]
 2. 解压缩压缩包
 3. 复制 `mpv-handler` 至 `$HOME/.local/bin`
 4. 复制 `mpv-handler.desktop` 至 `$HOME/.local/share/applications/`
-5. 为二进制文件设置可执行权限
+5. 复制 `mpv-handler-debug.desktop` 至 `$HOME/.local/share/applications/`
+6. 为二进制文件设置可执行权限
 
-```
-$ chmod +x $HOME/.local/bin/mpv-handler
-```
+   - ```
+     $ chmod +x $HOME/.local/bin/mpv-handler
+     ```
 
-6. 注册 xdg-mime（感谢 [linuxuprising][linuxuprising] 的提醒）
+7. 注册 xdg-mime（感谢 [linuxuprising][linuxuprising] 的提醒）
 
-```
-$ xdg-mime default mpv-handler.desktop x-scheme-handler/mpv
-```
+   - ```
+     $ xdg-mime default mpv-handler.desktop x-scheme-handler/mpv
+     $ xdg-mime default mpv-handler-debug.desktop x-scheme-handler/mpv-debug
+     ```
 
-6. 如果需要，添加 `$HOME/.local/bin` 到环境变量 `PATH`
-7. 如果需要，创建 `$HOME/.config/mpv-handler/custom.toml` 并按需更改
+8. 如果需要，添加 `$HOME/.local/bin` 到环境变量 `PATH`
+9. 如果需要，创建 `$HOME/.config/mpv-handler/custom.toml` 并按需更改
 
 ### Windows
 
