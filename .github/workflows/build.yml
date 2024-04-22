@@ -24,7 +24,9 @@ jobs:
 
           - os: windows-latest
             artifact_name: mpv-handler.exe
+            artifact_name_debug: mpv-handler-debug.exe
             asset_name: windows-amd64
+            asset_name_debug: windows-amd64-debug
             target: x86_64-pc-windows-msvc
 
           - os: macos-latest
@@ -52,6 +54,21 @@ jobs:
           name: ${{ matrix.asset_name }}
           path: target/${{ matrix.target }}/release/${{ matrix.artifact_name }}
 
+      - name: Build mpv-debug for Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          cargo build --release --locked --target ${{ matrix.target }} `
+            --features console
+          move target/${{ matrix.target }}/release/${{ matrix.artifact_name }} `
+            target/${{ matrix.target }}/release/${{ matrix.artifact_name_debug }}
+
+      - name: Upload mpv-debug to artifact
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset_name_debug }}
+          path: target/${{ matrix.target }}/release/${{ matrix.artifact_name_debug }}
+
   publish:
     needs: build
     runs-on: ubuntu-latest
@@ -74,7 +91,8 @@ jobs:
           zip -j mpv-handler-windows-amd64.zip \
             README*.md \
             share/windows/* \
-            windows-amd64/mpv-handler.exe
+            windows-amd64/mpv-handler.exe \
+            windows-amd64-debug/mpv-handler-debug.exe
 
       - name: Package macOS
         run: |
