@@ -29,11 +29,6 @@ jobs:
             asset_name_debug: windows-amd64-debug
             target: x86_64-pc-windows-msvc
 
-          - os: macos-latest
-            artifact_name: mpv-handler
-            asset_name: macos-amd64
-            target: x86_64-apple-darwin
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -93,15 +88,6 @@ jobs:
             share/windows/* \
             windows-amd64/mpv-handler.exe \
             windows-amd64-debug/mpv-handler-debug.exe
-
-      - name: Package macOS
-        run: |
-          mkdir -p macos-amd64/mpv-handler.app/Contents/MacOS
-          cp README*.md macos-amd64
-          cp share/macos/Info.plist macos-amd64/mpv-handler.app/Contents
-          mv macos-amd64/mpv-handler macos-amd64/mpv-handler.app/Contents/MacOS
-          cd macos-amd64
-          zip -r ../mpv-handler-macos-amd64.zip .
 
       - name: SHA512SUM
         run: |

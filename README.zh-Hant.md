@@ -94,19 +94,6 @@ Windows 用戶目前只能手動安裝。
 4. 如果需要，添加 **mpv** 和 **yt-dlp** 到環境變量 `PATH`
 5. 如果需要，更改 `config.toml`
 
-### macOS (Alpha)
-
-**我沒有測試過它，如果它不工作，請通過 issue 反饋。**
-
-macOS 用戶目前只能手動安裝。
-
-#### 手動安裝
-
-1. 下載 [最新的 macOS 壓縮包][download-macos]
-2. 解壓縮檔案並複製 `mpv-handler.app` 文件夾到 `$HOME/Applications`
-3. 如果需要，添加 **mpv** 和 **yt-dlp** 到環境變量 `PATH`
-4. 如果需要，創建 `$HOME/Library/Application Support/mpv-handler/config.toml` 並按需更改
-
 ## 配置
 
 如果您已經把 **mpv** 和 **yt-dlp** 添加到了 `PATH`，通常來說不需要手動配置。

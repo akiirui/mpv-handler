@@ -94,19 +94,6 @@ Windows users need to install manually.
 4. Add **mpv** and **yt-dlp** to environment variable `PATH` (if needed)
 5. Edit `config.toml` (if needed)
 
-### macOS (Alpha)
-
-**I haven't tested it, if it doesn't work, please open an issue.**
-
-macOS users need to install manually
-
-#### Manual installation
-
-1. Download [latest macOS release][download-macos]
-2. Unzip the archive and copy `mpv-handler.app` directory to `$HOME/Applications`
-3. Add **mpv** and **yt-dlp** to environment variable `PATH` (if needed)
-4. Create `$HOME/Library/Application Support/mpv-handler/config.toml` and edit it (if needed)
-
 ## Configuration
 
 If you have already added **mpv** and **yt-dlp** to `PATH`, manual configuration is usually not required.
