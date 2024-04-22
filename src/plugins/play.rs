@@ -4,8 +4,7 @@ use crate::protocol::Protocol;
 
 const PREFIX_COOKIES: &str = "--ytdl-raw-options-append=cookies=";
 const PREFIX_PROFILE: &str = "--profile=";
-const PREFIX_QUALITY: &str = "--ytdl-format=";
-const PREFIX_V_CODEC: &str = "--ytdl-raw-options-append=format-sort=";
+const PREFIX_FORMATS: &str = "--ytdl-raw-options-append=format-sort=";
 const PREFIX_SUBFILE: &str = "--sub-file=";
 
 /// Execute player with given options
@@ -140,12 +139,12 @@ fn profile(profile: &str) -> String {
 
 /// Return quality option
 fn quality(quality: i32) -> String {
-    format!("{PREFIX_QUALITY}bv*[height<={quality}]+ba/b[height<={quality}]/b").to_string()
+    format!("{PREFIX_FORMATS}res:{quality}").to_string()
 }
 
 /// Return v_codec option
 fn v_codec(v_codec: &str) -> String {
-    format!("{PREFIX_V_CODEC}+vcodec:{v_codec}").to_string()
+    format!("{PREFIX_FORMATS}+vcodec:{v_codec}").to_string()
 }
 
 /// Return subfile option
@@ -178,11 +177,11 @@ fn test_quality_option() {
 
     assert_eq!(
         option_quality_1080,
-        "--ytdl-format=bv*[height<=1080]+ba/b[height<=1080]/b".to_string()
+        "--ytdl-raw-options-append=format-sort=res:1080".to_string()
     );
     assert_eq!(
         option_quality_2160,
-        "--ytdl-format=bv*[height<=2160]+ba/b[height<=2160]/b".to_string()
+        "--ytdl-raw-options-append=format-sort=res:2160".to_string()
     );
 }
 
