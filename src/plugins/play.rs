@@ -12,77 +12,30 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     let mut options: Vec<&str> = Vec::new();
     let option_cookies: String;
     let option_profile: String;
-    let option_quality: String;
-    let option_v_codec: String;
+    let option_formats: String;
     let option_subfile: String;
 
     // Append cookies option
     if let Some(v) = proto.cookies {
-        let mut p: std::path::PathBuf;
-
-        #[cfg(unix)]
-        {
-            p = match dirs::config_dir() {
-                Some(path) => path,
-                None => return Err(Error::FailedGetConfigDir),
-            };
-            p.push("mpv-handler");
-            p.push("cookies");
-            p.push(v);
-        }
-
-        #[cfg(windows)]
-        {
-            p = std::env::current_exe()?;
-            p.pop();
-            p.push("cookies");
-            p.push(v);
-        }
-
-        if p.exists() {
-            option_cookies = cookies(p.display());
-
-            options.push(&option_cookies);
-        } else {
-            eprintln!("Cookies file {v} doesn't exist");
-        }
+        option_cookies = cookies(v)?;
+        options.push(&option_cookies);
     }
 
     // Append profile option
     if let Some(v) = proto.profile {
         option_profile = profile(v);
-
         options.push(&option_profile);
     }
 
-    // Append quality option
-    if let Some(v) = proto.quality {
-        option_quality = match v {
-            "2160p" => quality(2160),
-            "1440p" => quality(1440),
-            "1080p" => quality(1080),
-            "720p" => quality(720),
-            "480p" => quality(480),
-            "360p" => quality(360),
-            _ => String::new(),
-        };
-
-        if option_quality.len() != 0 {
-            options.push(&option_quality);
-        }
-    };
-
-    // Append v_codec option
-    if let Some(v) = proto.v_codec {
-        option_v_codec = v_codec(v);
-
-        options.push(&option_v_codec);
+    // Append formats option
+    if proto.quality.is_some() || proto.v_codec.is_some() {
+        option_formats = formats(proto.quality, proto.v_codec)?;
+        options.push(&option_formats);
     }
 
     // Append subfile option
     if let Some(v) = &proto.subfile {
         option_subfile = subfile(v);
-
         options.push(&option_subfile);
     }
 
@@ -99,6 +52,12 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
         std::env::set_var("https_proxy", proxy);
         std::env::set_var("HTTPS_PROXY", proxy);
     }
+
+    // Print options list
+    if cfg!(debug_assertions) {
+        println!("Options: {:?}", options);
+    }
+
     // Print video URL
     println!("Playing: {}", proto.url);
 
@@ -128,85 +87,106 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
 }
 
 /// Return cookies option
-fn cookies(cookies: std::path::Display) -> String {
-    format!("{PREFIX_COOKIES}{cookies}").to_string()
+fn cookies(cookies: &str) -> Result<String, Error> {
+    let mut p: std::path::PathBuf;
+
+    #[cfg(unix)]
+    {
+        p = match dirs::config_dir() {
+            Some(path) => path,
+            None => return Err(Error::FailedGetConfigDir),
+        };
+        p.push("mpv-handler");
+        p.push("cookies");
+        p.push(cookies);
+    }
+
+    #[cfg(windows)]
+    {
+        p = std::env::current_exe()?;
+        p.pop();
+        p.push("cookies");
+        p.push(cookies);
+    }
+
+    let cookies = p.display();
+
+    if p.exists() {
+        Ok(format!("{PREFIX_COOKIES}{cookies}"))
+    } else {
+        Err(Error::CookiesFileNotFound(cookies.to_string()))
+    }
 }
 
 /// Return profile option
 fn profile(profile: &str) -> String {
-    format!("{PREFIX_PROFILE}{profile}").to_string()
+    format!("{PREFIX_PROFILE}{profile}")
 }
 
-/// Return quality option
-fn quality(quality: i32) -> String {
-    format!("{PREFIX_FORMATS}res:{quality}").to_string()
-}
+/// Return formats option
+fn formats(quality: Option<&str>, v_codec: Option<&str>) -> Result<String, Error> {
+    let mut f: Vec<String> = Vec::new();
+    let formats: String;
 
-/// Return v_codec option
-fn v_codec(v_codec: &str) -> String {
-    format!("{PREFIX_FORMATS}+vcodec:{v_codec}").to_string()
+    if let Some(v) = quality {
+        let i = match v {
+            "2160p" => 2160,
+            "1440p" => 1440,
+            "1080p" => 1080,
+            "720p" => 720,
+            "480p" => 480,
+            "360p" => 360,
+            _ => -1,
+        };
+
+        if i != -1 {
+            f.push(format!("res:{i}"));
+        }
+    }
+
+    if let Some(v) = v_codec {
+        f.push(format!("+vcodec:{v}"))
+    }
+
+    formats = f.join(",");
+
+    Ok(format!("{PREFIX_FORMATS}{formats}"))
 }
 
 /// Return subfile option
 fn subfile(subfile: &str) -> String {
-    format!("{PREFIX_SUBFILE}{subfile}").to_string()
-}
-
-#[test]
-fn test_cookies_option() {
-    let option_cookies =
-        cookies(std::path::PathBuf::from("/some/cookies/domain.com.txt").display());
-
-    assert_eq!(
-        option_cookies,
-        "--ytdl-raw-options-append=cookies=/some/cookies/domain.com.txt".to_string()
-    )
+    format!("{PREFIX_SUBFILE}{subfile}")
 }
 
 #[test]
 fn test_profile_option() {
     let option_profile = profile("low-latency");
 
-    assert_eq!(option_profile, "--profile=low-latency".to_string());
+    assert_eq!(option_profile, "--profile=low-latency");
 }
 
 #[test]
-fn test_quality_option() {
-    let option_quality_1080 = quality(1080);
-    let option_quality_2160 = quality(2160);
+fn test_formats_option() {
+    let option_formats_none = formats(None, None);
+    let option_formats_quality = formats(Some("720p"), None);
+    let option_formats_v_codec = formats(None, Some("vp9"));
+    let option_formats_quality_vcodec = formats(Some("720p"), Some("vp9"));
 
     assert_eq!(
-        option_quality_1080,
-        "--ytdl-raw-options-append=format-sort=res:1080".to_string()
+        option_formats_none.unwrap(),
+        "--ytdl-raw-options-append=format-sort="
     );
     assert_eq!(
-        option_quality_2160,
-        "--ytdl-raw-options-append=format-sort=res:2160".to_string()
-    );
-}
-
-#[test]
-fn test_v_codec_option() {
-    let option_v_codec_av01 = v_codec("av01");
-    let option_v_codec_h265 = v_codec("h265");
-    let option_v_codec_vp92 = v_codec("vp9.2");
-    let option_v_codec_vp9 = v_codec("vp9");
-
-    assert_eq!(
-        option_v_codec_av01,
-        "--ytdl-raw-options-append=format-sort=+vcodec:av01".to_string()
+        option_formats_quality.unwrap(),
+        "--ytdl-raw-options-append=format-sort=res:720"
     );
     assert_eq!(
-        option_v_codec_h265,
-        "--ytdl-raw-options-append=format-sort=+vcodec:h265".to_string()
+        option_formats_v_codec.unwrap(),
+        "--ytdl-raw-options-append=format-sort=+vcodec:vp9"
     );
     assert_eq!(
-        option_v_codec_vp92,
-        "--ytdl-raw-options-append=format-sort=+vcodec:vp9.2".to_string()
-    );
-    assert_eq!(
-        option_v_codec_vp9,
-        "--ytdl-raw-options-append=format-sort=+vcodec:vp9".to_string()
+        option_formats_quality_vcodec.unwrap(),
+        "--ytdl-raw-options-append=format-sort=res:720,+vcodec:vp9"
     );
 }
 
@@ -214,8 +194,5 @@ fn test_v_codec_option() {
 fn test_subfile_option() {
     let option_subfile = subfile("http://example.com/en.ass");
 
-    assert_eq!(
-        option_subfile,
-        "--sub-file=http://example.com/en.ass".to_string()
-    );
+    assert_eq!(option_subfile, "--sub-file=http://example.com/en.ass");
 }
