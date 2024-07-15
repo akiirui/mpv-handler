@@ -34,6 +34,7 @@ fn run() -> Result<(), Error> {
     let proto = Protocol::parse(arg)?;
     let config = Config::load()?;
 
+    // Call plugin by scheme
     match proto.plugin {
         Plugins::Play => crate::plugins::play::exec(&proto, &config),
     }
