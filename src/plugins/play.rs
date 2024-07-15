@@ -17,8 +17,10 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
 
     // Append cookies option
     if let Some(v) = proto.cookies {
-        option_cookies = cookies(v)?;
-        options.push(&option_cookies);
+        if let Some(v) = cookies(v) {
+            option_cookies = v;
+            options.push(&option_cookies);
+        }
     }
 
     // Append profile option
@@ -29,8 +31,10 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
 
     // Append formats option
     if proto.quality.is_some() || proto.v_codec.is_some() {
-        option_formats = formats(proto.quality, proto.v_codec)?;
-        options.push(&option_formats);
+        if let Some(v) = formats(proto.quality, proto.v_codec) {
+            option_formats = v;
+            options.push(&option_formats);
+        }
     }
 
     // Append subfile option
@@ -87,15 +91,12 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
 }
 
 /// Return cookies option
-fn cookies(cookies: &str) -> Result<String, Error> {
+fn cookies(cookies: &str) -> Option<String> {
     let mut p: std::path::PathBuf;
 
     #[cfg(unix)]
     {
-        p = match dirs::config_dir() {
-            Some(path) => path,
-            None => return Err(Error::FailedGetConfigDir),
-        };
+        p = dirs::config_dir().unwrap();
         p.push("mpv-handler");
         p.push("cookies");
         p.push(cookies);
@@ -109,12 +110,11 @@ fn cookies(cookies: &str) -> Result<String, Error> {
         p.push(cookies);
     }
 
-    let cookies = p.display();
-
     if p.exists() {
-        Ok(format!("{PREFIX_COOKIES}{cookies}"))
+        let cookies = p.display();
+        Some(format!("{PREFIX_COOKIES}{cookies}"))
     } else {
-        Err(Error::CookiesFileNotFound(cookies.to_string()))
+        None
     }
 }
 
@@ -124,24 +124,13 @@ fn profile(profile: &str) -> String {
 }
 
 /// Return formats option
-fn formats(quality: Option<&str>, v_codec: Option<&str>) -> Result<String, Error> {
+fn formats(quality: Option<&str>, v_codec: Option<&str>) -> Option<String> {
     let mut f: Vec<String> = Vec::new();
     let formats: String;
 
     if let Some(v) = quality {
-        let i = match v {
-            "2160p" => 2160,
-            "1440p" => 1440,
-            "1080p" => 1080,
-            "720p" => 720,
-            "480p" => 480,
-            "360p" => 360,
-            _ => -1,
-        };
-
-        if i != -1 {
-            f.push(format!("res:{i}"));
-        }
+        let i: String = v.matches(char::is_numeric).collect();
+        f.push(format!("res:{i}"));
     }
 
     if let Some(v) = v_codec {
@@ -150,7 +139,7 @@ fn formats(quality: Option<&str>, v_codec: Option<&str>) -> Result<String, Error
 
     formats = f.join(",");
 
-    Ok(format!("{PREFIX_FORMATS}{formats}"))
+    Some(format!("{PREFIX_FORMATS}{formats}"))
 }
 
 /// Return subfile option
