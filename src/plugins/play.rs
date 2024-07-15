@@ -104,8 +104,7 @@ fn cookies(cookies: &str) -> Option<String> {
 
     #[cfg(windows)]
     {
-        p = std::env::current_exe()?;
-        p.pop();
+        p = std::env::current_exe().unwrap();
         p.push("cookies");
         p.push(cookies);
     }
@@ -114,6 +113,7 @@ fn cookies(cookies: &str) -> Option<String> {
         let cookies = p.display();
         Some(format!("{PREFIX_COOKIES}{cookies}"))
     } else {
+        eprintln!("Cookies file not found: {}", p.display());
         None
     }
 }
