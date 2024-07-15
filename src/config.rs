@@ -78,6 +78,7 @@ fn default_mpv() -> String {
 
 #[test]
 fn test_config_parse() {
+    // Custom values
     let config: Config = toml::from_str(
         r#"
             mpv = "/usr/bin/mpv"
@@ -91,6 +92,7 @@ fn test_config_parse() {
     assert_eq!(config.ytdl, Some("/usr/bin/yt-dlp".to_string()));
     assert_eq!(config.proxy, Some("http://example.com:8080".to_string()));
 
+    // Unexpected values
     let config: Config = toml::from_str(
         r#"
             key1 = "value1"
