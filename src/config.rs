@@ -20,7 +20,9 @@ impl Config {
     ///
     /// If config file doesn't exists, returns default value
     pub fn load() -> Result<Config, Error> {
-        if let Some(path) = get_config_file() {
+        if let Some(mut path) = get_config_dir() {
+            path.push("config.toml");
+
             if path.exists() {
                 let data: String = std::fs::read_to_string(&path)?;
                 let config: Config = toml::from_str(&data)?;
@@ -28,12 +30,14 @@ impl Config {
                 return Ok(config);
             }
         }
+
         Ok(default_config())
     }
 }
 
 /// Returns config directory path of mpv-handler
 pub fn get_config_dir() -> Option<PathBuf> {
+    // Linux config location: $XDG_CONFIG_HOME/mpv-handler/config.toml
     #[cfg(unix)]
     {
         if let Some(mut v) = dirs::config_dir() {
@@ -42,6 +46,7 @@ pub fn get_config_dir() -> Option<PathBuf> {
         }
     }
 
+    // Windows config location: %WORKING_DIR%\config.toml
     #[cfg(windows)]
     {
         if let Ok(mut v) = std::env::current_exe() {
@@ -52,17 +57,6 @@ pub fn get_config_dir() -> Option<PathBuf> {
 
     eprintln!("Failed to get config directory");
     None
-}
-
-/// Returns a path of config
-fn get_config_file() -> Option<PathBuf> {
-    match get_config_dir() {
-        Some(mut p) => {
-            p.push("config.toml");
-            Some(p)
-        }
-        None => None,
-    }
 }
 
 /// The defalut value of `Config`
@@ -107,15 +101,9 @@ fn test_config_parse() {
     .unwrap();
 
     #[cfg(unix)]
-    {
-        assert_eq!(config.mpv, "mpv");
-        assert_eq!(config.ytdl, None);
-        assert_eq!(config.proxy, None);
-    }
+    assert_eq!(config.mpv, "mpv");
     #[cfg(windows)]
-    {
-        assert_eq!(config.mpv, "mpv.com");
-        assert_eq!(config.ytdl, None);
-        assert_eq!(config.proxy, None);
-    }
+    assert_eq!(config.mpv, "mpv.com");
+    assert_eq!(config.ytdl, None);
+    assert_eq!(config.proxy, None);
 }

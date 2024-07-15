@@ -15,7 +15,7 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     let option_profile: String;
     let option_formats: String;
     let option_subfile: String;
-    let option_scripts: String;
+    let option_yt_path: String;
 
     // Append cookies option
     if let Some(v) = proto.cookies {
@@ -45,16 +45,10 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
         options.push(&option_subfile);
     }
 
-    // Fix some browsers to overwrite "LD_LIBRARY_PATH" on Linux
-    // It will be broken mpv player
-    // mpv: symbol lookup error: mpv: undefined symbol: vkCreateWaylandSurfaceKHR
-    #[cfg(unix)]
-    std::env::remove_var("LD_LIBRARY_PATH");
-
     // Set custom ytdl execute file path
     if let Some(v) = &config.ytdl {
-        option_scripts = scripts(v);
-        options.push(&option_scripts);
+        option_yt_path = yt_path(v);
+        options.push(&option_yt_path);
     }
 
     // Set HTTP(S) proxy environment variables
@@ -65,7 +59,13 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
         std::env::set_var("HTTPS_PROXY", proxy);
     }
 
-    // Print options list
+    // Fix some browsers to overwrite "LD_LIBRARY_PATH" on Linux
+    // It will be broken mpv player
+    // mpv: symbol lookup error: mpv: undefined symbol: vkCreateWaylandSurfaceKHR
+    #[cfg(unix)]
+    std::env::remove_var("LD_LIBRARY_PATH");
+
+    // Print options list (in debug build)
     if cfg!(debug_assertions) {
         println!("Options: {:?}", options);
     }
@@ -146,9 +146,9 @@ fn subfile(subfile: &str) -> String {
     format!("{PREFIX_SUBFILE}{subfile}")
 }
 
-/// Return scripts option
-fn scripts(scripts: &str) -> String {
-    format!("{PREFIX_YT_PATH}{scripts}")
+/// Return yt_path option
+fn yt_path(yt_path: &str) -> String {
+    format!("{PREFIX_YT_PATH}{yt_path}")
 }
 
 #[test]
@@ -188,4 +188,14 @@ fn test_subfile_option() {
     let option_subfile = subfile("http://example.com/en.ass");
 
     assert_eq!(option_subfile, "--sub-file=http://example.com/en.ass");
+}
+
+#[test]
+fn test_yt_path_option() {
+    let option_yt_path = yt_path("/usr/bin/yt-dlp");
+
+    assert_eq!(
+        option_yt_path,
+        "--script-opts=ytdl_hook-ytdl_path=/usr/bin/yt-dlp"
+    );
 }
