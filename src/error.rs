@@ -13,8 +13,6 @@ pub enum Error {
     #[cfg(unix)]
     #[error("Failed to get config directory")]
     FailedGetConfigDir,
-    #[error("Cookies file \"{0}\" doesn't exist")]
-    CookiesFileNotFound(String),
     #[error("Player exited by error")]
     PlayerExited(u8),
     #[error("Failed to run player. {0}")]
