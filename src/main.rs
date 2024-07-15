@@ -31,16 +31,11 @@ fn run() -> Result<(), Error> {
         _ => return Err(Error::TooManyArgs),
     };
 
-    match arg {
-        "-v" | "--version" => Ok(print_usage()),
-        _ => {
-            let proto = Protocol::parse(arg)?;
-            let config = Config::load()?;
+    let proto = Protocol::parse(arg)?;
+    let config = Config::load()?;
 
-            match proto.plugin {
-                Plugins::Play => crate::plugins::play::exec(&proto, &config),
-            }
-        }
+    match proto.plugin {
+        Plugins::Play => crate::plugins::play::exec(&proto, &config),
     }
 }
 
@@ -49,8 +44,7 @@ fn print_usage() {
     let version: &str = option_env!("MPV_HANDLER_VERSION").unwrap_or(env!("CARGO_PKG_VERSION"));
 
     println!("mpv-handler {}\n", version);
-    println!("Usage:\n  {}\n", "mpv-handler [options] <url>",);
-    println!("OPTIONS:\n  {}    {}", "-v, --version", "show version");
+    println!("Usage:\n  {}\n", "mpv-handler <url>",);
 }
 
 /// Print error

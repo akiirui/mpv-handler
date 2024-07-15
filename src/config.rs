@@ -11,8 +11,7 @@ use std::path::PathBuf;
 pub struct Config {
     #[serde(default = "default_mpv")]
     pub mpv: String,
-    #[serde(default = "default_ytdl")]
-    pub ytdl: String,
+    pub ytdl: Option<String>,
     pub proxy: Option<String>,
 }
 
@@ -21,51 +20,56 @@ impl Config {
     ///
     /// If config file doesn't exists, returns default value
     pub fn load() -> Result<Config, Error> {
-        let path = config_path()?;
+        if let Some(path) = get_config_file() {
+            if path.exists() {
+                let data: String = std::fs::read_to_string(&path)?;
+                let config: Config = toml::from_str(&data)?;
 
-        if path.exists() {
-            let data: String = std::fs::read_to_string(&path)?;
-            let config: Config = toml::from_str(&data)?;
-
-            return Ok(config);
+                return Ok(config);
+            }
         }
-
         Ok(default_config())
     }
 }
 
-#[cfg(unix)]
-/// Returns a path of config on Unix
-fn config_path() -> Result<PathBuf, Error> {
-    let mut path: PathBuf;
+/// Returns config directory path of mpv-handler
+pub fn get_config_dir() -> Option<PathBuf> {
+    #[cfg(unix)]
+    {
+        if let Some(mut v) = dirs::config_dir() {
+            v.push("mpv-handler");
+            return Some(v);
+        }
+    }
 
-    path = match dirs::config_dir() {
-        Some(path) => path,
-        None => return Err(Error::FailedGetConfigDir),
-    };
-    path.push("mpv-handler");
-    path.push("config.toml");
+    #[cfg(windows)]
+    {
+        if let Ok(mut v) = std::env::current_exe() {
+            v.pop();
+            return Some(v);
+        }
+    }
 
-    Ok(path)
+    eprintln!("Failed to get config directory");
+    None
 }
 
-#[cfg(windows)]
-/// Returns a path of config on Windows
-fn config_path() -> Result<PathBuf, Error> {
-    let mut path: PathBuf;
-
-    path = std::env::current_exe()?;
-    path.pop();
-    path.push("config.toml");
-
-    Ok(path)
+/// Returns a path of config
+fn get_config_file() -> Option<PathBuf> {
+    match get_config_dir() {
+        Some(mut p) => {
+            p.push("config.toml");
+            Some(p)
+        }
+        None => None,
+    }
 }
 
 /// The defalut value of `Config`
 fn default_config() -> Config {
     Config {
         mpv: default_mpv(),
-        ytdl: default_ytdl(),
+        ytdl: None,
         proxy: None,
     }
 }
@@ -76,14 +80,6 @@ fn default_mpv() -> String {
     return "mpv".to_string();
     #[cfg(windows)]
     return "mpv.com".to_string();
-}
-
-/// The default value of `Config.ytdl`
-fn default_ytdl() -> String {
-    #[cfg(unix)]
-    return "yt-dlp".to_string();
-    #[cfg(windows)]
-    return "yt-dlp.exe".to_string();
 }
 
 #[test]
@@ -98,7 +94,7 @@ fn test_config_parse() {
     .unwrap();
 
     assert_eq!(config.mpv, "/usr/bin/mpv");
-    assert_eq!(config.ytdl, "/usr/bin/yt-dlp");
+    assert_eq!(config.ytdl, Some("/usr/bin/yt-dlp".to_string()));
     assert_eq!(config.proxy, Some("http://example.com:8080".to_string()));
 
     let config: Config = toml::from_str(
@@ -113,13 +109,13 @@ fn test_config_parse() {
     #[cfg(unix)]
     {
         assert_eq!(config.mpv, "mpv");
-        assert_eq!(config.ytdl, "yt-dlp");
+        assert_eq!(config.ytdl, None);
         assert_eq!(config.proxy, None);
     }
     #[cfg(windows)]
     {
         assert_eq!(config.mpv, "mpv.com");
-        assert_eq!(config.ytdl, "yt-dlp.exe");
+        assert_eq!(config.ytdl, None);
         assert_eq!(config.proxy, None);
     }
 }

@@ -6,6 +6,7 @@ const PREFIX_COOKIES: &str = "--ytdl-raw-options-append=cookies=";
 const PREFIX_PROFILE: &str = "--profile=";
 const PREFIX_FORMATS: &str = "--ytdl-raw-options-append=format-sort=";
 const PREFIX_SUBFILE: &str = "--sub-file=";
+const PREFIX_YT_PATH: &str = "--script-opts=ytdl_hook-ytdl_path=";
 
 /// Execute player with given options
 pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
@@ -14,6 +15,7 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     let option_profile: String;
     let option_formats: String;
     let option_subfile: String;
+    let option_scripts: String;
 
     // Append cookies option
     if let Some(v) = proto.cookies {
@@ -48,6 +50,12 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     // mpv: symbol lookup error: mpv: undefined symbol: vkCreateWaylandSurfaceKHR
     #[cfg(unix)]
     std::env::remove_var("LD_LIBRARY_PATH");
+
+    // Set custom ytdl execute file path
+    if let Some(v) = &config.ytdl {
+        option_scripts = scripts(v);
+        options.push(&option_scripts);
+    }
 
     // Set HTTP(S) proxy environment variables
     if let Some(proxy) = &config.proxy {
@@ -92,29 +100,20 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
 
 /// Return cookies option
 fn cookies(cookies: &str) -> Option<String> {
-    let mut p: std::path::PathBuf;
+    match crate::config::get_config_dir() {
+        Some(mut p) => {
+            p.push("cookies");
+            p.push(cookies);
 
-    #[cfg(unix)]
-    {
-        p = dirs::config_dir().unwrap();
-        p.push("mpv-handler");
-        p.push("cookies");
-        p.push(cookies);
-    }
-
-    #[cfg(windows)]
-    {
-        p = std::env::current_exe().unwrap();
-        p.push("cookies");
-        p.push(cookies);
-    }
-
-    if p.exists() {
-        let cookies = p.display();
-        Some(format!("{PREFIX_COOKIES}{cookies}"))
-    } else {
-        eprintln!("Cookies file not found: {}", p.display());
-        None
+            if p.exists() {
+                let cookies = p.display();
+                return Some(format!("{PREFIX_COOKIES}{cookies}"));
+            } else {
+                eprintln!("Cookies file not found \"{}\"", p.display());
+                return None;
+            }
+        }
+        None => None,
     }
 }
 
@@ -145,6 +144,11 @@ fn formats(quality: Option<&str>, v_codec: Option<&str>) -> Option<String> {
 /// Return subfile option
 fn subfile(subfile: &str) -> String {
     format!("{PREFIX_SUBFILE}{subfile}")
+}
+
+/// Return scripts option
+fn scripts(scripts: &str) -> String {
+    format!("{PREFIX_YT_PATH}{scripts}")
 }
 
 #[test]
