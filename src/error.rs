@@ -10,12 +10,9 @@ pub enum Error {
     IncorrectVideoURL(String),
     #[error("Dangerous video protocol \"{0}\"")]
     DangerousVideoProtocol(String),
-    #[cfg(unix)]
-    #[error("Failed to get config directory")]
-    FailedGetConfigDir,
     #[error("Player exited by error")]
     PlayerExited(u8),
-    #[error("Failed to run player. {0}")]
+    #[error("Failed to run player ({0})")]
     PlayerRunFailed(std::io::Error),
     #[error("Failed to decode ({0})")]
     FromBase64Error(#[from] base64::DecodeError),
