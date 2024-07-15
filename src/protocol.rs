@@ -154,6 +154,7 @@ fn test_protocol_parse() {
     let proto =
         Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ/?cookies=www.youtube.com.txt&profile=low-latency&quality=1080p&v_codec=av01&subfile=aHR0cDovL2V4YW1wbGUuY29tL2VuLmFzcw").unwrap();
 
+    assert_eq!(proto.scheme, Schemes::Mpv);
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
     assert_eq!(proto.cookies, Some("www.youtube.com.txt"));
@@ -166,6 +167,8 @@ fn test_protocol_parse() {
     let proto =
         Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ/")
             .unwrap();
+
+    assert_eq!(proto.scheme, Schemes::Mpv);
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
     assert_eq!(proto.cookies, None);
@@ -178,6 +181,8 @@ fn test_protocol_parse() {
     let proto =
         Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ")
             .unwrap();
+
+    assert_eq!(proto.scheme, Schemes::Mpv);
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
     assert_eq!(proto.cookies, None);
@@ -191,6 +196,8 @@ fn test_protocol_parse() {
         "mpv-debug://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ",
     )
     .unwrap();
+
+    assert_eq!(proto.scheme, Schemes::MpvDebug);
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
     assert_eq!(proto.cookies, None);

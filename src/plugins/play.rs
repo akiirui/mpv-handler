@@ -153,49 +153,33 @@ fn yt_path(yt_path: &str) -> String {
 
 #[test]
 fn test_profile_option() {
-    let option_profile = profile("low-latency");
-
-    assert_eq!(option_profile, "--profile=low-latency");
+    let p = profile("low-latency");
+    assert_eq!(p, format!("{PREFIX_PROFILE}low-latency"));
 }
 
 #[test]
 fn test_formats_option() {
-    let option_formats_none = formats(None, None);
-    let option_formats_quality = formats(Some("720p"), None);
-    let option_formats_v_codec = formats(None, Some("vp9"));
-    let option_formats_quality_vcodec = formats(Some("720p"), Some("vp9"));
+    // Only quality
+    let q = formats(Some("720p"), None);
+    assert_eq!(q.unwrap(), format!("{PREFIX_FORMATS}res:720"));
 
-    assert_eq!(
-        option_formats_none.unwrap(),
-        "--ytdl-raw-options-append=format-sort="
-    );
-    assert_eq!(
-        option_formats_quality.unwrap(),
-        "--ytdl-raw-options-append=format-sort=res:720"
-    );
-    assert_eq!(
-        option_formats_v_codec.unwrap(),
-        "--ytdl-raw-options-append=format-sort=+vcodec:vp9"
-    );
-    assert_eq!(
-        option_formats_quality_vcodec.unwrap(),
-        "--ytdl-raw-options-append=format-sort=res:720,+vcodec:vp9"
-    );
+    // Only v_codec
+    let v = formats(None, Some("vp9"));
+    assert_eq!(v.unwrap(), format!("{PREFIX_FORMATS}+vcodec:vp9"));
+
+    // Both quality and v_codec
+    let qv = formats(Some("720p"), Some("vp9"));
+    assert_eq!(qv.unwrap(), format!("{PREFIX_FORMATS}res:720,+vcodec:vp9"));
 }
 
 #[test]
 fn test_subfile_option() {
-    let option_subfile = subfile("http://example.com/en.ass");
-
-    assert_eq!(option_subfile, "--sub-file=http://example.com/en.ass");
+    let s = subfile("http://example.com/en.ass");
+    assert_eq!(s, format!("{PREFIX_SUBFILE}http://example.com/en.ass"));
 }
 
 #[test]
 fn test_yt_path_option() {
-    let option_yt_path = yt_path("/usr/bin/yt-dlp");
-
-    assert_eq!(
-        option_yt_path,
-        "--script-opts=ytdl_hook-ytdl_path=/usr/bin/yt-dlp"
-    );
+    let y = yt_path("/usr/bin/yt-dlp");
+    assert_eq!(y, format!("{PREFIX_YT_PATH}/usr/bin/yt-dlp"));
 }
