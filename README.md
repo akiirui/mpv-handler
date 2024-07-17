@@ -100,7 +100,6 @@ If you have already added **mpv** and **yt-dlp** to `PATH`, manual configuration
 
 ```toml
 mpv = "/usr/bin/mpv"
-
 # Optional, Type: String
 # The path of mpv binary
 # Default value:
@@ -108,17 +107,12 @@ mpv = "/usr/bin/mpv"
 # - Windows: mpv.com
 
 ytdl = "/usr/bin/yt-dlp"
-
 # Optional, Type: String
 # The path of yt-dlp binary
-# Default value:
-# - Linux: yt-dlp
-# - Windows: yt-dlp.exe
 
 proxy = "http://example.com:8080"
-
 # Optional, Type: String
-# The proxy server address
+# HTTP(S) proxy server address
 
 # For Windows users:
 #   The path can be "C:\\folder\\some.exe" or "C:/folder/some.exe"
