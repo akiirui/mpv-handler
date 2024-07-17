@@ -100,7 +100,6 @@ Windows 用戶目前只能手動安裝。
 
 ```toml
 mpv = "/usr/bin/mpv"
-
 # 可選，類型：字符串
 # mpv 可執行文件的路徑
 # 默認值:
@@ -108,17 +107,12 @@ mpv = "/usr/bin/mpv"
 # - Windows: mpv.com
 
 ytdl = "/usr/bin/yt-dlp"
-
 # 可選，類型：字符串
 # yt-dlp 可執行文件的路徑
-# 默認值:
-# - Linux: yt-dlp
-# - Windows: yt-dlp.exe
 
 proxy = "http://example.com:8080"
-
 # 可選，類型：字符串
-# 代理服務器的地址
+# HTTP(S) 代理服務器的地址
 
 # 對於 Windows 用戶：
 #   路徑格式可以是 "C:\\folder\\some.exe"，也可以是 "C:/folder/some.exe"

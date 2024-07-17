@@ -37,7 +37,7 @@ impl Config {
 
 /// Returns config directory path of mpv-handler
 pub fn get_config_dir() -> Option<PathBuf> {
-    // Linux config location: $XDG_CONFIG_HOME/mpv-handler/config.toml
+    // Linux config directory location: $XDG_CONFIG_HOME/mpv-handler/
     #[cfg(unix)]
     {
         if let Some(mut v) = dirs::config_dir() {
@@ -46,7 +46,7 @@ pub fn get_config_dir() -> Option<PathBuf> {
         }
     }
 
-    // Windows config location: %WORKING_DIR%\config.toml
+    // Windows config directory location: %WORKING_DIR%\
     #[cfg(windows)]
     {
         if let Ok(mut v) = std::env::current_exe() {
