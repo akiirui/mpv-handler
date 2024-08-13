@@ -79,8 +79,8 @@ subfile = [ Encoded URL ]
      $ xdg-mime default mpv-handler-debug.desktop x-scheme-handler/mpv-debug
      ```
 
-8. 如果需要，添加 `$HOME/.local/bin` 到环境变量 `PATH`
-9. 如果需要，创建 `$HOME/.config/mpv-handler/custom.toml` 并按需更改
+8. 添加 `$HOME/.local/bin` 到环境变量 `PATH`
+9. **可选**: _复制 `config.toml` 至 `$HOME/.config/mpv-handler/config.toml` 并配置_
 
 ### Windows
 
@@ -91,12 +91,9 @@ Windows 用户目前只能手动安装。
 1. 下载 [最新的 Windows 压缩包][download-windows]
 2. 解压缩档案到你想要的位置
 3. 运行 `handler-install.bat` 注册协议处理程序
-4. 如果需要，添加 **mpv** 和 **yt-dlp** 到环境变量 `PATH`
-5. 如果需要，更改 `config.toml`
+4. 编辑 `config.toml` 设置 `mpv` 和 `ytdl` 的路径
 
 ## 配置
-
-如果您已经把 **mpv** 和 **yt-dlp** 添加到了 `PATH`，通常来说不需要手动配置。
 
 ```toml
 mpv = "/usr/bin/mpv"
@@ -115,7 +112,8 @@ proxy = "http://example.com:8080"
 # HTTP(S) 代理服务器的地址
 
 # 对于 Windows 用户：
-#   路径格式可以是 "C:\\folder\\some.exe"，也可以是 "C:/folder/some.exe"
+#   - 路径格式可以是 "C:\\folder\\some.exe"，也可以是 "C:/folder/some.exe"
+#   - 路径的目标是可执行二进制文件，而不是目录
 ```
 
 [rfc-base64-url]: https://datatracker.ietf.org/doc/html/rfc4648#section-5
