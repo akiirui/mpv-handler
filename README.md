@@ -79,8 +79,8 @@ subfile = [ Encoded URL ]
      $ xdg-mime default mpv-handler-debug.desktop x-scheme-handler/mpv-debug
      ```
 
-8. Add `$HOME/.local/bin` to your environment variable `PATH` (if needed)
-9. Create `$HOME/.config/mpv-handler/config.toml` and edit it (if needed)
+8. Add `$HOME/.local/bin` to your environment variable `PATH`
+9. **Optional**: _Copy `config.toml` to `$HOME/.config/mpv-handler/config.toml` and configure_
 
 ### Windows
 
@@ -90,32 +90,30 @@ Windows users need to install manually.
 
 1. Download [latest Windows release][download-windows]
 2. Unzip the archive to the directory you want
-3. Run `handler-install.bat` register protocol handler
-4. Add **mpv** and **yt-dlp** to environment variable `PATH` (if needed)
-5. Edit `config.toml` (if needed)
+3. Run `handler-install.bat` to register protocol handler
+4. Edit `config.toml` and set `mpv` and `ytdl` path
 
 ## Configuration
-
-If you have already added **mpv** and **yt-dlp** to `PATH`, manual configuration is usually not required.
 
 ```toml
 mpv = "/usr/bin/mpv"
 # Optional, Type: String
-# The path of mpv binary
+# The path of mpv executable binary
 # Default value:
 # - Linux: mpv
 # - Windows: mpv.com
 
 ytdl = "/usr/bin/yt-dlp"
 # Optional, Type: String
-# The path of yt-dlp binary
+# The path of yt-dlp executable binary
 
 proxy = "http://example.com:8080"
 # Optional, Type: String
 # HTTP(S) proxy server address
 
 # For Windows users:
-#   The path can be "C:\\folder\\some.exe" or "C:/folder/some.exe"
+#   - The path can be "C:\\folder\\some.exe" or "C:/folder/some.exe"
+#   - The path target is an executable binary file, not a directory
 ```
 
 [rfc-base64-url]: https://datatracker.ietf.org/doc/html/rfc4648#section-5
