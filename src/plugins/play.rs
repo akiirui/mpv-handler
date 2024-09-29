@@ -53,7 +53,7 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
         options.push(&option_yt_path);
     }
 
-    // Set custom title
+    // Set custom mpv title
     if let Some(v) = &proto.title {
         option_title = title(v);
         options.push(&option_title);
@@ -159,7 +159,7 @@ fn yt_path(yt_path: &str) -> String {
     format!("{PREFIX_YT_PATH}{yt_path}")
 }
 
-/// Return video title
+/// Return mpv title option
 fn title(title: &str) -> String {
     format!("{PREFIX_TITLE}{title}")
 }
