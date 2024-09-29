@@ -5,6 +5,7 @@ use crate::protocol::Protocol;
 const PREFIX_COOKIES: &str = "--ytdl-raw-options-append=cookies=";
 const PREFIX_PROFILE: &str = "--profile=";
 const PREFIX_FORMATS: &str = "--ytdl-raw-options-append=format-sort=";
+const PREFIX_V_TITLE: &str = "--title=";
 const PREFIX_SUBFILE: &str = "--sub-file=";
 const PREFIX_YT_PATH: &str = "--script-opts=ytdl_hook-ytdl_path=";
 
@@ -14,6 +15,7 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     let option_cookies: String;
     let option_profile: String;
     let option_formats: String;
+    let option_v_title: String;
     let option_subfile: String;
     let option_yt_path: String;
 
@@ -37,6 +39,12 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
             option_formats = v;
             options.push(&option_formats);
         }
+    }
+
+    // Append v_title option
+    if let Some(v) = &proto.v_title {
+        option_v_title = v_title(v);
+        options.push(&option_v_title);
     }
 
     // Append subfile option
@@ -141,6 +149,11 @@ fn formats(quality: Option<&str>, v_codec: Option<&str>) -> Option<String> {
     Some(format!("{PREFIX_FORMATS}{formats}"))
 }
 
+/// Return v_title option
+fn v_title(v_title: &str) -> String {
+    format!("{PREFIX_V_TITLE}{v_title}")
+}
+
 /// Return subfile option
 fn subfile(subfile: &str) -> String {
     format!("{PREFIX_SUBFILE}{subfile}")
@@ -170,6 +183,11 @@ fn test_formats_option() {
     // Both quality and v_codec
     let qv = formats(Some("720p"), Some("vp9"));
     assert_eq!(qv.unwrap(), format!("{PREFIX_FORMATS}res:720,+vcodec:vp9"));
+}
+#[test]
+fn test_v_title_option() {
+    let t = v_title("Hello World!");
+    assert_eq!(t, format!("{PREFIX_V_TITLE}Hello World!"));
 }
 
 #[test]

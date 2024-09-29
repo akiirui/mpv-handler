@@ -29,6 +29,7 @@ const SAFE_PROTOS: [&str; 11] = [
 /// - profile
 /// - quality
 /// - v_codec
+/// - v_title
 /// - subfile
 #[derive(Debug, PartialEq)]
 pub struct Protocol<'a> {
@@ -39,6 +40,7 @@ pub struct Protocol<'a> {
     pub profile: Option<&'a str>,
     pub quality: Option<&'a str>,
     pub v_codec: Option<&'a str>,
+    pub v_title: Option<String>,
     pub subfile: Option<String>,
 }
 
@@ -52,6 +54,7 @@ impl Protocol<'_> {
         let mut profile: Option<&str> = None;
         let mut quality: Option<&str> = None;
         let mut v_codec: Option<&str> = None;
+        let mut v_title: Option<String> = None;
         let mut subfile: Option<String> = None;
 
         let mut i: usize;
@@ -79,9 +82,9 @@ impl Protocol<'_> {
 
         // Get url and decode by base64
         (i, url) = if let Some(s) = arg[i..].find('/') {
-            (i + s + 1, decode(&arg[i..i + s])?)
+            (i + s + 1, decode_url(&arg[i..i + s])?)
         } else {
-            (arg.len(), decode(&arg[i..])?)
+            (arg.len(), decode_url(&arg[i..])?)
         };
 
         // Get parameters
@@ -103,7 +106,8 @@ impl Protocol<'_> {
                     "profile" => profile = Some(v),
                     "quality" => quality = Some(v),
                     "v_codec" => v_codec = Some(v),
-                    "subfile" => subfile = Some(decode(v)?),
+                    "v_title" => v_title = Some(decode_txt(v)?),
+                    "subfile" => subfile = Some(decode_url(v)?),
                     _ => {}
                 };
             }
@@ -117,9 +121,18 @@ impl Protocol<'_> {
             profile,
             quality,
             v_codec,
+            v_title,
             subfile,
         })
     }
+}
+
+/// Decode base64 data (URL-safe) and return `String`
+fn decode_txt(data: &str) -> Result<String, Error> {
+    Ok(String::from_utf8(base64::Engine::decode(
+        &base64::prelude::BASE64_URL_SAFE_NO_PAD,
+        data,
+    )?)?)
 }
 
 /// Decode base64 data (URL-safe) and check URL protocol
@@ -130,11 +143,8 @@ impl Protocol<'_> {
 /// "http", "https", "ftp", "ftps", "rtmp", "rtmps",
 /// "rtmpe", "rtmpt", "rtmpts", "rtmpte", "data"
 /// ```
-fn decode(data: &str) -> Result<String, Error> {
-    let url = String::from_utf8(base64::Engine::decode(
-        &base64::prelude::BASE64_URL_SAFE_NO_PAD,
-        data,
-    )?)?;
+fn decode_url(data: &str) -> Result<String, Error> {
+    let url = decode_txt(data)?;
 
     match url.find("://") {
         Some(s) => {
@@ -152,7 +162,7 @@ fn decode(data: &str) -> Result<String, Error> {
 fn test_protocol_parse() {
     // All parameters
     let proto =
-        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ/?cookies=www.youtube.com.txt&profile=low-latency&quality=1080p&v_codec=av01&subfile=aHR0cDovL2V4YW1wbGUuY29tL2VuLmFzcw").unwrap();
+        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ/?cookies=www.youtube.com.txt&profile=low-latency&quality=1080p&v_codec=av01&v_title=VGl0bGU&subfile=aHR0cDovL2V4YW1wbGUuY29tL2VuLmFzcw").unwrap();
 
     assert_eq!(proto.scheme, Schemes::Mpv);
     assert_eq!(proto.plugin, Plugins::Play);
@@ -161,6 +171,7 @@ fn test_protocol_parse() {
     assert_eq!(proto.profile, Some("low-latency"));
     assert_eq!(proto.quality, Some("1080p"));
     assert_eq!(proto.v_codec, Some("av01"));
+    assert_eq!(proto.v_title, Some("Title".to_string()));
     assert_eq!(proto.subfile, Some("http://example.com/en.ass".to_string()));
 
     // None parameter
@@ -175,6 +186,7 @@ fn test_protocol_parse() {
     assert_eq!(proto.profile, None);
     assert_eq!(proto.quality, None);
     assert_eq!(proto.v_codec, None);
+    assert_eq!(proto.v_title, None);
     assert_eq!(proto.subfile, None);
 
     // None parameter and last slash
@@ -189,6 +201,7 @@ fn test_protocol_parse() {
     assert_eq!(proto.profile, None);
     assert_eq!(proto.quality, None);
     assert_eq!(proto.v_codec, None);
+    assert_eq!(proto.v_title, None);
     assert_eq!(proto.subfile, None);
 
     // None parameter and protocol `mpv-debug`
@@ -204,5 +217,6 @@ fn test_protocol_parse() {
     assert_eq!(proto.profile, None);
     assert_eq!(proto.quality, None);
     assert_eq!(proto.v_codec, None);
+    assert_eq!(proto.v_title, None);
     assert_eq!(proto.subfile, None);
 }
