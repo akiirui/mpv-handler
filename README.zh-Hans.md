@@ -49,7 +49,7 @@ quality = [ 2160p, 1440p, 1080p, 720p, 480p, 360p ]
 v_codec = [ av01, vp9, h265, h264 ]
 v_title = [ Encoded Title ]
 subfile = [ Encoded URL ]
-startat = [ Floating point numbers ]
+startat = [ Seconds (float) ]
 ```
 
 ## 安装
