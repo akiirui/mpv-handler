@@ -7,6 +7,7 @@ const PREFIX_PROFILE: &str = "--profile=";
 const PREFIX_FORMATS: &str = "--ytdl-raw-options-append=format-sort=";
 const PREFIX_V_TITLE: &str = "--title=";
 const PREFIX_SUBFILE: &str = "--sub-file=";
+const PREFIX_STARTAT: &str = "--start=";
 const PREFIX_YT_PATH: &str = "--script-opts=ytdl_hook-ytdl_path=";
 
 /// Execute player with given options
@@ -17,6 +18,7 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     let option_formats: String;
     let option_v_title: String;
     let option_subfile: String;
+    let option_startat: String;
     let option_yt_path: String;
 
     // Append cookies option
@@ -51,6 +53,12 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     if let Some(v) = &proto.subfile {
         option_subfile = subfile(v);
         options.push(&option_subfile);
+    }
+
+    // Append startat option
+    if let Some(v) = &proto.startat {
+        option_startat = startat(v);
+        options.push(&option_startat);
     }
 
     // Set custom ytdl execute file path
@@ -159,6 +167,11 @@ fn subfile(subfile: &str) -> String {
     format!("{PREFIX_SUBFILE}{subfile}")
 }
 
+/// Return startat option
+fn startat(startat: &str) -> String {
+    format!("{PREFIX_STARTAT}{startat}")
+}
+
 /// Return yt_path option
 fn yt_path(yt_path: &str) -> String {
     format!("{PREFIX_YT_PATH}{yt_path}")
@@ -194,6 +207,12 @@ fn test_v_title_option() {
 fn test_subfile_option() {
     let s = subfile("http://example.com/en.ass");
     assert_eq!(s, format!("{PREFIX_SUBFILE}http://example.com/en.ass"));
+}
+
+#[test]
+fn test_startat_option() {
+    let s = startat("233");
+    assert_eq!(s, format!("{PREFIX_STARTAT}233"));
 }
 
 #[test]

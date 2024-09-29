@@ -31,6 +31,7 @@ const SAFE_PROTOS: [&str; 11] = [
 /// - v_codec
 /// - v_title
 /// - subfile
+/// - startat
 #[derive(Debug, PartialEq)]
 pub struct Protocol<'a> {
     pub scheme: Schemes,
@@ -42,6 +43,7 @@ pub struct Protocol<'a> {
     pub v_codec: Option<&'a str>,
     pub v_title: Option<String>,
     pub subfile: Option<String>,
+    pub startat: Option<&'a str>,
 }
 
 impl Protocol<'_> {
@@ -56,6 +58,7 @@ impl Protocol<'_> {
         let mut v_codec: Option<&str> = None;
         let mut v_title: Option<String> = None;
         let mut subfile: Option<String> = None;
+        let mut startat: Option<&str> = None;
 
         let mut i: usize;
 
@@ -108,6 +111,7 @@ impl Protocol<'_> {
                     "v_codec" => v_codec = Some(v),
                     "v_title" => v_title = Some(decode_txt(v)?),
                     "subfile" => subfile = Some(decode_url(v)?),
+                    "startat" => startat = Some(v),
                     _ => {}
                 };
             }
@@ -123,6 +127,7 @@ impl Protocol<'_> {
             v_codec,
             v_title,
             subfile,
+            startat,
         })
     }
 }
@@ -162,7 +167,7 @@ fn decode_url(data: &str) -> Result<String, Error> {
 fn test_protocol_parse() {
     // All parameters
     let proto =
-        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ/?cookies=www.youtube.com.txt&profile=low-latency&quality=1080p&v_codec=av01&v_title=VGl0bGU&subfile=aHR0cDovL2V4YW1wbGUuY29tL2VuLmFzcw").unwrap();
+        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ/?cookies=www.youtube.com.txt&profile=low-latency&quality=1080p&v_codec=av01&v_title=VGl0bGU&subfile=aHR0cDovL2V4YW1wbGUuY29tL2VuLmFzcw&startat=233").unwrap();
 
     assert_eq!(proto.scheme, Schemes::Mpv);
     assert_eq!(proto.plugin, Plugins::Play);
@@ -173,23 +178,9 @@ fn test_protocol_parse() {
     assert_eq!(proto.v_codec, Some("av01"));
     assert_eq!(proto.v_title, Some("Title".to_string()));
     assert_eq!(proto.subfile, Some("http://example.com/en.ass".to_string()));
+    assert_eq!(proto.startat, Some("233"));
 
-    // None parameter
-    let proto =
-        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ/")
-            .unwrap();
-
-    assert_eq!(proto.scheme, Schemes::Mpv);
-    assert_eq!(proto.plugin, Plugins::Play);
-    assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
-    assert_eq!(proto.cookies, None);
-    assert_eq!(proto.profile, None);
-    assert_eq!(proto.quality, None);
-    assert_eq!(proto.v_codec, None);
-    assert_eq!(proto.v_title, None);
-    assert_eq!(proto.subfile, None);
-
-    // None parameter and last slash
+    // No parameter and last slash
     let proto =
         Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ")
             .unwrap();
@@ -197,14 +188,17 @@ fn test_protocol_parse() {
     assert_eq!(proto.scheme, Schemes::Mpv);
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
-    assert_eq!(proto.cookies, None);
-    assert_eq!(proto.profile, None);
-    assert_eq!(proto.quality, None);
-    assert_eq!(proto.v_codec, None);
-    assert_eq!(proto.v_title, None);
-    assert_eq!(proto.subfile, None);
 
-    // None parameter and protocol `mpv-debug`
+    // No parameter and protocol `mpv`
+    let proto =
+        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ/")
+            .unwrap();
+
+    assert_eq!(proto.scheme, Schemes::Mpv);
+    assert_eq!(proto.plugin, Plugins::Play);
+    assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
+
+    // No parameter and protocol `mpv-debug`
     let proto = Protocol::parse(
         "mpv-debug://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ",
     )
@@ -213,10 +207,4 @@ fn test_protocol_parse() {
     assert_eq!(proto.scheme, Schemes::MpvDebug);
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
-    assert_eq!(proto.cookies, None);
-    assert_eq!(proto.profile, None);
-    assert_eq!(proto.quality, None);
-    assert_eq!(proto.v_codec, None);
-    assert_eq!(proto.v_title, None);
-    assert_eq!(proto.subfile, None);
 }
