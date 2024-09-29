@@ -7,6 +7,7 @@ const PREFIX_PROFILE: &str = "--profile=";
 const PREFIX_FORMATS: &str = "--ytdl-raw-options-append=format-sort=";
 const PREFIX_SUBFILE: &str = "--sub-file=";
 const PREFIX_YT_PATH: &str = "--script-opts=ytdl_hook-ytdl_path=";
+const PREFIX_TITLE: &str = "--title=";
 
 /// Execute player with given options
 pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
@@ -16,6 +17,7 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     let option_formats: String;
     let option_subfile: String;
     let option_yt_path: String;
+    let option_title: String;
 
     // Append cookies option
     if let Some(v) = proto.cookies {
@@ -49,6 +51,12 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     if let Some(v) = &config.ytdl {
         option_yt_path = yt_path(v);
         options.push(&option_yt_path);
+    }
+
+    // Set custom title
+    if let Some(v) = &proto.title {
+        option_title = title(v);
+        options.push(&option_title);
     }
 
     // Set HTTP(S) proxy environment variables
@@ -151,6 +159,11 @@ fn yt_path(yt_path: &str) -> String {
     format!("{PREFIX_YT_PATH}{yt_path}")
 }
 
+/// Return video title
+fn title(title: &str) -> String {
+    format!("{PREFIX_TITLE}{title}")
+}
+
 #[test]
 fn test_profile_option() {
     let p = profile("low-latency");
@@ -182,4 +195,10 @@ fn test_subfile_option() {
 fn test_yt_path_option() {
     let y = yt_path("/usr/bin/yt-dlp");
     assert_eq!(y, format!("{PREFIX_YT_PATH}/usr/bin/yt-dlp"));
+}
+
+#[test]
+fn test_title_option() {
+    let t = title("My custom title");
+    assert_eq!(t, format!("{PREFIX_TITLE}My custom title"));
 }

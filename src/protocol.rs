@@ -1,5 +1,6 @@
 use crate::error::Error;
 use crate::plugins::Plugins;
+use urlencoding::decode as decodeURL;
 
 #[derive(Debug, PartialEq)]
 pub enum Schemes {
@@ -30,6 +31,7 @@ const SAFE_PROTOS: [&str; 11] = [
 /// - quality
 /// - v_codec
 /// - subfile
+/// - title
 #[derive(Debug, PartialEq)]
 pub struct Protocol<'a> {
     pub scheme: Schemes,
@@ -40,6 +42,7 @@ pub struct Protocol<'a> {
     pub quality: Option<&'a str>,
     pub v_codec: Option<&'a str>,
     pub subfile: Option<String>,
+    pub title: Option<String>,
 }
 
 impl Protocol<'_> {
@@ -53,6 +56,7 @@ impl Protocol<'_> {
         let mut quality: Option<&str> = None;
         let mut v_codec: Option<&str> = None;
         let mut subfile: Option<String> = None;
+        let mut title: Option<String> = None;
 
         let mut i: usize;
 
@@ -104,6 +108,7 @@ impl Protocol<'_> {
                     "quality" => quality = Some(v),
                     "v_codec" => v_codec = Some(v),
                     "subfile" => subfile = Some(decode(v)?),
+                    "title" => title = Some(decode_title(v)?),
                     _ => {}
                 };
             }
@@ -118,6 +123,7 @@ impl Protocol<'_> {
             quality,
             v_codec,
             subfile,
+            title,
         })
     }
 }
@@ -148,11 +154,19 @@ fn decode(data: &str) -> Result<String, Error> {
     Ok(url)
 }
 
+/// Decode video title from URL
+fn decode_title(data: &str) -> Result<String, Error> {
+    match decodeURL(data) {
+        Ok(title) => Ok(title.into_owned().to_string()),
+        Err(e) => Err(Error::FromStringError(e)),
+    }
+}
+
 #[test]
 fn test_protocol_parse() {
     // All parameters
     let proto =
-        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ/?cookies=www.youtube.com.txt&profile=low-latency&quality=1080p&v_codec=av01&subfile=aHR0cDovL2V4YW1wbGUuY29tL2VuLmFzcw").unwrap();
+        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ/?cookies=www.youtube.com.txt&profile=low-latency&quality=1080p&v_codec=av01&subfile=aHR0cDovL2V4YW1wbGUuY29tL2VuLmFzcw&title=Hello%20world").unwrap();
 
     assert_eq!(proto.scheme, Schemes::Mpv);
     assert_eq!(proto.plugin, Plugins::Play);
@@ -162,6 +176,7 @@ fn test_protocol_parse() {
     assert_eq!(proto.quality, Some("1080p"));
     assert_eq!(proto.v_codec, Some("av01"));
     assert_eq!(proto.subfile, Some("http://example.com/en.ass".to_string()));
+    assert_eq!(proto.title, Some("Hello world".to_string()));
 
     // None parameter
     let proto =
@@ -176,6 +191,7 @@ fn test_protocol_parse() {
     assert_eq!(proto.quality, None);
     assert_eq!(proto.v_codec, None);
     assert_eq!(proto.subfile, None);
+    assert_eq!(proto.title, None);
 
     // None parameter and last slash
     let proto =
@@ -190,6 +206,7 @@ fn test_protocol_parse() {
     assert_eq!(proto.quality, None);
     assert_eq!(proto.v_codec, None);
     assert_eq!(proto.subfile, None);
+    assert_eq!(proto.title, None);
 
     // None parameter and protocol `mpv-debug`
     let proto = Protocol::parse(
@@ -205,4 +222,5 @@ fn test_protocol_parse() {
     assert_eq!(proto.quality, None);
     assert_eq!(proto.v_codec, None);
     assert_eq!(proto.subfile, None);
+    assert_eq!(proto.title, None);
 }
