@@ -27,9 +27,9 @@
 
 - `play`: 使用 mpv 播放视频
 
-### 编码的网址 / Encoded URL
+### 编码数据 / Encoded Data
 
-使用 [URL 安全的 base64][rfc-base64-url] 编码网址。
+使用 [URL 安全的 base64][rfc-base64-url] 编码网址或标题。
 
 替换 `/` 至 `_`, `+` 至 `-` 并且删除填充的 `=`。
 
@@ -47,6 +47,7 @@ cookies = [ www.domain.com.txt ]
 profile = [ default, low-latency, etc... ]
 quality = [ 2160p, 1440p, 1080p, 720p, 480p, 360p ]
 v_codec = [ av01, vp9, h265, h264 ]
+v_title = [ Encoded Title ]
 subfile = [ Encoded URL ]
 ```
 
