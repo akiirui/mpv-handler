@@ -56,10 +56,10 @@ startat = [ Seconds (float) ]
 
 ### Linux
 
-- Arch Linux
+#### Arch Linux
 
-  [![mpv-handler][badges-aur]][download-aur] \
-  [![mpv-handler-git][badges-aur-git]][download-aur-git]
+[![mpv-handler][badges-aur]][download-aur]
+[![mpv-handler-git][badges-aur-git]][download-aur-git]
 
 #### 手动安装
 
@@ -119,9 +119,9 @@ proxy = "http://example.com:8080"
 ```
 
 [rfc-base64-url]: https://datatracker.ietf.org/doc/html/rfc4648#section-5
-[badges-aur-git]: https://img.shields.io/aur/version/mpv-handler-git?label=mpv-handler-git&style=for-the-badge
-[badges-aur]: https://img.shields.io/aur/version/mpv-handler?label=mpv-handler&style=for-the-badge
-[badges-play-with-mpv]: https://img.shields.io/badge/dynamic/json?style=for-the-badge&label=play-with-mpv&prefix=v&query=version&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F416271.json
+[badges-aur-git]: https://img.shields.io/aur/version/mpv-handler-git?style=for-the-badge&logo=archlinux&label=mpv-handler-git
+[badges-aur]: https://img.shields.io/aur/version/mpv-handler?style=for-the-badge&logo=archlinux&label=mpv-handler
+[badges-play-with-mpv]: https://img.shields.io/greasyfork/v/416271?style=for-the-badge&logo=greasyfork&label=play-with-mpv
 [download-aur-git]: https://aur.archlinux.org/packages/mpv-handler-git/
 [download-aur]: https://aur.archlinux.org/packages/mpv-handler/
 [download-linux]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-linux-amd64.zip
