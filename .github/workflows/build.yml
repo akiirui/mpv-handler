@@ -98,4 +98,3 @@ jobs:
         with:
           artifacts: "mpv-handler-*.zip,sha512sum"
           generateReleaseNotes: true
-          token: ${{ secrets.GITHUB_TOKEN }}
