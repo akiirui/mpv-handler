@@ -67,20 +67,6 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
         options.push(&option_yt_path);
     }
 
-    // Set HTTP(S) proxy environment variables
-    if let Some(proxy) = &config.proxy {
-        std::env::set_var("http_proxy", proxy);
-        std::env::set_var("HTTP_PROXY", proxy);
-        std::env::set_var("https_proxy", proxy);
-        std::env::set_var("HTTPS_PROXY", proxy);
-    }
-
-    // Fix some browsers to overwrite "LD_LIBRARY_PATH" on Linux
-    // It will be broken mpv player
-    // mpv: symbol lookup error: mpv: undefined symbol: vkCreateWaylandSurfaceKHR
-    #[cfg(unix)]
-    std::env::remove_var("LD_LIBRARY_PATH");
-
     // Print video URL
     println!("Playing: {}", proto.url);
 
@@ -106,6 +92,20 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
             command.creation_flags(0x08000000);
         }
     }
+
+    // Set HTTP(S) proxy environment variables
+    if let Some(proxy) = &config.proxy {
+        command.env("http_proxy", proxy);
+        command.env("https_proxy", proxy);
+        command.env("HTTP_PROXY", proxy);
+        command.env("HTTPS_PROXY", proxy);
+    }
+
+    // Fix some browsers to overwrite "LD_LIBRARY_PATH" on Linux
+    // It will be broken mpv player
+    // mpv: symbol lookup error: mpv: undefined symbol: vkCreateWaylandSurfaceKHR
+    #[cfg(unix)]
+    command.env_remove("LD_LIBRARY_PATH");
 
     match command.status() {
         Ok(o) => match o.code() {

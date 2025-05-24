@@ -1,7 +1,7 @@
 [package]
 name = "mpv-handler"
 version = "0.3.13"
-edition = "2021"
+edition = "2024"
 authors = ["Akatsuki Rui <akiirui@outlook.com>"]
 description = "Play website videos and songs with mpv & yt-dlp"
 license = "MIT"
