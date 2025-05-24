@@ -81,13 +81,18 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     #[cfg(unix)]
     std::env::remove_var("LD_LIBRARY_PATH");
 
-    // Print options list (in debug build)
-    if cfg!(debug_assertions) {
-        println!("Options: {:?}", options);
-    }
-
     // Print video URL
     println!("Playing: {}", proto.url);
+
+    // Print options list (in debug build)
+    if &proto.scheme == &crate::protocol::Schemes::MpvDebug || cfg!(debug_assertions) {
+        if !options.is_empty() {
+            println!("Options:");
+            for option in &options {
+                println!("  {}", option);
+            }
+        }
+    }
 
     // Execute mpv player
     let mut command = std::process::Command::new(&config.mpv);
