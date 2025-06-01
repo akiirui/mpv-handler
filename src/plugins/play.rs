@@ -67,21 +67,42 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
         options.push(&option_yt_path);
     }
 
-    // Print video URL
-    println!("Playing: {}", proto.url);
-
-    // Print options list (in debug build)
+    // Print binaries and options list (in debug build)
     if &proto.scheme == &crate::protocol::Schemes::MpvDebug || cfg!(debug_assertions) {
+        // Print binaries
+        println!("Binaries:");
+
+        if let Some(v) = &config.mpv {
+            println!("    {}", v);
+        } else {
+            println!("    {}", crate::config::default_mpv()?);
+        }
+
+        if let Some(v) = &config.ytdl {
+            println!("    {}", v);
+        }
+
+        // Print options list
         if !options.is_empty() {
             println!("Options:");
             for option in &options {
-                println!("  {}", option);
+                println!("    {}", option);
             }
         }
     }
 
+    // Print video URL
+    println!("Playing: {}", proto.url);
+
     // Execute mpv player
-    let mut command = std::process::Command::new(&config.mpv);
+    let mut command;
+
+    if let Some(v) = &config.mpv {
+        command = std::process::Command::new(v);
+    } else {
+        command = std::process::Command::new(crate::config::default_mpv()?);
+    }
+
     command.args(&options).arg("--").arg(&proto.url);
 
     // Hide console window on Windows if not in debug mode
@@ -96,8 +117,8 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     // Set HTTP(S) proxy environment variables
     if let Some(proxy) = &config.proxy {
         command.env("http_proxy", proxy);
-        command.env("https_proxy", proxy);
         command.env("HTTP_PROXY", proxy);
+        command.env("https_proxy", proxy);
         command.env("HTTPS_PROXY", proxy);
     }
 

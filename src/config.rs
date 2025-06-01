@@ -9,8 +9,7 @@ use std::path::PathBuf;
 /// - `proxy: HTTP(S) proxy server address
 #[derive(Debug, Deserialize)]
 pub struct Config {
-    #[serde(default = "default_mpv")]
-    pub mpv: String,
+    pub mpv: Option<String>,
     pub ytdl: Option<String>,
     pub proxy: Option<String>,
 }
@@ -25,7 +24,14 @@ impl Config {
 
             if path.exists() {
                 let data: String = std::fs::read_to_string(&path)?;
-                let config: Config = toml::from_str(&data)?;
+                let mut config: Config = toml::from_str(&data)?;
+
+                if let Some(mpv) = config.mpv {
+                    config.mpv = Some(realpath(mpv)?);
+                }
+                if let Some(ytdl) = config.ytdl {
+                    config.ytdl = Some(realpath(ytdl)?);
+                }
 
                 return Ok(config);
             }
@@ -59,21 +65,48 @@ pub fn get_config_dir() -> Option<PathBuf> {
     None
 }
 
+/// The default value of `Config.mpv`
+pub fn default_mpv() -> Result<String, Error> {
+    #[cfg(unix)]
+    return realpath("mpv");
+    #[cfg(windows)]
+    return realpath("mpv.com");
+}
+
 /// The defalut value of `Config`
 fn default_config() -> Config {
     Config {
-        mpv: default_mpv(),
+        mpv: None,
         ytdl: None,
         proxy: None,
     }
 }
 
-/// The default value of `Config.mpv`
-fn default_mpv() -> String {
-    #[cfg(unix)]
-    return "mpv".to_string();
-    #[cfg(windows)]
-    return "mpv.com".to_string();
+fn realpath<T: AsRef<std::ffi::OsStr>>(path: T) -> Result<String, Error> {
+    let path = std::path::PathBuf::from(&path);
+
+    if path.is_relative() {
+        #[cfg(windows)]
+        {
+            if let Some(mut p) = crate::config::get_config_dir() {
+                p.push(&path);
+                if let Ok(rp) = p.canonicalize() {
+                    return Ok(rp.display().to_string());
+                };
+            }
+        }
+
+        if let Some(paths) = std::env::var_os("PATH") {
+            for mut p in std::env::split_paths(&paths) {
+                p.push(&path);
+                if let Ok(rp) = p.canonicalize() {
+                    return Ok(rp.display().to_string());
+                };
+            }
+        }
+    }
+
+    Ok(path.display().to_string())
 }
 
 #[test]
@@ -88,7 +121,7 @@ fn test_config_parse() {
     )
     .unwrap();
 
-    assert_eq!(config.mpv, "/usr/bin/mpv");
+    assert_eq!(config.mpv, Some("/usr/bin/mpv".to_string()));
     assert_eq!(config.ytdl, Some("/usr/bin/yt-dlp".to_string()));
     assert_eq!(config.proxy, Some("http://example.com:8080".to_string()));
 
@@ -103,9 +136,7 @@ fn test_config_parse() {
     .unwrap();
 
     #[cfg(unix)]
-    assert_eq!(config.mpv, "mpv");
-    #[cfg(windows)]
-    assert_eq!(config.mpv, "mpv.com");
+    assert_eq!(config.mpv, None);
     assert_eq!(config.ytdl, None);
     assert_eq!(config.proxy, None);
 }
