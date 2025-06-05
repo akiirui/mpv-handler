@@ -128,6 +128,11 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     #[cfg(unix)]
     command.env_remove("LD_LIBRARY_PATH");
 
+    // Fix Vivaldi to overwrite "LD_PRELOAD" on Linux
+    // https://github.com/akiirui/mpv-handler/issues/78
+    #[cfg(unix)]
+    command.env_remove("LD_PRELOAD");
+
     match command.status() {
         Ok(o) => match o.code() {
             Some(code) => match code {
