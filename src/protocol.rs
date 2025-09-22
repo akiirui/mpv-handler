@@ -48,7 +48,7 @@ pub struct Protocol<'a> {
 
 impl Protocol<'_> {
     /// Parse the given argument and returns `Protocol`
-    pub fn parse(arg: &str) -> Result<Protocol, Error> {
+    pub fn parse(arg: &str) -> Result<Protocol<'_>, Error> {
         let scheme;
         let plugin;
         let url;
