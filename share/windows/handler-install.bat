@@ -70,11 +70,11 @@ call :add_verbs
     call :reg add "HKCR\mpv-handler\shell\open\command" /d "\"%mpv_handler_path%\" \"%%%%1\"" /f
 
     :: Add the mpv protocol to the registry
-    call :reg add "HKCR\mpv-hanlder-debug" /d "URL:MPV Handler Debug" /f
-    call :reg add "HKCR\mpv-hanlder-debug" /v "Content Type" /d "application/x-mpv-handler-debug" /f
-    call :reg add "HKCR\mpv-hanlder-debug" /v "URL Protocol" /f
-    call :reg add "HKCR\mpv-hanlder-debug\DefaultIcon" /d "\"%mpv_exe_path%\",1" /f
-    call :reg add "HKCR\mpv-hanlder-debug\shell\open\command" /d "\"%mpv_handler_debug_path%\" \"%%%%1\"" /f
+    call :reg add "HKCR\mpv-handler-debug" /d "URL:MPV Handler Debug" /f
+    call :reg add "HKCR\mpv-handler-debug" /v "Content Type" /d "application/x-mpv-handler-debug" /f
+    call :reg add "HKCR\mpv-handler-debug" /v "URL Protocol" /f
+    call :reg add "HKCR\mpv-handler-debug\DefaultIcon" /d "\"%mpv_exe_path%\",1" /f
+    call :reg add "HKCR\mpv-handler-debug\shell\open\command" /d "\"%mpv_handler_debug_path%\" \"%%%%1\"" /f
 
     echo Successfully installed mpv-handler
     echo Enjoy!

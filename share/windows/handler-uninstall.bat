@@ -57,7 +57,7 @@ call :del_verbs
 
     :: Delete protocol
     call :reg delete "HKCR\mpv-handler" /f
-    call :reg delete "HKCR\mpv-hanlder-debug" /f
+    call :reg delete "HKCR\mpv-handler-debug" /f
 
     echo Successfully uninstalled mpv-handler
 
