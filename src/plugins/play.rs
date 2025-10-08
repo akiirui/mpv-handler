@@ -68,7 +68,7 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     }
 
     // Print binaries and options list (in debug build)
-    if &proto.scheme == &crate::protocol::Schemes::MpvDebug || cfg!(debug_assertions) {
+    if &proto.scheme == &crate::protocol::Schemes::MpvHandlerDebug || cfg!(debug_assertions) {
         // Print binaries
         println!("Binaries:");
 
@@ -109,7 +109,7 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     #[cfg(windows)]
     {
         use std::os::windows::process::CommandExt;
-        if &proto.scheme == &crate::protocol::Schemes::Mpv && !cfg!(debug_assertions) {
+        if &proto.scheme == &crate::protocol::Schemes::MpvHandler && !cfg!(debug_assertions) {
             command.creation_flags(0x08000000);
         }
     }

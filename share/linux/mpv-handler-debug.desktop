@@ -8,5 +8,5 @@ Icon=mpv
 Exec=mpv-handler %u
 Terminal=true
 Categories=AudioVideo;Audio;Video;Player;TV;
-MimeType=x-scheme-handler/mpv-debug;
-X-KDE-Protocols=mpv-debug
+MimeType=x-scheme-handler/mpv-handler-debug;
+X-KDE-Protocols=mpv-handler-debug

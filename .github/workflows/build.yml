@@ -39,7 +39,7 @@ jobs:
           sudo apt-get install -y musl
           rustup target add x86_64-unknown-linux-musl
 
-      - name: Build
+      - name: Build mpv-handler
         run: |
           cargo build --release --locked --target ${{ matrix.target }}
 
@@ -49,7 +49,7 @@ jobs:
           name: ${{ matrix.asset_name }}
           path: target/${{ matrix.target }}/release/${{ matrix.artifact_name }}
 
-      - name: Build mpv-debug for Windows
+      - name: Build mpv-handler-debug for Windows
         if: matrix.os == 'windows-latest'
         run: |
           cargo build --release --locked --target ${{ matrix.target }} `
@@ -57,7 +57,7 @@ jobs:
           move target/${{ matrix.target }}/release/${{ matrix.artifact_name }} `
             target/${{ matrix.target }}/release/${{ matrix.artifact_name_debug }}
 
-      - name: Upload mpv-debug to artifact
+      - name: Upload mpv-handler-debug to artifact
         if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:

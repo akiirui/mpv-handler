@@ -20,8 +20,8 @@ Please use it with userscript:
 
 ### Scheme
 
-- `mpv`: Run mpv-handler without console window
-- `mpv-debug`: Run mpv-handler with console window to view outputs and errors
+- `mpv-handler`: Run mpv-handler without console window
+- `mpv-handler-debug`: Run mpv-handler with console window to view outputs and errors
 
 ### Plugins
 
@@ -77,8 +77,8 @@ startat = [ Seconds (float) ]
 7. Register xdg-mime (thanks for the [linuxuprising][linuxuprising] reminder)
 
    - ```
-     $ xdg-mime default mpv-handler.desktop x-scheme-handler/mpv
-     $ xdg-mime default mpv-handler-debug.desktop x-scheme-handler/mpv-debug
+     $ xdg-mime default mpv-handler.desktop x-scheme-handler/mpv-handler
+     $ xdg-mime default mpv-handler-debug.desktop x-scheme-handler/mpv-handler-debug
      ```
 
 8. Add `$HOME/.local/bin` to your environment variable `PATH`

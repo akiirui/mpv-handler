@@ -51,11 +51,13 @@ call :del_verbs
     goto :EOF
 
 :del_verbs
-    :: Delete mpv protocol from the registry
+    :: Delete deprecated mpv and mpv-debug protocol
     call :reg delete "HKCR\mpv" /f
-
-    :: Delete mpv-debug protocol from the registry
     call :reg delete "HKCR\mpv-debug" /f
+
+    :: Delete protocol
+    call :reg delete "HKCR\mpv-handler" /f
+    call :reg delete "HKCR\mpv-hanlder-debug" /f
 
     echo Successfully uninstalled mpv-handler
 

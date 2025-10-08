@@ -3,8 +3,8 @@ use crate::plugins::Plugins;
 
 #[derive(Debug, PartialEq)]
 pub enum Schemes {
-    Mpv,
-    MpvDebug,
+    MpvHandler,
+    MpvHandlerDebug,
 }
 
 const SAFE_PROTOS: [&str; 11] = [
@@ -14,8 +14,8 @@ const SAFE_PROTOS: [&str; 11] = [
 /// Protocol of mpv-handler
 ///
 /// ```
-/// mpv://PLUGINS/ENCODED_URL/?PARAMETERS=VALUES
-/// mpv-debug://PLUGINS/ENCODED_URL/?PARAMETERS=VALUES
+/// mpv-handler://PLUGINS/ENCODED_URL/?PARAMETERS=VALUES
+/// mpv-handler-debug://PLUGINS/ENCODED_URL/?PARAMETERS=VALUES
 /// ```
 ///
 /// PLUGINS:
@@ -62,11 +62,11 @@ impl Protocol<'_> {
 
         let mut i: usize;
 
-        // Check scheme `mpv://` and `mpv-debug://`
+        // Check scheme `mpv-handler://` and `mpv-handler-debug://`
         (i, scheme) = if let Some(s) = arg.find("://") {
             match &arg[..s] {
-                "mpv" => (s + "://".len(), Schemes::Mpv),
-                "mpv-debug" => (s + "://".len(), Schemes::MpvDebug),
+                "mpv-handler" => (s + "://".len(), Schemes::MpvHandler),
+                "mpv-handler-debug" => (s + "://".len(), Schemes::MpvHandlerDebug),
                 _ => return Err(Error::IncorrectProtocol(arg.to_string())),
             }
         } else {
@@ -167,9 +167,9 @@ fn decode_url(data: &str) -> Result<String, Error> {
 fn test_protocol_parse() {
     // All parameters
     let proto =
-        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ/?cookies=www.youtube.com.txt&profile=low-latency&quality=1080p&v_codec=av01&v_title=VGl0bGU&subfile=aHR0cDovL2V4YW1wbGUuY29tL2VuLmFzcw&startat=233").unwrap();
+        Protocol::parse("mpv-handler://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ/?cookies=www.youtube.com.txt&profile=low-latency&quality=1080p&v_codec=av01&v_title=VGl0bGU&subfile=aHR0cDovL2V4YW1wbGUuY29tL2VuLmFzcw&startat=233").unwrap();
 
-    assert_eq!(proto.scheme, Schemes::Mpv);
+    assert_eq!(proto.scheme, Schemes::MpvHandler);
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
     assert_eq!(proto.cookies, Some("www.youtube.com.txt"));
@@ -181,30 +181,32 @@ fn test_protocol_parse() {
     assert_eq!(proto.startat, Some("233"));
 
     // No parameter and last slash
-    let proto =
-        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ")
-            .unwrap();
+    let proto = Protocol::parse(
+        "mpv-handler://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ",
+    )
+    .unwrap();
 
-    assert_eq!(proto.scheme, Schemes::Mpv);
+    assert_eq!(proto.scheme, Schemes::MpvHandler);
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
 
     // No parameter and protocol `mpv`
-    let proto =
-        Protocol::parse("mpv://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ/")
-            .unwrap();
-
-    assert_eq!(proto.scheme, Schemes::Mpv);
-    assert_eq!(proto.plugin, Plugins::Play);
-    assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
-
-    // No parameter and protocol `mpv-debug`
     let proto = Protocol::parse(
-        "mpv-debug://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ",
+        "mpv-handler://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ/",
     )
     .unwrap();
 
-    assert_eq!(proto.scheme, Schemes::MpvDebug);
+    assert_eq!(proto.scheme, Schemes::MpvHandler);
+    assert_eq!(proto.plugin, Plugins::Play);
+    assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
+
+    // No parameter and protocol `mpv-handler-debug`
+    let proto = Protocol::parse(
+        "mpv-handler-debug://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ",
+    )
+    .unwrap();
+
+    assert_eq!(proto.scheme, Schemes::MpvHandlerDebug);
     assert_eq!(proto.plugin, Plugins::Play);
     assert_eq!(proto.url, "https://www.youtube.com/watch?v=Ggkn2f5e-IU");
 }

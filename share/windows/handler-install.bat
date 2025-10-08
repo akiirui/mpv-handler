@@ -63,18 +63,18 @@ call :add_verbs
 
 :add_verbs
     :: Add the mpv protocol to the registry
-    call :reg add "HKCR\mpv" /d "URL:mpv Handler link" /f
-    call :reg add "HKCR\mpv" /v "Content Type" /d "application/x-mpv" /f
-    call :reg add "HKCR\mpv" /v "URL Protocol" /f
-    call :reg add "HKCR\mpv\DefaultIcon" /d "\"%mpv_exe_path%\",1" /f
-    call :reg add "HKCR\mpv\shell\open\command" /d "\"%mpv_handler_path%\" \"%%%%1\"" /f
+    call :reg add "HKCR\mpv-handler" /d "URL:MPV Handler" /f
+    call :reg add "HKCR\mpv-handler" /v "Content Type" /d "application/x-mpv-handler" /f
+    call :reg add "HKCR\mpv-handler" /v "URL Protocol" /f
+    call :reg add "HKCR\mpv-handler\DefaultIcon" /d "\"%mpv_exe_path%\",1" /f
+    call :reg add "HKCR\mpv-handler\shell\open\command" /d "\"%mpv_handler_path%\" \"%%%%1\"" /f
 
     :: Add the mpv protocol to the registry
-    call :reg add "HKCR\mpv-debug" /d "URL:mpv Handler link" /f
-    call :reg add "HKCR\mpv-debug" /v "Content Type" /d "application/x-mpv-debug" /f
-    call :reg add "HKCR\mpv-debug" /v "URL Protocol" /f
-    call :reg add "HKCR\mpv-debug\DefaultIcon" /d "\"%mpv_exe_path%\",1" /f
-    call :reg add "HKCR\mpv-debug\shell\open\command" /d "\"%mpv_handler_debug_path%\" \"%%%%1\"" /f
+    call :reg add "HKCR\mpv-hanlder-debug" /d "URL:MPV Handler Debug" /f
+    call :reg add "HKCR\mpv-hanlder-debug" /v "Content Type" /d "application/x-mpv-handler-debug" /f
+    call :reg add "HKCR\mpv-hanlder-debug" /v "URL Protocol" /f
+    call :reg add "HKCR\mpv-hanlder-debug\DefaultIcon" /d "\"%mpv_exe_path%\",1" /f
+    call :reg add "HKCR\mpv-hanlder-debug\shell\open\command" /d "\"%mpv_handler_debug_path%\" \"%%%%1\"" /f
 
     echo Successfully installed mpv-handler
     echo Enjoy!

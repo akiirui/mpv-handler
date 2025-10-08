@@ -20,8 +20,8 @@
 
 ### 协议名
 
-- `mpv`: 在没有命令行窗口的情况下运行 mpv-handler
-- `mpv-debug`: 在有命令行窗口的情况下运行 mpv-handler 以便于查看输出和错误
+- `mpv-handler`: 在没有命令行窗口的情况下运行 mpv-handler
+- `mpv-handler-debug`: 在有命令行窗口的情况下运行 mpv-handler 以便于查看输出和错误
 
 ### 插件 / Plugins
 
@@ -77,8 +77,8 @@ startat = [ Seconds (float) ]
 7. 注册 xdg-mime（感谢 [linuxuprising][linuxuprising] 的提醒）
 
    - ```
-     $ xdg-mime default mpv-handler.desktop x-scheme-handler/mpv
-     $ xdg-mime default mpv-handler-debug.desktop x-scheme-handler/mpv-debug
+     $ xdg-mime default mpv-handler.desktop x-scheme-handler/mpv-handler
+     $ xdg-mime default mpv-handler-debug.desktop x-scheme-handler/mpv-handler-debug
      ```
 
 8. 添加 `$HOME/.local/bin` 到环境变量 `PATH`
