@@ -14,6 +14,28 @@
 
 [![play-with-mpv][badges-play-with-mpv]][greasyfork-play-with-mpv]
 
+## 重大变更
+
+### [v0.4.0][v0.4.0]
+
+为了避免与 mpv 所提供的 `mpv://` 协议冲突。
+
+> mpv://...
+>
+> mpv protocol. This is used for starting mpv from URL handler. The protocol is stripped and the rest is passed to the player as a normal open argument. Only safe network protocols are allowed to be opened this way.
+
+协议 `mpv://` 和 `mpv-debug://` 已弃用, 请使用 `mpv-handler://` 和 `mpv-handler-debug://`.
+
+**需要手动干预**
+
+#### Windows
+
+运行 `handler-uninstall.bat` 卸载已弃用的协议, 然后运行 `handler-install.bat` 安装新的协议.
+
+#### Linux
+
+如果你是手动安装的，请重新执行一遍手动安装流程。
+
 ## 协议
 
 ![](share/proto.png)
@@ -118,6 +140,7 @@ proxy = "http://example.com:8080"
 #   - 路径的目标是可执行二进制文件，而不是目录
 ```
 
+[v0.4.0]: https://github.com/akiirui/mpv-handler/releases/tag/v0.4.0
 [rfc-base64-url]: https://datatracker.ietf.org/doc/html/rfc4648#section-5
 [badges-aur-git]: https://img.shields.io/aur/version/mpv-handler-git?style=for-the-badge&logo=archlinux&label=mpv-handler-git
 [badges-aur]: https://img.shields.io/aur/version/mpv-handler?style=for-the-badge&logo=archlinux&label=mpv-handler

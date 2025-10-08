@@ -14,6 +14,28 @@ Please use it with userscript:
 
 [![play-with-mpv][badges-play-with-mpv]][greasyfork-play-with-mpv]
 
+## Breaking changes
+
+### [v0.4.0][v0.4.0]
+
+To avoid conflicts with the `mpv://` protocol provided by mpv.
+
+> mpv://...
+>
+> mpv protocol. This is used for starting mpv from URL handler. The protocol is stripped and the rest is passed to the player as a normal open argument. Only safe network protocols are allowed to be opened this way.
+
+Scheme `mpv://` and `mpv-debug://` are deprecated, use `mpv-handler://` and `mpv-handler-debug://`.
+
+**Require manual intervention**
+
+#### Windows
+
+Run `handler-uninstall.bat` to uninstall deprecated protocol, and run `handler-install.bat` to install new procotol.
+
+#### Linux
+
+If you installed manually, please repeat the manual installation process.
+
 ## Protocol
 
 ![](share/proto.png)
@@ -118,6 +140,7 @@ proxy = "http://example.com:8080"
 #   - The path target is an executable binary file, not a directory
 ```
 
+[v0.4.0]: https://github.com/akiirui/mpv-handler/releases/tag/v0.4.0
 [rfc-base64-url]: https://datatracker.ietf.org/doc/html/rfc4648#section-5
 [badges-aur-git]: https://img.shields.io/aur/version/mpv-handler-git?style=for-the-badge&logo=archlinux&label=mpv-handler-git
 [badges-aur]: https://img.shields.io/aur/version/mpv-handler?style=for-the-badge&logo=archlinux&label=mpv-handler
