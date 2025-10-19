@@ -8,6 +8,7 @@ const PREFIX_FORMATS: &str = "--ytdl-raw-options-append=format-sort=";
 const PREFIX_V_TITLE: &str = "--title=";
 const PREFIX_SUBFILE: &str = "--sub-file=";
 const PREFIX_STARTAT: &str = "--start=";
+const PREFIX_REFERRER: &str = "--referrer=";
 const PREFIX_YT_PATH: &str = "--script-opts=ytdl_hook-ytdl_path=";
 
 /// Execute player with given options
@@ -20,6 +21,7 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     let option_subfile: String;
     let option_startat: String;
     let option_yt_path: String;
+    let option_referrer: String;
 
     // Append cookies option
     if let Some(v) = proto.cookies {
@@ -59,6 +61,12 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     if let Some(v) = &proto.startat {
         option_startat = startat(v);
         options.push(&option_startat);
+    }
+
+    // Append referrer option
+    if let Some(v) = &proto.referrer {
+        option_referrer = referrer(v);
+        options.push(&option_referrer);
     }
 
     // Set custom ytdl execute file path
@@ -203,6 +211,11 @@ fn startat(startat: &str) -> String {
     format!("{PREFIX_STARTAT}{startat}")
 }
 
+/// Return referrer option
+fn referrer(referrer: &str) -> String {
+    format!("{PREFIX_REFERRER}{referrer}")
+}
+
 /// Return yt_path option
 fn yt_path(yt_path: &str) -> String {
     format!("{PREFIX_YT_PATH}{yt_path}")
@@ -244,6 +257,12 @@ fn test_subfile_option() {
 fn test_startat_option() {
     let s = startat("233");
     assert_eq!(s, format!("{PREFIX_STARTAT}233"));
+}
+
+#[test]
+fn test_referrer_option() {
+    let r = referrer("http://example.com/");
+    assert_eq!(r, format!("{PREFIX_REFERRER}http://example.com/"));
 }
 
 #[test]

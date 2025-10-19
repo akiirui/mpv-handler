@@ -32,6 +32,7 @@ const SAFE_PROTOS: [&str; 11] = [
 /// - v_title
 /// - subfile
 /// - startat
+/// - referrer
 #[derive(Debug, PartialEq)]
 pub struct Protocol<'a> {
     pub scheme: Schemes,
@@ -44,6 +45,7 @@ pub struct Protocol<'a> {
     pub v_title: Option<String>,
     pub subfile: Option<String>,
     pub startat: Option<&'a str>,
+    pub referrer: Option<String>,
 }
 
 impl Protocol<'_> {
@@ -59,6 +61,7 @@ impl Protocol<'_> {
         let mut v_title: Option<String> = None;
         let mut subfile: Option<String> = None;
         let mut startat: Option<&str> = None;
+        let mut referrer: Option<String> = None;
 
         let mut i: usize;
 
@@ -112,6 +115,7 @@ impl Protocol<'_> {
                     "v_title" => v_title = Some(decode_txt(v)?),
                     "subfile" => subfile = Some(decode_url(v)?),
                     "startat" => startat = Some(v),
+                    "referrer" => referrer = Some(decode_txt(v)?),
                     _ => {}
                 };
             }
@@ -128,6 +132,7 @@ impl Protocol<'_> {
             v_title,
             subfile,
             startat,
+            referrer,
         })
     }
 }
@@ -167,7 +172,7 @@ fn decode_url(data: &str) -> Result<String, Error> {
 fn test_protocol_parse() {
     // All parameters
     let proto =
-        Protocol::parse("mpv-handler://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ/?cookies=www.youtube.com.txt&profile=low-latency&quality=1080p&v_codec=av01&v_title=VGl0bGU&subfile=aHR0cDovL2V4YW1wbGUuY29tL2VuLmFzcw&startat=233").unwrap();
+        Protocol::parse("mpv-handler://play/aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g_dj1HZ2tuMmY1ZS1JVQ/?cookies=www.youtube.com.txt&profile=low-latency&quality=1080p&v_codec=av01&v_title=VGl0bGU&subfile=aHR0cDovL2V4YW1wbGUuY29tL2VuLmFzcw&startat=233&referrer=aHR0cHM6Ly93d3cueW91dHViZS5jb20v").unwrap();
 
     assert_eq!(proto.scheme, Schemes::MpvHandler);
     assert_eq!(proto.plugin, Plugins::Play);
@@ -179,6 +184,7 @@ fn test_protocol_parse() {
     assert_eq!(proto.v_title, Some("Title".to_string()));
     assert_eq!(proto.subfile, Some("http://example.com/en.ass".to_string()));
     assert_eq!(proto.startat, Some("233"));
+    assert_eq!(proto.referrer, Some("https://www.youtube.com/".to_string()));
 
     // No parameter and last slash
     let proto = Protocol::parse(
