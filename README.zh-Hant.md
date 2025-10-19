@@ -65,13 +65,14 @@ let safe = data.replace(/\//g, "_").replace(/\+/g, "-").replace(/\=/g, "");
 ### 參數 / Parameters (可選)
 
 ```
-cookies = [ www.domain.com.txt ]
-profile = [ default, low-latency, etc... ]
-quality = [ 2160p, 1440p, 1080p, 720p, 480p, 360p ]
-v_codec = [ av01, vp9, h265, h264 ]
-v_title = [ Encoded Title ]
-subfile = [ Encoded URL ]
-startat = [ Seconds (float) ]
+cookies  = [ www.domain.com.txt ]
+profile  = [ default, low-latency, etc... ]
+quality  = [ 2160p, 1440p, 1080p, 720p, 480p, 360p ]
+v_codec  = [ av01, vp9, h265, h264 ]
+v_title  = [ Encoded Title ]
+subfile  = [ Encoded URL ]
+startat  = [ Seconds (float) ]
+referrer = [ Encoded URL ]
 ```
 
 ## 安裝
