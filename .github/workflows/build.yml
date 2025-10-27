@@ -44,7 +44,7 @@ jobs:
           cargo build --release --locked --target ${{ matrix.target }}
 
       - name: Upload to artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ matrix.asset_name }}
           path: target/${{ matrix.target }}/release/${{ matrix.artifact_name }}
@@ -59,7 +59,7 @@ jobs:
 
       - name: Upload mpv-handler-debug to artifact
         if: matrix.os == 'windows-latest'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ matrix.asset_name_debug }}
           path: target/${{ matrix.target }}/release/${{ matrix.artifact_name_debug }}
