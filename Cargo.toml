@@ -16,7 +16,7 @@ base64 = "0.22"
 dirs = "6.0"
 serde = { version = "1.0", features = ["derive"] }
 thiserror = "2.0"
-toml = "0.9"
+toml = "1.0"
 
 [features]
 console = []
