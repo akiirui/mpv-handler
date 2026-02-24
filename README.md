@@ -118,6 +118,47 @@ Windows users need to install manually.
 3. Run `handler-install.bat` to register protocol handler
 4. Edit `config.toml` and set `mpv` and `ytdl` path
 
+### Macos
+
+Macos user need to install manually. 
+
+#### Manual installation
+
+1. Clone the repo. 
+2. Install cargo.
+3. Run `cargo build` in the repo to build the binary. 
+4. Move the binary to `/usr/local/bin/mpv-handler` or other path in your `$PATH`.
+5. Move `share/macos/mpv-handler.app` to `/Applications` or `~/Applications` if your binary is in `/usr/local/bin/mpv-handler`, then open it once to register scheme.
+   Or you can create app manually as follows: 
+    1. Install [Platypus](https://github.com/sveinbjornt/Platypus) and then install `platypus` cli. 
+    1. Create a wrapper: 
+        ```sh
+        #!/bin/sh
+        exec "/usr/local/bin/mpv-handler" "$@"
+        ```
+        at any position. 
+    1. Run 
+    ```zsh 
+    platypus \
+    -a "mpv-handler" \
+    -I "io.github.akiirui.mpv-handler" \
+    -U "mpv-handler" \
+    -o None \
+    -B \
+    -R \
+    -y \
+    /path/to/mpv-handler-wrapper.sh \
+    ~/Applications/mpv-handler.app
+    ```
+    to create an app to register scheme.
+
+#### Manual installation
+
+1. Download [latest Windows release][download-windows]
+2. Unzip the archive to the directory you want
+3. Run `handler-install.bat` to register protocol handler
+4. Edit `config.toml` and set `mpv` and `ytdl` path
+
 ## Configuration
 
 ```toml
