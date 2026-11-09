@@ -111,6 +111,13 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v8
 
+      # actions/upload-artifact does not preserve file modes, so the binaries
+      # come back without the executable bit and would end up in the archives
+      # as 644. install.sh papers over it, but the archives should be correct.
+      - name: Restore executable bits lost by artifact upload
+        run: |
+          chmod +x linux-amd64/mpv-handler macos-universal/mpv-handler
+
       - name: Package Linux
         run: |
           zip -j mpv-handler-linux-amd64.zip \
