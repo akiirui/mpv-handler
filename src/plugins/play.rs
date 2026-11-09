@@ -11,8 +11,8 @@ const PREFIX_STARTAT: &str = "--start=";
 const PREFIX_REFERRER: &str = "--referrer=";
 const PREFIX_YT_PATH: &str = "--script-opts=ytdl_hook-ytdl_path=";
 
-/// Execute player with given options
-pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
+/// Build the mpv command for the given protocol and config
+fn build_command(proto: &Protocol, config: &Config) -> Result<std::process::Command, Error> {
     let mut options: Vec<&str> = Vec::new();
     let option_cookies: String;
     let option_profile: String;
@@ -102,7 +102,7 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     // Print video URL
     println!("Playing: {}", proto.url);
 
-    // Execute mpv player
+    // Build mpv player command
     let mut command;
 
     if let Some(v) = &config.mpv {
@@ -141,6 +141,21 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     #[cfg(unix)]
     command.env_remove("LD_PRELOAD");
 
+    // The same kind of interference exists through "DYLD_*" on macOS
+    #[cfg(target_os = "macos")]
+    {
+        command.env_remove("DYLD_LIBRARY_PATH");
+        command.env_remove("DYLD_FRAMEWORK_PATH");
+        command.env_remove("DYLD_INSERT_LIBRARIES");
+    }
+
+    Ok(command)
+}
+
+/// Execute player with given options and wait for it to exit
+pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
+    let mut command = build_command(proto, config)?;
+
     match command.status() {
         Ok(o) => match o.code() {
             Some(code) => match code {
@@ -151,6 +166,19 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
         },
         Err(e) => Err(Error::PlayerRunFailed(e)),
     }
+}
+
+/// Start player with given options and return without waiting for it
+///
+/// Used by the macOS URL service, where the application bundle exits right
+/// after mpv has started. Dropping the `Child` does not terminate mpv, and a
+/// fresh bundle instance handles the next URL.
+pub fn exec_detached(proto: &Protocol, config: &Config) -> Result<(), Error> {
+    let mut command = build_command(proto, config)?;
+
+    command.spawn().map_err(Error::PlayerRunFailed)?;
+
+    Ok(())
 }
 
 /// Return cookies option

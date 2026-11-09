@@ -64,8 +64,45 @@ jobs:
           name: ${{ matrix.asset_name_debug }}
           path: target/${{ matrix.target }}/release/${{ matrix.artifact_name_debug }}
 
+  # macOS is built apart from the matrix because a useful release is a single
+  # universal binary, which needs both targets compiled and then merged.
+  build-macos:
+    name: Build for macOS
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install dependencies
+        run: |
+          rustup target add aarch64-apple-darwin x86_64-apple-darwin
+
+      - name: Build mpv-handler
+        run: |
+          cargo build --release --locked --target aarch64-apple-darwin
+          cargo build --release --locked --target x86_64-apple-darwin
+
+      - name: Merge into a universal binary
+        run: |
+          lipo -create \
+            target/aarch64-apple-darwin/release/mpv-handler \
+            target/x86_64-apple-darwin/release/mpv-handler \
+            -output mpv-handler
+          chmod +x mpv-handler
+          file mpv-handler
+
+      - name: Run tests
+        run: |
+          cargo test --locked
+
+      - name: Upload to artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: macos-universal
+          path: mpv-handler
+
   publish:
-    needs: build
+    needs: [build, build-macos]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -80,6 +117,13 @@ jobs:
             README*.md \
             share/linux/* \
             linux-amd64/mpv-handler
+
+      - name: Package macOS
+        run: |
+          zip -j mpv-handler-macos-universal.zip \
+            README*.md \
+            share/macos/* \
+            macos-universal/mpv-handler
 
       - name: Package Windows
         run: |

@@ -106,6 +106,45 @@ referrer = [ Encoded URL ]
 8. 添加 `$HOME/.local/bin` 到环境变量 `PATH`
 9. **可选**: _复制 `config.toml` 至 `$HOME/.config/mpv-handler/config.toml` 并配置_
 
+### macOS
+
+macOS 没有 `.desktop` 文件或注册表项那样的机制：协议处理程序必须是一个应用程序包（app bundle）。因此发布包里带有 `install.sh`，它会把二进制文件包装成 `mpv-handler.app`，做 ad-hoc 签名，并向 LaunchServices 注册这两个协议。
+
+#### 手动安装
+
+1. 下载 [最新的 macOS 压缩包][download-macos]
+2. 解压缩压缩包
+3. 运行 `install.sh`
+   - ```
+     $ sh install.sh
+     ```
+
+   - 应用包会安装到 `$HOME/Applications`，不需要管理员权限。加上 `-d /Applications` 可以为本机所有用户安装。
+   - 请用 `sh install.sh` 运行。若你更喜欢直接 `./install.sh`，而 macOS 因压缩包带隔离属性而拒绝运行，先移除隔离属性：
+     - ```
+       $ xattr -dr com.apple.quarantine .
+       ```
+
+4. **可选**: _编辑 `$HOME/.config/mpv-handler/config.toml`_
+
+二进制文件是通用二进制（universal binary），同一个压缩包在 Apple Silicon 和 Intel Mac 上都能运行。
+
+#### 查找 mpv 和 yt-dlp
+
+被 LaunchServices 启动的应用包只继承 `PATH=/usr/bin:/bin:/usr/sbin:/sbin`，包管理器安装的程序因此不可见。除了 `$PATH`，mpv-handler 还会查找 `/opt/homebrew/bin`、`/usr/local/bin`、`/opt/local/bin`、`$HOME/.local/bin`、`$HOME/bin`，以及 `/Applications/mpv.app` 和 `$HOME/Applications/mpv.app` 内部。用 [Homebrew][homebrew] 或 [MacPorts][macports] 安装 mpv 和 yt-dlp 即可自动找到；也可以在 `config.toml` 里设置 `mpv` 和 `ytdl` 覆盖。
+
+#### 调试
+
+被 LaunchServices 启动的应用包没有控制台，所以 `mpv-handler-debug://` 会打开 Terminal 并在其中运行命令行接口。首次使用时 macOS 会请求控制 Terminal 的权限。普通 `mpv-handler://` 出错时会弹出警告框，因为没有别的地方可以显示错误。
+
+#### 卸载
+
+- ```
+  $ sh uninstall.sh
+  ```
+
+加上 `-c` 会一并删除 `$HOME/.config/mpv-handler/`，包括其中的 cookies。
+
 ### Windows
 
 Windows 用户目前只能手动安装。
@@ -125,6 +164,7 @@ mpv = "/usr/bin/mpv"
 # mpv 可执行文件的路径
 # 默认值:
 # - Linux: mpv
+# - macOS: mpv
 # - Windows: mpv.com
 
 ytdl = "/usr/bin/yt-dlp"
@@ -148,8 +188,10 @@ proxy = "http://example.com:8080"
 [download-aur-git]: https://aur.archlinux.org/packages/mpv-handler-git/
 [download-aur]: https://aur.archlinux.org/packages/mpv-handler/
 [download-linux]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-linux-amd64.zip
-[download-macos]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-macos-amd64.zip
+[download-macos]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-macos-universal.zip
 [download-windows]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-windows-amd64.zip
 [greasyfork-play-with-mpv]: https://greasyfork.org/scripts/416271-play-with-mpv
+[homebrew]: https://brew.sh/
 [linuxuprising]: https://www.linuxuprising.com/2021/07/open-youtube-and-more-videos-from-your.html
+[macports]: https://www.macports.org/
 [muse90673]: https://github.com/akiirui/mpv-handler/issues/122

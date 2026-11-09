@@ -18,5 +18,25 @@ serde = { version = "1.0", features = ["derive"] }
 thiserror = "2.0"
 toml = "1.1"
 
+# macOS receives the URL through an Apple Event instead of the command line,
+# so it needs a minimal AppKit event loop. See `src/macos.rs`.
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2 = "0.6"
+objc2-app-kit = { version = "0.3", default-features = false, features = [
+    "std",
+    "NSApplication",
+    "NSResponder",
+    "NSRunningApplication",
+    "NSWindow",
+] }
+objc2-foundation = { version = "0.3", default-features = false, features = [
+    "std",
+    "NSObject",
+    "NSString",
+    "NSAppleEventDescriptor",
+    "NSAppleEventManager",
+    "objc2-core-services",
+] }
+
 [features]
 console = []

@@ -106,6 +106,62 @@ referrer = [ Encoded URL ]
 8. Add `$HOME/.local/bin` to your environment variable `PATH`
 9. **Optional**: _Copy `config.toml` to `$HOME/.config/mpv-handler/config.toml` and configure_
 
+### macOS
+
+macOS has no equivalent of a `.desktop` file or a registry entry: a protocol
+handler has to be an application bundle. The release therefore ships
+`install.sh`, which wraps the binary in `mpv-handler.app`, signs it ad-hoc and
+registers both schemes with LaunchServices.
+
+#### Manual installation
+
+1. Download [latest macOS release][download-macos]
+2. Unzip the archive
+3. Run `install.sh`
+   - ```
+     $ sh install.sh
+     ```
+
+   - The bundle is installed to `$HOME/Applications`, which needs no
+     administrator rights. Pass `-d /Applications` to install it for every user
+     of this machine.
+   - Run it as `sh install.sh`. If you prefer `./install.sh` and macOS
+     refuses because the archive is quarantined, drop the flag first:
+     - ```
+       $ xattr -dr com.apple.quarantine .
+       ```
+
+4. **Optional**: _Edit `$HOME/.config/mpv-handler/config.toml`_
+
+The binary is universal, so the same archive runs on Apple Silicon and on Intel
+Macs.
+
+#### Finding mpv and yt-dlp
+
+A bundle started by LaunchServices only inherits
+`PATH=/usr/bin:/bin:/usr/sbin:/sbin`, which hides anything a package manager
+installed. Besides `$PATH`, mpv-handler also searches `/opt/homebrew/bin`,
+`/usr/local/bin`, `/opt/local/bin`, `$HOME/.local/bin`, `$HOME/bin`, and inside
+`/Applications/mpv.app` and `$HOME/Applications/mpv.app`. Install mpv and
+yt-dlp with [Homebrew][homebrew] or [MacPorts][macports] and they are found
+automatically; set `mpv` and `ytdl` in `config.toml` to override.
+
+#### Debugging
+
+A bundle started by LaunchServices has no console, so `mpv-handler-debug://`
+opens Terminal and runs the command line interface there. macOS asks for
+permission to control Terminal the first time. Errors of the normal
+`mpv-handler://` scheme are shown as an alert, because there is nowhere else to
+put them.
+
+#### Uninstall
+
+- ```
+  $ sh uninstall.sh
+  ```
+
+Add `-c` to also remove `$HOME/.config/mpv-handler/`, including any cookies.
+
 ### Windows
 
 Windows users need to install manually.
@@ -125,6 +181,7 @@ mpv = "/usr/bin/mpv"
 # The path of mpv executable binary
 # Default value:
 # - Linux: mpv
+# - macOS: mpv
 # - Windows: mpv.com
 
 ytdl = "/usr/bin/yt-dlp"
@@ -148,8 +205,10 @@ proxy = "http://example.com:8080"
 [download-aur-git]: https://aur.archlinux.org/packages/mpv-handler-git/
 [download-aur]: https://aur.archlinux.org/packages/mpv-handler/
 [download-linux]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-linux-amd64.zip
-[download-macos]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-macos-amd64.zip
+[download-macos]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-macos-universal.zip
 [download-windows]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-windows-amd64.zip
 [greasyfork-play-with-mpv]: https://greasyfork.org/scripts/416271-play-with-mpv
+[homebrew]: https://brew.sh/
 [linuxuprising]: https://www.linuxuprising.com/2021/07/open-youtube-and-more-videos-from-your.html
+[macports]: https://www.macports.org/
 [muse90673]: https://github.com/akiirui/mpv-handler/issues/122

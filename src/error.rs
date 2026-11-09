@@ -14,6 +14,11 @@ pub enum Error {
     PlayerExited(u8),
     #[error("Failed to run player ({0})")]
     PlayerRunFailed(std::io::Error),
+    // Only the macOS URL service opens Terminal, so the variant is limited to
+    // that target to keep it from being reported as unused elsewhere.
+    #[cfg(target_os = "macos")]
+    #[error("Failed to open Terminal ({0})")]
+    TerminalRunFailed(String),
     #[error("Failed to decode ({0})")]
     FromBase64Error(#[from] base64::DecodeError),
     #[error("Failed to decode ({0})")]
