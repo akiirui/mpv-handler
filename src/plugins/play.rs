@@ -69,11 +69,19 @@ fn build_command(proto: &Protocol, config: &Config) -> Result<std::process::Comm
         options.push(&option_referrer);
     }
 
-    // Set custom ytdl execute file path
-    if let Some(v) = &config.ytdl {
-        option_yt_path = yt_path(v);
-        options.push(&option_yt_path);
-    }
+    // Tell ytdl_hook where yt-dlp lives. Without this mpv looks yt-dlp up in
+    // its own `$PATH`, which a bundle started by LaunchServices on macOS does
+    // not have, and extraction then fails with "youtube-dl failed: not found".
+    let resolved_ytdl: String;
+    let ytdl_path: &str = match &config.ytdl {
+        Some(v) => v,
+        None => {
+            resolved_ytdl = crate::config::default_ytdl()?;
+            &resolved_ytdl
+        }
+    };
+    option_yt_path = yt_path(ytdl_path);
+    options.push(&option_yt_path);
 
     // Print binaries and options list (in debug build)
     if &proto.scheme == &crate::protocol::Schemes::MpvHandlerDebug || cfg!(debug_assertions) {
@@ -147,6 +155,21 @@ fn build_command(proto: &Protocol, config: &Config) -> Result<std::process::Comm
         command.env_remove("DYLD_LIBRARY_PATH");
         command.env_remove("DYLD_FRAMEWORK_PATH");
         command.env_remove("DYLD_INSERT_LIBRARIES");
+    }
+
+    // A bundle started by LaunchServices on macOS inherits only
+    // PATH=/usr/bin:/bin:/usr/sbin:/sbin, but yt-dlp shells out to ffmpeg and
+    // ffprobe by name. Give the child the extra directories we search for the
+    // binaries themselves, so merging separate streams keeps working.
+    #[cfg(target_os = "macos")]
+    {
+        let inherited = std::env::var_os("PATH").unwrap_or_default();
+        let mut dirs = crate::config::extra_bin_dirs();
+        dirs.extend(std::env::split_paths(&inherited));
+
+        if let Ok(joined) = std::env::join_paths(dirs) {
+            command.env("PATH", joined);
+        }
     }
 
     Ok(command)

@@ -118,6 +118,17 @@ pub fn default_mpv() -> Result<String, Error> {
     return realpath("mpv.com");
 }
 
+/// The default value of `Config.ytdl`
+///
+/// mpv's `ytdl_hook` looks yt-dlp up in its own `$PATH` unless it is told
+/// otherwise, so the resolved path has to be handed to the player explicitly.
+pub fn default_ytdl() -> Result<String, Error> {
+    #[cfg(unix)]
+    return realpath("yt-dlp");
+    #[cfg(windows)]
+    return realpath("yt-dlp.exe");
+}
+
 /// The defalut value of `Config`
 fn default_config() -> Config {
     Config {
@@ -133,7 +144,7 @@ fn default_config() -> Config {
 /// `PATH=/usr/bin:/bin:/usr/sbin:/sbin`, which hides package manager
 /// installations such as Homebrew or MacPorts.
 #[cfg(target_os = "macos")]
-fn extra_bin_dirs() -> Vec<PathBuf> {
+pub(crate) fn extra_bin_dirs() -> Vec<PathBuf> {
     let mut dirs: Vec<PathBuf> = vec![
         // Homebrew on Apple Silicon
         PathBuf::from("/opt/homebrew/bin"),
