@@ -7,9 +7,12 @@
 # hands over to the install.sh shipped inside the archive, which assembles
 # and registers mpv-handler.app.
 #
-# Environment:
+# Environment, set on the sh that runs this script, i.e. after the pipe:
 #   MPV_HANDLER_REPO  owner/repo to download from (default: akiirui/mpv-handler)
 #   MPV_HANDLER_TAG   release tag to pin instead of "latest"
+#
+#   curl -fsSL https://raw.githubusercontent.com/akiirui/mpv-handler/main/share/macos/remote-install.sh \
+#     | MPV_HANDLER_TAG=macos-0.4.2-2 sh
 #
 # Arguments are passed to install.sh, e.g.  | sh -s -- -d /Applications
 

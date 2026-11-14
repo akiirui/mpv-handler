@@ -117,6 +117,7 @@ macOS 沒有 `.desktop` 文件或註冊表項那樣的機制：協議處理程�
   ```
 
 該腳本下載最新 release 壓縮包、校驗其 sha512 後，運行包內自帶的 `install.sh`。安裝選項放在 `sh -s --` 之後，例如 `| sh -s -- -d /Applications`。
+固定版本則把 `MPV_HANDLER_TAG` 設在管道後的 `sh` 上：`| MPV_HANDLER_TAG=v0.4.2 sh`。
 
 #### 手動安裝
 

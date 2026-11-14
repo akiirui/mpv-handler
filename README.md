@@ -122,6 +122,8 @@ registers both schemes with LaunchServices.
 The script downloads the latest release archive, verifies its sha512
 checksum and runs the `install.sh` shipped inside it. Installer options go
 after `sh -s --`, for example `| sh -s -- -d /Applications`.
+To pin a release, set `MPV_HANDLER_TAG` on the `sh` after the pipe:
+`| MPV_HANDLER_TAG=v0.4.2 sh`.
 
 #### Manual installation
 
