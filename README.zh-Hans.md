@@ -110,6 +110,14 @@ referrer = [ Encoded URL ]
 
 macOS 没有 `.desktop` 文件或注册表项那样的机制：协议处理程序必须是一个应用程序包（app bundle）。因此发布包里带有 `install.sh`，它会把二进制文件包装成 `mpv-handler.app`，做 ad-hoc 签名，并向 LaunchServices 注册这两个协议。
 
+#### 一行安装
+
+- ```
+  $ curl -fsSL https://raw.githubusercontent.com/akiirui/mpv-handler/main/share/macos/remote-install.sh | sh
+  ```
+
+该脚本下载最新 release 压缩包、校验其 sha512 后，运行包内自带的 `install.sh`。安装选项放在 `sh -s --` 之后，例如 `| sh -s -- -d /Applications`。
+
 #### 手动安装
 
 1. 下载 [最新的 macOS 压缩包][download-macos]
