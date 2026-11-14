@@ -1,0 +1,20 @@
+#mpv = "/opt/homebrew/bin/mpv"
+# Optional, Type: String
+# The path of mpv executable binary
+# Default value:
+# - Linux: mpv
+# - macOS: mpv
+# - Windows: mpv.com
+#
+# On macOS the binary is looked up in $PATH, /opt/homebrew/bin,
+# /usr/local/bin, /opt/local/bin, $HOME/.local/bin, $HOME/bin and inside
+# /Applications/mpv.app, because a bundle started by LaunchServices only
+# inherits PATH=/usr/bin:/bin:/usr/sbin:/sbin.
+
+#ytdl = "/opt/homebrew/bin/yt-dlp"
+# Optional, Type: String
+# The path of yt-dlp executable binary
+
+#proxy = "http://example.com:8080"
+# Optional, Type: String
+# HTTP(S) proxy server address

@@ -11,8 +11,8 @@ const PREFIX_STARTAT: &str = "--start=";
 const PREFIX_REFERRER: &str = "--referrer=";
 const PREFIX_YT_PATH: &str = "--script-opts=ytdl_hook-ytdl_path=";
 
-/// Execute player with given options
-pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
+/// Build the mpv command for the given protocol and config
+fn build_command(proto: &Protocol, config: &Config) -> Result<std::process::Command, Error> {
     let mut options: Vec<&str> = Vec::new();
     let option_cookies: String;
     let option_profile: String;
@@ -69,11 +69,19 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
         options.push(&option_referrer);
     }
 
-    // Set custom ytdl execute file path
-    if let Some(v) = &config.ytdl {
-        option_yt_path = yt_path(v);
-        options.push(&option_yt_path);
-    }
+    // Tell ytdl_hook where yt-dlp lives. Without this mpv looks yt-dlp up in
+    // its own `$PATH`, which a bundle started by LaunchServices on macOS does
+    // not have, and extraction then fails with "youtube-dl failed: not found".
+    let resolved_ytdl: String;
+    let ytdl_path: &str = match &config.ytdl {
+        Some(v) => v,
+        None => {
+            resolved_ytdl = crate::config::default_ytdl()?;
+            &resolved_ytdl
+        }
+    };
+    option_yt_path = yt_path(ytdl_path);
+    options.push(&option_yt_path);
 
     // Print binaries and options list (in debug build)
     if &proto.scheme == &crate::protocol::Schemes::MpvHandlerDebug || cfg!(debug_assertions) {
@@ -102,7 +110,7 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     // Print video URL
     println!("Playing: {}", proto.url);
 
-    // Execute mpv player
+    // Build mpv player command
     let mut command;
 
     if let Some(v) = &config.mpv {
@@ -141,6 +149,36 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
     #[cfg(unix)]
     command.env_remove("LD_PRELOAD");
 
+    // The same kind of interference exists through "DYLD_*" on macOS
+    #[cfg(target_os = "macos")]
+    {
+        command.env_remove("DYLD_LIBRARY_PATH");
+        command.env_remove("DYLD_FRAMEWORK_PATH");
+        command.env_remove("DYLD_INSERT_LIBRARIES");
+    }
+
+    // A bundle started by LaunchServices on macOS inherits only
+    // PATH=/usr/bin:/bin:/usr/sbin:/sbin, but yt-dlp shells out to ffmpeg and
+    // ffprobe by name. Give the child the extra directories we search for the
+    // binaries themselves, so merging separate streams keeps working.
+    #[cfg(target_os = "macos")]
+    {
+        let inherited = std::env::var_os("PATH").unwrap_or_default();
+        let mut dirs = crate::config::extra_bin_dirs();
+        dirs.extend(std::env::split_paths(&inherited));
+
+        if let Ok(joined) = std::env::join_paths(dirs) {
+            command.env("PATH", joined);
+        }
+    }
+
+    Ok(command)
+}
+
+/// Execute player with given options and wait for it to exit
+pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
+    let mut command = build_command(proto, config)?;
+
     match command.status() {
         Ok(o) => match o.code() {
             Some(code) => match code {
@@ -151,6 +189,19 @@ pub fn exec(proto: &Protocol, config: &Config) -> Result<(), Error> {
         },
         Err(e) => Err(Error::PlayerRunFailed(e)),
     }
+}
+
+/// Start player with given options and return without waiting for it
+///
+/// Used by the macOS URL service, where the application bundle exits right
+/// after mpv has started. Dropping the `Child` does not terminate mpv, and a
+/// fresh bundle instance handles the next URL.
+pub fn exec_detached(proto: &Protocol, config: &Config) -> Result<(), Error> {
+    let mut command = build_command(proto, config)?;
+
+    command.spawn().map_err(Error::PlayerRunFailed)?;
+
+    Ok(())
 }
 
 /// Return cookies option

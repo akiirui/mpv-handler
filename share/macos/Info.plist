@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleExecutable</key>
+	<string>mpv-handler</string>
+	<key>CFBundleIdentifier</key>
+	<string>io.github.akiirui.mpv-handler</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>mpv-handler</string>
+	<key>CFBundleDisplayName</key>
+	<string>mpv-handler</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>__VERSION__</string>
+	<key>CFBundleVersion</key>
+	<string>__VERSION__</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.13</string>
+	<!--
+	  No Dock icon and no menu bar. The bundle only exists so that
+	  LaunchServices has something to hand mpv-handler:// URLs to.
+	-->
+	<key>LSUIElement</key>
+	<true/>
+	<key>NSHumanReadableCopyright</key>
+	<string>MIT License</string>
+	<!--
+	  One bundle claims both schemes. The binary tells them apart by the URL
+	  prefix: mpv-handler:// plays directly, mpv-handler-debug:// re-runs the
+	  command line interface inside Terminal so its output can be read.
+	-->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLName</key>
+			<string>mpv-handler</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>mpv-handler</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLName</key>
+			<string>mpv-handler-debug</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>mpv-handler-debug</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>
