@@ -1,4 +1,4 @@
-[English][readme-en] | [简体中文][readme-zh-hans] | [繁体中文][readme-zh-hant]
+**English** | [简体中文][readme-zh-hans] | [繁体中文][readme-zh-hant]
 
 [readme-en]: https://github.com/akiirui/mpv-handler/blob/main/README.md
 [readme-zh-hans]: https://github.com/akiirui/mpv-handler/blob/main/README.zh-Hans.md
@@ -113,11 +113,11 @@ handler has to be an application bundle. The release therefore ships
 `install.sh`, which wraps the binary in `mpv-handler.app`, signs it ad-hoc and
 registers both schemes with LaunchServices.
 
-#### One-command installation
+#### Quick installation
 
-- ```
-  curl -fsSL https://raw.githubusercontent.com/akiirui/mpv-handler/main/share/macos/remote-install.sh | sh
-  ```
+```shell
+curl -fsSL https://raw.githubusercontent.com/akiirui/mpv-handler/main/share/macos/remote-install.sh | sh
+```
 
 The script downloads the latest release archive, verifies its sha512
 checksum and runs the `install.sh` shipped inside it. Installer options go

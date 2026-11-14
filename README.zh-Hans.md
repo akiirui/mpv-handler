@@ -1,4 +1,4 @@
-[English][readme-en] | [简体中文][readme-zh-hans] | [繁体中文][readme-zh-hant]
+[English][readme-en] | **简体中文** | [繁体中文][readme-zh-hant]
 
 [readme-en]: https://github.com/akiirui/mpv-handler/blob/main/README.md
 [readme-zh-hans]: https://github.com/akiirui/mpv-handler/blob/main/README.zh-Hans.md
@@ -110,11 +110,11 @@ referrer = [ Encoded URL ]
 
 macOS 没有 `.desktop` 文件或注册表项那样的机制：协议处理程序必须是一个应用程序包（app bundle）。因此发布包里带有 `install.sh`，它会把二进制文件包装成 `mpv-handler.app`，做 ad-hoc 签名，并向 LaunchServices 注册这两个协议。
 
-#### 一行命令安装
+#### 快速安装
 
-- ```
-  curl -fsSL https://raw.githubusercontent.com/akiirui/mpv-handler/main/share/macos/remote-install.sh | sh
-  ```
+```shell
+curl -fsSL https://raw.githubusercontent.com/akiirui/mpv-handler/main/share/macos/remote-install.sh | sh
+```
 
 该脚本下载最新 release 压缩包、校验其 sha512 后，运行包内自带的 `install.sh`。安装选项放在 `sh -s --` 之后，例如 `| sh -s -- -d /Applications`。
 固定版本则把 `MPV_HANDLER_TAG` 设在管道后的 `sh` 上：`| MPV_HANDLER_TAG=v0.4.2 sh`。
