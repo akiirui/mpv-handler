@@ -106,6 +106,71 @@ referrer = [ Encoded URL ]
 8. Add `$HOME/.local/bin` to your environment variable `PATH`
 9. **Optional**: _Copy `config.toml` to `$HOME/.config/mpv-handler/config.toml` and configure_
 
+### macOS
+
+macOS cannot register a bare executable as a protocol handler, so the binary
+has to be wrapped in an `.app` bundle. `install.sh` assembles that bundle,
+ad-hoc signs it and registers it with LaunchServices.
+
+1. Install **mpv** and **yt-dlp**
+   - ```
+     $ brew install mpv yt-dlp
+     ```
+
+2. Unpack the archive for your Mac. Manual GitHub Actions builds on a branch
+   containing the macOS workflow provide both ZIPs in the `macos-packages` artifact.
+
+   - Apple Silicon — `unzip mpv-handler-macos-arm64.zip -d mpv-handler-macos`
+   - Intel — `unzip mpv-handler-macos-amd64.zip -d mpv-handler-macos`
+
+3. Run the installer from the extracted directory
+   - ```
+     $ cd mpv-handler-macos
+     $ sh install.sh ./mpv-handler
+     ```
+
+   The bundle goes to `$HOME/Applications`, which needs no administrator
+   rights. Pass a second argument to install for every user of this machine
+   - ```
+     $ sh install.sh ./mpv-handler /Applications
+     ```
+
+4. **Optional**: _Copy `config.toml` to `${XDG_CONFIG_HOME:-$HOME/.config}/mpv-handler/config.toml` and configure_
+
+For a personal installation, `install.sh` saves an absolute `$XDG_CONFIG_HOME`
+from your shell so the app can use it when you open a browser link. Re-run
+`install.sh` if you set, change, or unset that variable. A shared installation
+in `/Applications` uses each user's `$XDG_CONFIG_HOME` at launch if it is an
+absolute path, or that user's `~/.config` otherwise.
+
+To install from source, use a checkout that contains `share/macos/install.sh`.
+From its root, run `cargo build --release --locked` and then `sh share/macos/install.sh`.
+
+Uninstall with `sh uninstall.sh`, adding the install directory if it was not
+`$HOME/Applications`. It unregisters the bundle before deleting it, and that
+order matters: LaunchServices keeps a claim on the scheme for a path that no
+longer exists, and a stale claim wins resolution over a working install.
+
+Opening an `mpv-handler-debug://` link starts a separate Terminal process with
+mpv-handler as its startup program. The window shows handler and player output
+and errors. Normal playback begins with `Binaries:`. This test link has an incomplete
+payload and displays
+`Failed to decode`.
+
+```sh
+open 'mpv-handler-debug://play/A'
+```
+
+When LaunchServices starts the bundle, mpv-handler appends `/opt/homebrew/bin`,
+`/usr/local/bin`, `/opt/local/bin` and `$HOME/.local/bin` to its inherited
+`PATH` so it can find Homebrew and MacPorts installations. Set `mpv` and
+`ytdl` in `config.toml` to use specific executables.
+
+The downloaded archive carries `com.apple.quarantine`, which `install.sh`
+clears from the bundle it stages, so Gatekeeper does not report the app as
+damaged. The signature is ad-hoc: enough to run locally on Apple Silicon, but
+the bundle is not notarized.
+
 ### Windows
 
 Windows users need to install manually.
@@ -125,6 +190,7 @@ mpv = "/usr/bin/mpv"
 # The path of mpv executable binary
 # Default value:
 # - Linux: mpv
+# - macOS: mpv
 # - Windows: mpv.com
 
 ytdl = "/usr/bin/yt-dlp"
@@ -148,7 +214,6 @@ proxy = "http://example.com:8080"
 [download-aur-git]: https://aur.archlinux.org/packages/mpv-handler-git/
 [download-aur]: https://aur.archlinux.org/packages/mpv-handler/
 [download-linux]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-linux-amd64.zip
-[download-macos]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-macos-amd64.zip
 [download-windows]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-windows-amd64.zip
 [greasyfork-play-with-mpv]: https://greasyfork.org/scripts/416271-play-with-mpv
 [linuxuprising]: https://www.linuxuprising.com/2021/07/open-youtube-and-more-videos-from-your.html

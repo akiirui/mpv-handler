@@ -43,10 +43,11 @@ impl Config {
 
 /// Returns config directory path of mpv-handler
 pub fn get_config_dir() -> Option<PathBuf> {
-    // Linux config directory location: $XDG_CONFIG_HOME/mpv-handler/
+    // Unix config directory location:
+    //   $XDG_CONFIG_HOME/mpv-handler/, or $HOME/.config/mpv-handler/
     #[cfg(unix)]
     {
-        if let Some(mut v) = dirs::config_dir() {
+        if let Some(mut v) = config_home() {
             v.push("mpv-handler");
             return Some(v);
         }
@@ -63,6 +64,25 @@ pub fn get_config_dir() -> Option<PathBuf> {
 
     eprintln!("Failed to get config directory");
     None
+}
+
+/// Returns the XDG config home: `$XDG_CONFIG_HOME` when it is set to a
+/// non-empty absolute path, otherwise `$HOME/.config`.
+///
+/// `dirs::config_dir()` already resolves exactly this on Linux and the BSDs,
+/// but on macOS it returns `~/Library/Application Support` and ignores
+/// `$XDG_CONFIG_HOME`. Doing the lookup here keeps one config location across
+/// every Unix platform, which is what the README documents.
+#[cfg(unix)]
+fn config_home() -> Option<PathBuf> {
+    #[cfg(not(target_os = "macos"))]
+    return dirs::config_dir();
+
+    #[cfg(target_os = "macos")]
+    return std::env::var_os("XDG_CONFIG_HOME")
+        .map(PathBuf::from)
+        .filter(|p| p.is_absolute())
+        .or_else(|| dirs::home_dir().map(|h| h.join(".config")));
 }
 
 /// The default value of `Config.mpv`

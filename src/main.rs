@@ -5,6 +5,8 @@
 
 mod config;
 mod error;
+#[cfg(target_os = "macos")]
+mod macos;
 mod plugins;
 mod protocol;
 
@@ -16,6 +18,12 @@ use crate::plugins::Plugins;
 use crate::protocol::Protocol;
 
 fn main() -> ExitCode {
+    #[cfg(target_os = "macos")]
+    if let Err(e) = macos::handle_launch() {
+        eprintln!("Could not start mpv-handler debug session: {e}");
+        return ExitCode::FAILURE;
+    }
+
     match run() {
         Ok(_) => ExitCode::SUCCESS,
         Err(e) => print_error(e),
@@ -31,10 +39,13 @@ fn run() -> Result<(), Error> {
         _ => return Err(Error::TooManyArgs),
     };
 
-    let proto = Protocol::parse(arg)?;
+    handle_url(arg)
+}
+
+fn handle_url(url: &str) -> Result<(), Error> {
+    let proto = Protocol::parse(url)?;
     let config = Config::load()?;
 
-    // Call plugin by scheme
     match proto.plugin {
         Plugins::Play => crate::plugins::play::exec(&proto, &config),
     }

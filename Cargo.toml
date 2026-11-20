@@ -18,5 +18,31 @@ serde = { version = "1.0", features = ["derive"] }
 thiserror = "2.0"
 toml = "1.1"
 
+[target.'cfg(target_os = "macos")'.dependencies]
+libc = "0.2"
+objc2 = "0.6"
+objc2-core-foundation = { version = "0.3", default-features = false, features = [
+    "std", "CFData", "CFDate", "CFMessagePort", "CFRunLoop", "CFString",
+] }
+objc2-app-kit = { version = "0.3", default-features = false, features = [
+    "std",
+    "NSApplication",
+    "NSResponder",
+    "NSRunningApplication",
+    "NSWorkspace",
+] }
+objc2-foundation = { version = "0.3", default-features = false, features = [
+    "std",
+    "NSObject",
+    "NSString",
+    "NSAppleEventDescriptor",
+    "NSAppleEventManager",
+    "NSRunLoop",
+    "NSDate",
+    "NSObjCRuntime",
+    "NSPathUtilities",
+    "objc2-core-services",
+] }
+
 [features]
 console = []
