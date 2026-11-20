@@ -106,6 +106,66 @@ referrer = [ Encoded URL ]
 8. 添加 `$HOME/.local/bin` 到環境變量 `PATH`
 9. **可選**: _複製 `config.toml` 至 `$HOME/.config/mpv-handler/config.toml` 並配置_
 
+### macOS
+
+macOS 無法把裸的可執行文件註冊爲協議處理程序，因此必須把它包進一個 `.app`
+bundle。`install.sh` 會組裝這個 bundle、做 ad-hoc 簽名，並向 LaunchServices 註冊。
+
+1. 安裝 **mpv** 和 **yt-dlp**
+   - ```
+     $ brew install mpv yt-dlp
+     ```
+
+2. 依晶片架構解壓縮 macOS 安裝包。在含有 macOS 建置流程的分支上手動執行 GitHub Actions 後，
+   可從建置產物 `macos-packages` 取得這兩個壓縮檔。
+
+   - Apple Silicon — `unzip mpv-handler-macos-arm64.zip -d mpv-handler-macos`
+   - Intel — `unzip mpv-handler-macos-amd64.zip -d mpv-handler-macos`
+
+3. 進入解壓縮後的目錄並執行安裝腳本
+   - ```
+     $ cd mpv-handler-macos
+     $ sh install.sh ./mpv-handler
+     ```
+
+   bundle 會被安裝到 `$HOME/Applications`，該位置不需要管理員權限。傳入第二個
+   參數可爲本機的所有用戶安裝
+   - ```
+     $ sh install.sh ./mpv-handler /Applications
+     ```
+
+4. **可選**: _複製 `config.toml` 至 `${XDG_CONFIG_HOME:-$HOME/.config}/mpv-handler/config.toml` 並配置_
+
+個人安裝時，如果 shell 中的 `$XDG_CONFIG_HOME` 是絕對路徑，`install.sh` 會保存該路徑，
+供從瀏覽器開啓連結時使用。設置、更改或取消該變量後，請重新運行 `install.sh`。
+共享安裝在 `/Applications` 時，應用啓動後從當前用戶的環境讀取 `$XDG_CONFIG_HOME`。
+如果它是絕對路徑，就使用該路徑，否則使用該用戶的 `~/.config`。
+
+從原始碼安裝時，請使用含有 `share/macos/install.sh` 的原始碼版本。
+在專案根目錄執行 `cargo build --release --locked`，再執行 `sh share/macos/install.sh`。
+
+卸載運行 `sh uninstall.sh`；如果安裝目錄不是 `$HOME/Applications`，把它作爲參數
+傳入。腳本會先註銷再刪除，這個順序很重要：LaunchServices 會爲已不存在的路徑保留
+一條協議聲明，而這條殘留聲明的解析優先級高於正常安裝，會讓協議失效。
+
+開啟 `mpv-handler-debug://` 連結時，系統會為這次播放啟動獨立的「終端機」程序，
+直接執行 mpv-handler。視窗顯示 handler 和 mpv 的輸出及錯誤訊息，正常播放的首行是
+`Binaries:`。以下測試連結的編碼資料不完整，會顯示
+`Failed to decode`。
+
+```sh
+open 'mpv-handler-debug://play/A'
+```
+
+從 LaunchServices 啟動時，mpv-handler 會在繼承的 `PATH` 中追加
+`/opt/homebrew/bin`、`/usr/local/bin`、`/opt/local/bin` 和 `$HOME/.local/bin`，
+以便找到透過 Homebrew 或 MacPorts 安裝的程式。也可以在 `config.toml` 中指定
+`mpv` 和 `ytdl` 的路徑。
+
+下載的壓縮包帶有 `com.apple.quarantine` 屬性，`install.sh` 會在組裝 bundle 時清除
+它，因此 Gatekeeper 不會報告應用已損壞。簽名是 ad-hoc 的：在 Apple Silicon 上本地
+運行足夠，但 bundle 並未經過公證。
+
 ### Windows
 
 Windows 用戶目前只能手動安裝。
@@ -125,6 +185,7 @@ mpv = "/usr/bin/mpv"
 # mpv 可執行文件的路徑
 # 默認值:
 # - Linux: mpv
+# - macOS: mpv
 # - Windows: mpv.com
 
 ytdl = "/usr/bin/yt-dlp"
@@ -148,7 +209,6 @@ proxy = "http://example.com:8080"
 [download-aur-git]: https://aur.archlinux.org/packages/mpv-handler-git/
 [download-aur]: https://aur.archlinux.org/packages/mpv-handler/
 [download-linux]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-linux-amd64.zip
-[download-macos]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-macos-amd64.zip
 [download-windows]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-windows-amd64.zip
 [greasyfork-play-with-mpv]: https://greasyfork.org/scripts/416271-play-with-mpv
 [linuxuprising]: https://www.linuxuprising.com/2021/07/open-youtube-and-more-videos-from-your.html

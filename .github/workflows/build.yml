@@ -22,6 +22,16 @@ jobs:
             asset_name: linux-amd64
             target: x86_64-unknown-linux-musl
 
+          - os: macos-latest
+            artifact_name: mpv-handler
+            asset_name: macos-arm64
+            target: aarch64-apple-darwin
+
+          - os: macos-15-intel
+            artifact_name: mpv-handler
+            asset_name: macos-amd64
+            target: x86_64-apple-darwin
+
           - os: windows-latest
             artifact_name: mpv-handler.exe
             artifact_name_debug: mpv-handler-debug.exe
@@ -42,6 +52,30 @@ jobs:
       - name: Build mpv-handler
         run: |
           cargo build --release --locked --target ${{ matrix.target }}
+
+      - name: Test macOS build and installation
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          cargo test --locked --target ${{ matrix.target }}
+          binary="target/${{ matrix.target }}/release/mpv-handler"
+          destination=$(mktemp -d "$RUNNER_TEMP/mpv-handler.XXXXXX")
+          app="$destination/mpv-handler.app"
+          sh share/macos/install.sh "$binary" "$destination"
+          trap 'sh share/macos/uninstall.sh "$destination"' EXIT
+          codesign --verify --strict "$app"
+          python3 - "$app/Contents/Info.plist" <<'PYTHON'
+          import plistlib
+          import sys
+          with open(sys.argv[1], "rb") as f:
+              info = plistlib.load(f)
+          schemes = {s for t in info["CFBundleURLTypes"] for s in t["CFBundleURLSchemes"]}
+          assert {"mpv-handler", "mpv-handler-debug"} <= schemes, schemes
+          assert info["LSEnvironment"]["MPV_HANDLER_URL_SERVICE"] == "1"
+          PYTHON
+          "$binary" </dev/null > "$destination/expected-usage"
+          grep -Fxq 'Usage:' "$destination/expected-usage"
+          "$app/Contents/MacOS/mpv-handler" </dev/null | diff "$destination/expected-usage" -
 
       - name: Upload to artifact
         uses: actions/upload-artifact@v7
@@ -81,6 +115,18 @@ jobs:
             share/linux/* \
             linux-amd64/mpv-handler
 
+      - name: Read macOS package version
+        run: |
+          cargo metadata --no-deps --locked --format-version 1 |
+            jq -er '.packages[] | select(.name == "mpv-handler") | .version' > VERSION
+
+      - name: Package macOS
+        run: |
+          for arch in arm64 amd64; do
+            zip -j "mpv-handler-macos-${arch}.zip" \
+              VERSION README*.md share/macos/* "macos-${arch}/mpv-handler"
+          done
+
       - name: Package Windows
         run: |
           zip -j mpv-handler-windows-amd64.zip \
@@ -93,7 +139,16 @@ jobs:
         run: |
           sha512sum mpv-handler-*.zip > sha512sum
 
+      - name: Upload macOS packages
+        if: github.ref_type == 'branch'
+        uses: actions/upload-artifact@v7
+        with:
+          name: macos-packages
+          path: mpv-handler-macos-*.zip
+          if-no-files-found: error
+
       - name: Publish
+        if: github.ref_type == 'tag'
         uses: ncipollo/release-action@v1
         with:
           artifacts: "mpv-handler-*.zip,sha512sum"
