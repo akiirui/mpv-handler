@@ -43,12 +43,19 @@ impl Config {
 
 /// Returns config directory path of mpv-handler
 pub fn get_config_dir() -> Option<PathBuf> {
-    // Linux config directory location: $XDG_CONFIG_HOME/mpv-handler/
     #[cfg(unix)]
     {
-        if let Some(mut v) = dirs::config_dir() {
-            v.push("mpv-handler");
-            return Some(v);
+        // Use the Linux XDG layout on macOS as well.
+        #[cfg(target_os = "macos")]
+        let base = std::env::var_os("XDG_CONFIG_HOME")
+            .map(PathBuf::from)
+            .filter(|path| path.is_absolute())
+            .or_else(|| dirs::home_dir().map(|home| home.join(".config")));
+        #[cfg(not(target_os = "macos"))]
+        let base = dirs::config_dir();
+
+        if let Some(path) = base {
+            return Some(path.join("mpv-handler"));
         }
     }
 
