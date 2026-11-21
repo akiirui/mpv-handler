@@ -110,7 +110,10 @@ referrer = [ Encoded URL ]
 
 1. 安装 mpv 和 yt-dlp。使用 Homebrew 可运行 `brew install mpv yt-dlp`。
 2. 解压 [macOS 安装包][download-macos]，将 `mpv-handler.app` 拖入“应用程序”，打开一次即可注册两个协议。
-3. 使用与 Linux 相同的浏览器脚本。调试链接会在“终端”中打开。
+
+   如果 macOS 提示 Apple 无法验证 `mpv-handler`，先点“完成”。如果你信任该下载来源，打开“系统设置”→“隐私与安全性”，在“安全性”中找到 `mpv-handler`，点“仍要打开”并确认。如果看不到这个按钮，在访达中再次双击该应用，然后回到设置查看。[Apple 官方说明](https://support.apple.com/zh-cn/102445)
+
+3. 在视频页面使用 [play-with-mpv 用户脚本][greasyfork-play-with-mpv] 启动 mpv 播放。处理程序本身没有主窗口。调试链接会在“终端”中打开。
 
 和 Linux 一样，应用从 `~/.config/mpv-handler/config.toml` 和 `~/.config/mpv-handler/cookies/` 读取配置和 cookies。若应用环境中的 `XDG_CONFIG_HOME` 是绝对路径，则用它替代 `~/.config`。
 
