@@ -2,7 +2,7 @@
 # Optional, Type: String
 # The path of mpv executable binary
 # Default value:
-# - Linux: mpv
+# - Linux/macOS: mpv
 # - Windows: mpv.com
 
 #ytdl = "/path/of/ytdl"
