@@ -106,7 +106,7 @@ referrer = [ Encoded URL ]
 8. Add `$HOME/.local/bin` to your environment variable `PATH`
 9. **Optional**: _Copy `config.toml` to `$HOME/.config/mpv-handler/config.toml` and configure_
 
-### macOS (Apple Silicon)
+### macOS (Apple Silicon and Intel)
 
 1. Install mpv and yt-dlp (with Homebrew, run `brew install mpv yt-dlp`).
 2. Unzip the [macOS release][download-macos], move `mpv-handler.app` to Applications and open it once to register both URL schemes.
@@ -117,7 +117,7 @@ referrer = [ Encoded URL ]
 
 The app reads `~/.config/mpv-handler/config.toml` and `~/.config/mpv-handler/cookies/`, just like Linux. An absolute `XDG_CONFIG_HOME` in the app's environment overrides `~/.config`.
 
-To build the app from source, run `cargo build --release --locked && sh share/macos/bundle.sh target/release/mpv-handler mpv-handler.app` in the repository root.
+To build for your Mac’s architecture, run `cargo build --release --locked && sh share/macos/bundle.sh target/release/mpv-handler mpv-handler.app` in the repository root. The [release workflow](.github/workflows/build.yml) builds the universal app.
 
 ### Windows
 
@@ -161,7 +161,7 @@ proxy = "http://example.com:8080"
 [download-aur-git]: https://aur.archlinux.org/packages/mpv-handler-git/
 [download-aur]: https://aur.archlinux.org/packages/mpv-handler/
 [download-linux]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-linux-amd64.zip
-[download-macos]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-macos-arm64.zip
+[download-macos]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-macos-universal.zip
 [download-windows]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-windows-amd64.zip
 [greasyfork-play-with-mpv]: https://greasyfork.org/scripts/416271-play-with-mpv
 [linuxuprising]: https://www.linuxuprising.com/2021/07/open-youtube-and-more-videos-from-your.html
