@@ -113,8 +113,6 @@ referrer = [ Encoded URL ]
 
    If macOS says Apple could not verify `mpv-handler`, click **Done**. If you trust the download, go to **System Settings → Privacy & Security**. Under **Security**, click **Open Anyway** next to `mpv-handler` and confirm. If the button is missing, double-click the app in Finder and check the settings again. [Apple’s instructions](https://support.apple.com/en-us/102445)
 
-3. Use the [play-with-mpv userscript][greasyfork-play-with-mpv] on a video page to start playback in mpv. The handler has no main window. Debug links open in Terminal.
-
 The app reads `~/.config/mpv-handler/config.toml` and `~/.config/mpv-handler/cookies/`, just like Linux. An absolute `XDG_CONFIG_HOME` in the app's environment overrides `~/.config`.
 
 To build for your Mac’s architecture, run `cargo build --release --locked && sh share/macos/bundle.sh target/release/mpv-handler mpv-handler.app` in the repository root. The [release workflow](.github/workflows/build.yml) builds the universal app.

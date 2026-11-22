@@ -113,8 +113,6 @@ referrer = [ Encoded URL ]
 
    如果 macOS 提示 Apple 無法驗證 `mpv-handler`，先按一下「完成」。如果你信任下載來源，請開啟「系統設定」→「隱私權與安全性」，在「安全性」中找到 `mpv-handler`，按一下「強制打開」並確認。如果沒有看到這個按鈕，請在 Finder 中再按兩下該 App，然後返回設定查看。[Apple 官方說明](https://support.apple.com/zh-tw/102445)
 
-3. 在影片頁面使用 [play-with-mpv 使用者腳本][greasyfork-play-with-mpv] 啟動 mpv 播放。處理程式本身沒有主視窗。除錯連結會在「終端機」中開啟。
-
 和 Linux 一樣，應用程式從 `~/.config/mpv-handler/config.toml` 和 `~/.config/mpv-handler/cookies/` 讀取設定與 cookies。若應用程式環境中的 `XDG_CONFIG_HOME` 是絕對路徑，則用它取代 `~/.config`。
 
 若要為本機架構建置，可在專案根目錄執行 `cargo build --release --locked && sh share/macos/bundle.sh target/release/mpv-handler mpv-handler.app`。通用 App 的建置步驟請見[發布工作流程](.github/workflows/build.yml)。
