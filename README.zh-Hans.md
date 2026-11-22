@@ -106,7 +106,7 @@ referrer = [ Encoded URL ]
 8. 添加 `$HOME/.local/bin` 到环境变量 `PATH`
 9. **可选**: _复制 `config.toml` 至 `$HOME/.config/mpv-handler/config.toml` 并配置_
 
-### macOS（Apple Silicon）
+### macOS（Apple Silicon 和 Intel）
 
 1. 安装 mpv 和 yt-dlp。使用 Homebrew 可运行 `brew install mpv yt-dlp`。
 2. 解压 [macOS 安装包][download-macos]，将 `mpv-handler.app` 拖入“应用程序”，打开一次即可注册两个协议。
@@ -117,7 +117,7 @@ referrer = [ Encoded URL ]
 
 和 Linux 一样，应用从 `~/.config/mpv-handler/config.toml` 和 `~/.config/mpv-handler/cookies/` 读取配置和 cookies。若应用环境中的 `XDG_CONFIG_HOME` 是绝对路径，则用它替代 `~/.config`。
 
-从源码构建时，可在仓库根目录运行 `cargo build --release --locked && sh share/macos/bundle.sh target/release/mpv-handler mpv-handler.app`。
+要为本机架构构建，可在仓库根目录运行 `cargo build --release --locked && sh share/macos/bundle.sh target/release/mpv-handler mpv-handler.app`。通用应用的构建步骤见[发布工作流](.github/workflows/build.yml)。
 
 ### Windows
 
@@ -161,7 +161,7 @@ proxy = "http://example.com:8080"
 [download-aur-git]: https://aur.archlinux.org/packages/mpv-handler-git/
 [download-aur]: https://aur.archlinux.org/packages/mpv-handler/
 [download-linux]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-linux-amd64.zip
-[download-macos]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-macos-arm64.zip
+[download-macos]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-macos-universal.zip
 [download-windows]: https://github.com/akiirui/mpv-handler/releases/latest/download/mpv-handler-windows-amd64.zip
 [greasyfork-play-with-mpv]: https://greasyfork.org/scripts/416271-play-with-mpv
 [linuxuprising]: https://www.linuxuprising.com/2021/07/open-youtube-and-more-videos-from-your.html
