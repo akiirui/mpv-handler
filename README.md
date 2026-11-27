@@ -118,6 +118,8 @@ Click **Done**. If you trust the download, go to **System Settings → Privacy &
 
 </details>
 
+The first time you open a debug link, macOS may ask to let mpv-handler control Terminal. Click **Allow** to see playback logs. Regular playback does not need this permission.
+
 The app reads `~/.config/mpv-handler/config.toml` and `~/.config/mpv-handler/cookies/`, just like Linux. An absolute `XDG_CONFIG_HOME` in the app's environment overrides `~/.config`.
 
 To uninstall, move `mpv-handler.app` from `~/Applications` or `/Applications` to the Trash. Your configuration and cookies stay in place.

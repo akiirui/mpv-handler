@@ -118,6 +118,8 @@ referrer = [ Encoded URL ]
 
 </details>
 
+首次打开调试链接时，macOS 可能会询问是否允许 mpv-handler 控制“终端”。点按“允许”即可查看播放日志。普通播放无需此权限。
+
 和 Linux 一样，应用从 `~/.config/mpv-handler/config.toml` 和 `~/.config/mpv-handler/cookies/` 读取配置和 cookies。若应用环境中的 `XDG_CONFIG_HOME` 是绝对路径，则用它替代 `~/.config`。
 
 卸载时，在 `~/Applications` 或 `/Applications` 中找到 `mpv-handler.app`，将它移到废纸篓即可。个人配置和 cookies 会保留。
